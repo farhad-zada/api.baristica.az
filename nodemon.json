@@ -1,0 +1,15 @@
+{
+    "watch": [
+        "controllers/*",
+        "utils/*",
+        "routes/*",
+        "models/*",
+        "node_modules/*",
+        "app.js",
+        "index.js"
+    ],
+    "ignore": [
+        "logs/*"
+    ],
+    "exec": "node index.js"
+}
