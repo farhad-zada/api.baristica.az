@@ -22,18 +22,19 @@ const ProductSchema = new Schema(
     description: {
       type: String,
     },
+    discount: {
+      type: Number,
+      default: 0,
+    },
+    discountType: {
+      type: String,
+      enum: ["percentage", "fixed"],
+      default: "percentage",
+    },
     slug: {
       type: String,
       // unique: true,
       index: true,
-    },
-    createdAt: {
-      type: Date,
-      default: Date.now(),
-    },
-    updatedAt: {
-      type: Date,
-      default: Date.now(),
     },
     deletedAt: {
       type: Date,
