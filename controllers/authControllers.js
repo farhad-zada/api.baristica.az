@@ -1,4 +1,7 @@
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+const validator = require("validator");
+const sendEmail = require("../utils/sendMail");
 const {
   secret,
   token_expiration,
@@ -18,6 +21,7 @@ const logger = require("../utils/logger");
  */
 async function login(req, res, next) {
   const { email, password } = req.body.creds;
+  console.log(req.body.creds);
   const user = await User.findOne({ email }).select("+password");
   if (!user) {
     return errorResponse(res, "User not found!", 404);
@@ -116,18 +120,96 @@ async function updatePassword(req, res, next) {
  * @returns {void | import("express").Response | import("express").NextFunction}
  */
 async function forgotPassword(req, res, next) {
-  const { email } = req.body;
-  const user = await User.findOne({ email });
-  if (!user) {
-    return errorResponse(res, "User not found!", 404);
+  try {
+    const { email } = req.body;
+    if (!validator.isEmail(email)) {
+      return errorResponse(res, "Invalid email!", 400);
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return errorResponse(res, "User not found!", 404);
+    }
+
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    user.resetPasswordToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+    user.resetPasswordExpires = Date.now() + 60 * 60 * 1000 * 24; // 10 minutes
+    await user.save();
+
+    // send email with reset password link
+    const resetURL = `${req.protocol}://${req.get(
+      "host"
+    )}/api/v1/auth/reset-password/${resetToken}`;
+
+    const to = email;
+
+    const subject = "Baristica ⚙️ Reset Password";
+
+    const text = `Click to reset your password: ${resetURL}`;
+
+    await sendEmail({
+      to,
+      subject,
+      text,
+    });
+
+    return successResponse(res, "Reset password link sent to your email!", 200);
+  } catch (error) {
+    return errorResponse(res, error.message, 500);
   }
-  // send email with reset password link
-  return successResponse(res, "Reset password link sent to your email!");
 }
+
+/**
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import("express").NextFunction} next
+ * @returns {void | import("express").Response | import("express").NextFunction}
+ */
+async function resetPassword(req, res, next) {
+  try {
+    const { token } = req.params;
+    const { password, passwordConfirm } = req.body.creds;
+
+    if (password.length < 8 || passwordConfirm.length < 8) {
+      return errorResponse(
+        res,
+        "Password should be at least 8 characters!",
+        400
+      );
+    }
+    if (password !== passwordConfirm) {
+      return errorResponse(res, "Passwords do not match!", 400);
+    }
+
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+    const user = await User.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpires: { $gt: Date.now() },
+    }).select("+email");
+
+    if (!user) {
+      return errorResponse(res, "Url is invalid or has expired!", 400);
+    }
+    user.password = password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    user.passwordChangedAt = Date.now();
+    await user.save();
+    req.body.creds = { email: user.email, password };
+    return login(req, res, next);
+  } catch (error) {
+    return errorResponse(res, error.message, 500);
+  }
+}
+
 module.exports = {
   login,
   register,
   logout,
   updatePassword,
   forgotPassword,
+  resetPassword,
 };

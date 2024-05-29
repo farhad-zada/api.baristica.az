@@ -24,9 +24,11 @@ async function authMiddleware(req, res, next) {
     if (!userId) {
       return errorResponse(res, "Invalid token.", 400);
     }
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).select("+passwordChangedAt");
     if (!user) {
       return errorResponse(res, "Please sign in!", 404);
+    } else if (user.passwordChangedAt && user.passwordChangedAt > decoded.iat) {
+      return errorResponse(res, "Password changed. Sign in again!", 401);
     }
     req.user = user;
     next();

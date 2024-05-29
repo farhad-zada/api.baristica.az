@@ -1,5 +1,5 @@
 const { Schema, model } = require("mongoose");
-const { isMobilePhone } = require("validator");
+const { isMobilePhone, isEmail } = require("validator");
 const bcrypt = require("bcrypt");
 const UserSchema = new Schema(
   {
@@ -28,7 +28,7 @@ const UserSchema = new Schema(
       select: false,
       validate: {
         validator: function (v) {
-          return validator.isEmail(v);
+          return isEmail(v);
         },
         message: (props) => `${props.value} is not a valid email!`,
       },
@@ -50,6 +50,10 @@ const UserSchema = new Schema(
       unique: true,
     },
     resetPasswordExpires: {
+      type: Date,
+      select: false,
+    },
+    passwordChangedAt: {
       type: Date,
       select: false,
     },

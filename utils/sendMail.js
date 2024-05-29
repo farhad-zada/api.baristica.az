@@ -1,7 +1,7 @@
 const nodemailer = require("nodemailer");
 const config = require("../config");
 
-const sendEmail = async (options) => {
+module.exports = async (options) => {
   const transporter = nodemailer.createTransport({
     service: config.email_service,
     auth: {
@@ -12,12 +12,10 @@ const sendEmail = async (options) => {
 
   const mailOptions = {
     from: config.email_username,
-    to: options.email,
+    to: options.to,
     subject: options.subject,
-    text: options.message,
+    text: options.text,
   };
 
   await transporter.sendMail(mailOptions);
 };
-
-sendEmail({});
