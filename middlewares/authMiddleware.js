@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const { secret } = require("../config");
 const { errorResponse } = require("../utils/responseHandlers");
 const User = require("../models/userModel");
+const logger = require("../utils/logger");
 
 /**
  * @param {import('express').Request} req
@@ -33,7 +34,7 @@ async function authMiddleware(req, res, next) {
     req.user = user;
     next();
   } catch (ex) {
-    console.log(ex);
+    logger.error(ex);
     return errorResponse(res, "Invalid token.", 400);
   }
 }

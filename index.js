@@ -22,6 +22,10 @@ app.use(helmet());
 app.use(mongoSanitize());
 app.use("/api/v1", require("./routes/api"));
 
+app.use("*", (req, res) =>
+  res.status(404).json({ status: false, message: "You hit a wrong route! 🤫" })
+);
+
 app.listen(config.port, () => {
   console.log(`Server is running on port ${config.port}`);
 });

@@ -82,7 +82,7 @@ const deleteProduct = async (req, res) => {
       deleted: true,
       deletedAt: Date.now(),
     });
-    console.log(productDeleted);
+
     if (!productDeleted) {
       return errorResponse(res, "Product not found", 404);
     }
