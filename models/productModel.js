@@ -15,6 +15,10 @@ const ProductSchema = new Schema(
       required: true,
       min: [0, "There must be a valid price"],
     },
+    weight: {
+      type: Number,
+      min: [0, "There must be a valid weight"],
+    },
     image: {
       type: String,
       required: true,

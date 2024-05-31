@@ -9,7 +9,10 @@ const validator = require("validator");
  */
 const index = async (req, res) => {
   try {
-    const orders = await Order.find().populate("user", "name email phone");
+    const orders = await Order.find() //TODO: adjust to needs
+      .skip(0)
+      .limit(20)
+      .populate("user", "name email phone");
     successResponse(res, orders, 200);
   } catch (error) {
     errorResponse(res, error.message, 500);
@@ -45,7 +48,10 @@ const orderById = async (req, res) => {
  * @description The request is already validated by the middleware
  */
 const createOrder = async (req, res) => {
-  successResponse(res, "Order created successfully", 201);
+  const order = req.body.order;
+  const newOrder = new Order(order);
+  await newOrder.save();
+  successResponse(res, newOrder, 201);
 };
 
 /**
@@ -63,6 +69,21 @@ const updateOrder = async (req, res) => {
  * @description The request is already validated by the middleware
  */
 const deleteOrder = async (req, res) => {
+  const orderId = req.params.orderId;
+  if (!validator.isMongoId(orderId)) {
+    return errorResponse(res, "Invalid id", 429);
+  }
+  const order = await Order.findById(orderId);
+  if (!order) {
+    return errorResponse(res, "Not found", 404);
+  }
+
+  if (order.customer.toString() !== req.user._id.toString()) {
+    return errorResponse(res, "You are not allowed to delete this order", 403);
+  }
+  order.deleted = true;
+  await order.save();
+
   successResponse(res, "Order deleted successfully", 200);
 };
 

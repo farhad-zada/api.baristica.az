@@ -1,4 +1,6 @@
 const router = require("express").Router();
+const auth = require("../middlewares/authMiddleware");
+const { validateOrder } = require("../middlewares/validateOrderMiddleware");
 
 const {
   index,
@@ -7,10 +9,14 @@ const {
   updateOrder,
   deleteOrder,
 } = require("../controllers/orderControllers");
+const { allowTo } = require("../middlewares/policies");
 
 router.get("/", index);
 router.get("/:orderId", orderById);
-router.post("/", createOrder);
+router.post("/", auth, validateOrder, createOrder); // product ids, product quantities,
+
+router.use(auth, allowTo("baristica", "admin", "superadmin"));
+
 router.patch("/:orderId", updateOrder);
 router.delete("/:orderId", deleteOrder);
 
