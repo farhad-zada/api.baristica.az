@@ -8,7 +8,11 @@ const Product = require("../models/productModel");
  */
 const allProducts = async (req, res) => {
   try {
-    const products = await Product.find();
+    let { pg, lt, ptp } = req.query;
+    const skip = (pg - 1) * lt;
+    const products = await Product.find(ptp ? { productType: ptp } : {})
+      .skip(skip)
+      .limit(lt);
     successResponse(res, products);
   } catch (error) {
     errorResponse(res, error.message, 500);

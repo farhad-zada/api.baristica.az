@@ -10,7 +10,7 @@ const checkQueryString = (req, res, next) => {
   //  pg (page) is integer between 1 and 1000 and can be omitted
   //  lt (limit) is integer between 1 and 100 and can be omitted
   //  s (string contains) is string and can be omitted this string that name, description or about fields may contain
-  const { pg, lt } = req.query;
+  const { pg, lt, ptp } = req.query;
 
   if (pg) {
     if (isNaN(pg) || pg < 1 || pg > 20) {
@@ -26,6 +26,19 @@ const checkQueryString = (req, res, next) => {
     }
   } else {
     req.query.lt = 10;
+  }
+  if (ptp) {
+    if (
+      ![
+        "coffee",
+        "grinder",
+        "grinder-commandate",
+        "coffee-machine",
+        "accessory",
+      ].includes(ptp)
+    ) {
+      return errorResponse(res, "Invalid product type", 400);
+    }
   }
 
   next();
