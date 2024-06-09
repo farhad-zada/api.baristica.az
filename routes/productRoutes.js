@@ -4,7 +4,7 @@ const { validateNewProduct } = require("../middlewares/productMiddlewares");
 const router = Router();
 const { restrictTo, allowTo } = require("../middlewares/policies");
 const auth = require("../middlewares/authMiddleware");
-const { checkQueryString } = require("../middlewares/checkQueryString");
+const checkQueryString = require("../middlewares/checkQueryString");
 
 router.get("/", checkQueryString, productControllers.allProducts);
 router.get("/:id", productControllers.productById);

@@ -1,6 +1,4 @@
 const { errorResponse } = require("../utils/responseHandlers");
-const logger = require("../utils/logger");
-const validator = require("validator");
 
 /**
  * @param {import('express').Request} req
