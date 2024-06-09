@@ -38,6 +38,17 @@ const UserSchema = new Schema(
       required: true,
       select: false,
     },
+    passwordConfirm: {
+      type: String,
+      required: true,
+      select: false,
+      validate: {
+        validator: function (v) {
+          return v === this.password;
+        },
+        message: (props) => `Passwords do not match!`,
+      },
+    },
     role: {
       type: String,
       enum: ["default", "baristica", "admin", "superadmin"],
@@ -47,7 +58,7 @@ const UserSchema = new Schema(
     resetPasswordToken: {
       type: String,
       select: false,
-      unique: true,
+      unique: false,
     },
     resetPasswordExpires: {
       type: Date,
@@ -74,7 +85,9 @@ const UserSchema = new Schema(
 UserSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
     this.password = await bcrypt.hash(this.password, 12);
+    this.passwordConfirm = undefined;
   }
+
   next();
 });
 

@@ -4,11 +4,52 @@ const slugify = require("slugify");
 
 const { Schema, model } = mongoose;
 
+const multiLang = {
+  en: {
+    type: String,
+    required: true,
+  },
+  ru: {
+    type: String,
+    required: true,
+  },
+  az: {
+    type: String,
+    required: true,
+  },
+
+  _id: false,
+};
+
 const ProductSchema = new Schema(
   {
     name: {
-      type: String,
+      type: multiLang,
       required: true,
+    },
+    description: {
+      type: multiLang,
+      required: false,
+    },
+
+    about: {
+      type: multiLang,
+      required: false,
+    },
+    processingType: {
+      type: multiLang,
+      required: false,
+    },
+    region: {
+      type: String,
+      required: false,
+    },
+    brewingMethod: {
+      type: {
+        en: [String],
+        ru: [String],
+        az: [String],
+      },
     },
     price: {
       type: Number,
@@ -19,13 +60,40 @@ const ProductSchema = new Schema(
       type: Number,
       min: [0, "There must be a valid weight"],
     },
+    height: {
+      type: String,
+    },
+    qGrader: {
+      type: Number,
+      min: [0, "There must be a valid Q-Grader"],
+    },
+    acidity: {
+      type: Number,
+      min: [0, "There must be a valid acidity"],
+    },
+    viscosity: {
+      type: Number,
+      min: [0, "There must be a valid viscosity"],
+    },
+    sweetness: {
+      type: Number,
+      min: [0, "There must be a valid sweetness"],
+    },
     image: {
       type: String,
-      required: true,
+      // required: true, TODO: uncomment after adding images
     },
-    description: {
-      type: String,
+    roastingTemperature: {
+      type: Number,
     },
+    roastingTime: {
+      type: Number,
+    },
+    roastingLevel: {
+      type: [String],
+      required: false,
+    },
+
     discount: {
       type: Number,
       default: 0,
@@ -38,6 +106,18 @@ const ProductSchema = new Schema(
     slug: {
       type: String,
       // unique: true,
+      index: true,
+    },
+    productType: {
+      type: String,
+      enum: [
+        "coffee",
+        "accessory",
+        "grinder",
+        "grinder-commandate",
+        "coffee-machine",
+      ],
+      required: true,
       index: true,
     },
     deletedAt: {

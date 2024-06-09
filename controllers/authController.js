@@ -61,7 +61,6 @@ async function register(req, res, next) {
     req.body.creds = { email: user.email, password: userData.password };
     return login(req, res, next);
   } catch (error) {
-    logger.error(error);
     return errorResponse(
       res,
       "Something went wrong on our side! Please contact support!",

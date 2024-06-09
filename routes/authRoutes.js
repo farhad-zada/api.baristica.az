@@ -7,7 +7,7 @@ const {
   updatePassword,
   forgotPassword,
   resetPassword,
-} = require("../controllers/authControllers");
+} = require("../controllers/authController");
 const {
   validateNewUserMiddleware,
 } = require("../middlewares/validateNewUserMiddleware");

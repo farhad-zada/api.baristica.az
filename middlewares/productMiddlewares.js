@@ -5,9 +5,19 @@ const { errorResponse } = require("../utils/responseHandlers");
  * @param {import ('express').Response} res
  * @param {import ('express').NextFunction} next
  */
-const validateNewProduct = async (req, res, next) => {
+const newProduct = async (req, res, next) => {
+  const {
+    name,
+    price,
+    weight,
+    description,
+    about,
+    discount,
+    roastingTemperature,
+    roastingTime,
+    roastingLevel,
+  } = req.body;
   try {
-    req.body.product = await Product.validate(req.body.product);
     next();
   } catch (error) {
     errorResponse(res, error.message, 400);
@@ -15,5 +25,5 @@ const validateNewProduct = async (req, res, next) => {
 };
 
 module.exports = {
-  validateNewProduct,
+  validateNewProduct: newProduct,
 };

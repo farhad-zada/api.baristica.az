@@ -9,10 +9,12 @@ const validator = require("validator");
  */
 const index = async (req, res) => {
   try {
-    const orders = await Order.find() //TODO: adjust to needs
-      .skip(0)
-      .limit(20)
-      .populate("user", "name email phone");
+    let { pg, pl } = req.query;
+    const skip = (pg - 1) * pl;
+    const orders = await Order.find()
+      .skip(skip)
+      .limit(pl)
+      .populate("customer", "name email phone");
     successResponse(res, orders, 200);
   } catch (error) {
     errorResponse(res, error.message, 500);
@@ -60,7 +62,34 @@ const createOrder = async (req, res) => {
  * @description The request is already validated by the middleware
  */
 const updateOrder = async (req, res) => {
-  successResponse(res, "Order updated successfully", 200);
+  try {
+    const orderId = req.params.orderId;
+    const status = req.body.order.status;
+    if (!status) {
+      return errorResponse(res, "Status is required", 400);
+    }
+    if (!validator.isMongoId(orderId)) {
+      return errorResponse(res, "Invalid id", 429);
+    }
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return errorResponse(res, "Not found", 404);
+    }
+    order.status = status;
+    await order.validate();
+
+    const updatedOrder = await order.save({
+      validateBeforeSave: true,
+      new: true,
+    });
+
+    successResponse(res, updatedOrder, 200);
+  } catch (error) {
+    if (error.name === "ValidationError") {
+      return errorResponse(res, error.message, 400);
+    }
+    errorResponse(res, error.message, 500);
+  }
 };
 
 /**

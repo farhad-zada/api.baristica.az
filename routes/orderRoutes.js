@@ -8,7 +8,7 @@ const {
   createOrder,
   updateOrder,
   deleteOrder,
-} = require("../controllers/orderControllers");
+} = require("../controllers/orderController");
 const { allowTo } = require("../middlewares/policies");
 
 router.get("/", index);
