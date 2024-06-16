@@ -10,8 +10,14 @@ const {
   deleteOrder,
 } = require("../controllers/orderController");
 const { allowTo } = require("../middlewares/policies");
+const logger = require("../utils/logger");
 
 router.get("/", index);
+router.post("/check", (req, res) => {
+  console.log(req.body);
+  logger.info("Order check", req.body);
+  res.status(200).json({ message: "Order check" });
+});
 router.get("/:orderId", orderById);
 router.post("/", auth, validateOrder, createOrder); // product ids, product quantities,
 
