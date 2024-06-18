@@ -1,6 +1,4 @@
 const { infoMessage } = require("./utils");
-const trusted = require("./trusted.json");
-const fs = require("fs");
 /**
  *
  * @param {Telegram.Context} ctx
