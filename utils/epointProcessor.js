@@ -14,14 +14,13 @@ const sha1 = crypto.createHash("sha1");
 
 const data = {
   public_key: PUBLIC_KEY,
-  amount: "20.00",
+  amount: "1.00",
   currency: "AZN",
   description: "Paying for the glory of the Baristica empire",
   order_id: "1",
   language: "az",
 };
 
-console.log(data);
 data64 = Buffer.from(JSON.stringify(data)).toString("base64");
 
 sha1.update(PRIVATE_KEY + data64 + PRIVATE_KEY, "utf8");
@@ -66,19 +65,19 @@ const epointProcessor = () => {
 
         const getStatusUrl = `${epointGetStatus}?${queryParams.toString()}`;
 
-        fetch(getStatusUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
-          .then((res) => res.json())
-          .then((json) => {
-            console.log(json);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+        // fetch(getStatusUrl, {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        // })
+        //   .then((res) => res.json())
+        //   .then((json) => {
+        //     console.log(json);
+        //   })
+        //   .catch((err) => {
+        //     console.log(err);
+        //   });
       }, 5000);
     })
     .catch((err) => {

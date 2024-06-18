@@ -9,10 +9,12 @@
         "index.js",
         "config.js",
         "middlewares/*",
-        "nodemon.json"
+        "nodemon.json",
+        "telegram/*"
     ],
     "ignore": [
-        "logs/*"
+        "logs/*",
+        "telegram/trusted.json"
     ],
     "exec": "node index.js"
 }

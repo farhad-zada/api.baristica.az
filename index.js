@@ -6,8 +6,8 @@ const helmet = require("helmet");
 const cors = require("cors");
 const app = express();
 const config = require("./config");
+const bot = require("./telegram");
 config.validateConfig(config);
-
 const uri = config.db_uri();
 
 mongoose
@@ -36,6 +36,7 @@ mongoose
 
     app.listen(config.port, () => {
       console.log(`Server is running on port ${config.port}`);
+      bot.launch();
     });
   })
   .catch((err) => {

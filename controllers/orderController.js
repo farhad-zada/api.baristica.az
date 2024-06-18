@@ -116,10 +116,36 @@ const deleteOrder = async (req, res) => {
   successResponse(res, "Order deleted successfully", 200);
 };
 
+/**
+ * @param {import ('express').Request} req
+ * @param {import ('express').Response} res
+ * @description The request is already validated by the middleware
+ */
+const orderPaid = async (req, res) => {
+  try {
+    const { orderId } = req.body;
+    if (!validator.isMongoId(orderId)) {
+      return errorResponse(res, "Invalid id", 429);
+    }
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return errorResponse(res, "Not found", 404);
+    }
+    order.status = "paid";
+    await order.save();
+
+    // here we will implement a direct to telegeam bot so the order will be sent to telegram group
+    successResponse(res, "Order paid successfully", 200);
+  } catch (error) {
+    errorResponse(res, error.message, 500);
+  }
+};
+
 module.exports = {
   index,
   orderById,
   createOrder,
   updateOrder,
   deleteOrder,
+  orderPaid,
 };
