@@ -34,13 +34,12 @@ async function downloadImage(url, filePath, id) {
 
   const image = `https://farhadzada.com/md/${id}.${extension}`;
 
-  return [
-    new Promise((resolve, reject) => {
-      writer.on("finish", resolve);
-      writer.on("error", reject);
-    }),
-    Product.updateOne({ _id: id }, { image }),
-  ];
+  await Product.updateOne({ _id: id }, { image });
+  return;
+  new Promise((resolve, reject) => {
+    writer.on("finish", resolve);
+    writer.on("error", reject);
+  });
 }
 
 const uploadCoffee = async () => {
@@ -56,18 +55,14 @@ const uploadCoffee = async () => {
   }
   if (products.length) {
     console.log(`<<<<Coffee>>>>`);
-    const promisesTuple = products.map(async (product) => {
+    const promises = products.map(async (product) => {
       const url = product.image;
       const filePath = `public/images/${product._id}`;
 
-      return downloadImage(url, filePath, product._id);
+      return await downloadImage(url, filePath, product._id);
     });
 
-    const promisesDownloadImage = promisesTuple.map((promise) => promise[0]);
-    const promisesSaveToDB = promisesTuple.map((promise) => promise[1]);
-
-    await Promise.all(promisesDownloadImage);
-    await Promise.all(promisesSaveToDB);
+    await Promise.all(promises);
   } else {
     console.log("No data found.");
   }
