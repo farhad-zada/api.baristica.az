@@ -4,3 +4,4 @@ logs
 .env
 telegram/trusted.json
 public/images/*
+.creds
