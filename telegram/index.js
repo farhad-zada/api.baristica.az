@@ -3,6 +3,7 @@ require("dotenv").config();
 const commands = require("./commands");
 const { hello, info, addNewIds } = require("./hears");
 const { haveAccess } = require("./auth");
+const { callbackQuery, preCheckoutQuery } = require("./listeners");
 const Order = require("../models/orderModel");
 
 const bot = new Telegraf(process.env.TG_BOT_API_TOKEN);
@@ -29,42 +30,9 @@ bot.hears(["Test", "test"], (ctx) => {
   });
 });
 
-bot.on("pre_checkout_query", (ctx) => {
-  ctx
-    .answerPreCheckoutQuery(true)
-    .then(() => console.log("Pre-checkout query answered"))
-    .catch((err) => console.error("Failed to answer pre-checkout query", err));
-});
+bot.on("pre_checkout_query", preCheckoutQuery);
 
-bot.on("callback_query", async (ctx) => {
-  const { data } = ctx.callbackQuery;
-
-  if (!data.startsWith("delivered_")) return;
-
-  const orderId = data.split("_")[1];
-
-  const order = await Order.findById(orderId);
-
-  if (!order) {
-    ctx.reply("Order not found.");
-    return;
-  }
-
-  if (order.status === "delivered") {
-    ctx.reply("Order already marked as delivered.");
-    return;
-  }
-
-  order.status = "delivered";
-
-  await order.save();
-
-  ctx.editMessageReplyMarkup({
-    inline_keyboard: [],
-  });
-  ctx.answerCbQuery("Order marked as delivered.");
-  ctx.reply("Order marked as delivered. ✅");
-});
+bot.on("callback_query", callbackQuery);
 
 bot.hears(["my id", "My id"], (ctx) => ctx.reply(ctx.from.id));
 

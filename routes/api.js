@@ -12,5 +12,6 @@ router.use("/products", require("./productRoutes"));
 router.use("/auth", require("./authRoutes"));
 router.use("/users", require("./userRoutes"));
 router.use("/orders", require("./orderRoutes"));
+router.use("/favorites", require("./favoriteRoutes"));
 
 module.exports = router;

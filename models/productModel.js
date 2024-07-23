@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { v4: uuidv4, validate } = require("uuid");
 const slugify = require("slugify");
 
 const { Schema, model } = mongoose;
@@ -17,8 +16,20 @@ const multiLang = {
     type: String,
     required: true,
   },
+};
 
-  _id: false,
+const option = {
+  // this needs to be in grams
+  weight: {
+    type: Number,
+    min: [0, "There must be a valid weight"],
+  },
+  // this needs to be in kopeks
+  price: {
+    type: Number,
+    required: true,
+    min: [0, "There must be a valid price"],
+  },
 };
 
 const ProductSchema = new Schema(
@@ -51,15 +62,7 @@ const ProductSchema = new Schema(
         az: [String],
       },
     },
-    price: {
-      type: Number,
-      required: true,
-      min: [0, "There must be a valid price"],
-    },
-    weight: {
-      type: Number,
-      min: [0, "There must be a valid weight"],
-    },
+    options: [option],
     height: {
       type: String,
     },
@@ -81,7 +84,7 @@ const ProductSchema = new Schema(
     },
     image: {
       type: String,
-      // required: true, TODO: uncomment after adding images
+      required: true,
     },
     roastingTemperature: {
       type: Number,
@@ -102,11 +105,6 @@ const ProductSchema = new Schema(
       type: String,
       enum: ["percentage", "fixed"],
       default: "percentage",
-    },
-    slug: {
-      type: String,
-      // unique: true,
-      index: true,
     },
     productType: {
       type: String,
@@ -133,6 +131,8 @@ const ProductSchema = new Schema(
     timestamps: true,
   }
 );
+
+ProductSchema.index("$**", "text");
 
 ProductSchema.pre("save", function (next) {
   this.slug = slugify(this.name, { lower: true, strict: true, locale: "en" });

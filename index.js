@@ -34,12 +34,23 @@ mongoose
         .json({ status: false, message: "You hit a wrong route! 🤫" })
     );
 
-    app.listen(config.port, () => {
+    const server = app.listen(config.port, () => {
       console.log(`Server is running on port ${config.port}`);
       bot.launch();
     });
+
+    const shutdown = () => {
+      console.log("Shutting down gracefully...");
+      server.close(() => {
+        console.log("HTTP server closed.");
+      });
+    };
+
+    process.on("SIGINT", shutdown);
+    process.on("SIGTERM", shutdown);
   })
+
   .catch((err) => {
     console.error("Failed to connect to the database", err);
-    process.exit(1); // Exit the process with a failure code
+    process.exit(1);
   });

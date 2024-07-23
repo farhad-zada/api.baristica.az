@@ -9,10 +9,42 @@ const Order = require("../../models/orderModel");
 const getOrders = async (status) => {
   const orders = await Order.find({ status })
     .populate("items.product")
+    .populate("customer", "name email phone")
     .sort({ createdAt: -1 })
     .limit(1);
 
   return orders;
+};
+
+/**
+ * @param {Array} orders
+ */
+
+const orderMessage = (order) => {
+  return `Order ID: ${order._id}\nStatus: ${order.status}\nTotal Cost: ${(
+    order.totalCost / 100
+  ).toFixed(2)} AZN\nDelivery Fee: ${(order.deliveryFee / 100).toFixed(
+    2
+  )} AZN\nNotes: ${order.notes || "No notes"}\n\nCustomer:\n\nName: ${
+    order.customer.name
+  }\nPhone: ${order.customer.phone}\nEmail: ${
+    order.customer.email
+  }\n\nProducts:\n\n${
+    order.items.length
+      ? order.items
+          .map(
+            (item) =>
+              `Name: ${item.product.name.en}\nProduct ID: ${
+                item.product._id
+              }\nQuantity: ${item.quantity}\nPrice: ${(
+                item.product.price / 100
+              ).toFixed(2)} AZN\nTotal Cost: ${(item.totalCost / 100).toFixed(
+                2
+              )} AZN\n`
+          )
+          .join("\n")
+      : "No products"
+  }\n${order.createdAt.toString().split("GMT")[0]}`;
 };
 
 /**
@@ -21,31 +53,13 @@ const getOrders = async (status) => {
  * @param {Array} orders
  */
 const sendOrdersMessage = (ctx, orders) => {
+  console.log(orders);
   if (!orders.length) {
     ctx.reply("No orders found");
     return;
   }
   orders.map((order) => {
-    const message = `Order ID: ${order._id}\nStatus: ${
-      order.status
-    }\nTotal Cost: ${(order.totalCost / 100).toFixed(2)} AZN\nDelivery Fee: ${(
-      order.deliveryFee / 100
-    ).toFixed(2)} AZN\nNotes: ${order.notes || "No notes"}\n\nProducts:\n\n${
-      order.items.length
-        ? order.items
-            .map(
-              (item) =>
-                `Name: ${item.product.name.en}\nProduct ID: ${
-                  item.product._id
-                }\nQuantity: ${item.quantity}\nPrice: ${(
-                  item.product.price / 100
-                ).toFixed(2)} AZN\nTotal Cost: ${(item.totalCost / 100).toFixed(
-                  2
-                )} AZN\n`
-            )
-            .join("\n")
-        : "No products"
-    }\n${order.createdAt.toString().split("GMT")[0]}`;
+    const message = orderMessage(order);
 
     ctx.reply(message, {
       reply_markup: {

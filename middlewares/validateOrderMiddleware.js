@@ -12,7 +12,6 @@ const validateOrder = async (req, res, next) => {
   try {
     req.body.order.customer = req.user._id;
     req.body.order.deliveryFee = delivery_fee;
-
     const itemsPromises = req.body.order.items.map(async (item) =>
       Product.findById(item.product).select("price")
     );

@@ -3,3 +3,4 @@ config.js
 logs
 .env
 telegram/trusted.json
+public/images/*
