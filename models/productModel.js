@@ -134,11 +134,6 @@ const ProductSchema = new Schema(
 
 ProductSchema.index("$**", "text");
 
-ProductSchema.pre("save", function (next) {
-  this.slug = slugify(this.name, { lower: true, strict: true, locale: "en" });
-  next();
-});
-
 ProductSchema.pre("update", function (next) {
   this.updatedAt = Date.now();
   next();

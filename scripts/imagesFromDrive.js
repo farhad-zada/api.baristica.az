@@ -20,7 +20,7 @@ mongoose
     process.exit(1); // Exit the process with a failure code
   });
 
-async function downloadImage(url, filePath) {
+async function downloadImage(url, filePath, id) {
   const response = await axios({
     url,
     method: "GET",
@@ -32,47 +32,42 @@ async function downloadImage(url, filePath) {
   const writer = fs.createWriteStream(filePath + "." + extension);
   response.data.pipe(writer);
 
-  return new Promise((resolve, reject) => {
-    writer.on("finish", resolve);
-    writer.on("error", reject);
-  });
+  const image = `https://farhadzada.com/md/${id}.${extension}`;
+
+  return [
+    new Promise((resolve, reject) => {
+      writer.on("finish", resolve);
+      writer.on("error", reject);
+    }),
+    Product.updateOne({ _id: id }, { image }),
+  ];
 }
 
-const getRows = async (sheet, range) => {
-  const auth = new google.auth.GoogleAuth({
-    keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS,
-    scopes: process.env.SCOPES,
-  });
-
-  const client = await auth.getClient();
-  const spreadsheetId = process.env.SPREADSHEET_ID;
-
-  const sheets = google.sheets({ version: "v4", auth: client });
-
-  const response = await sheets.spreadsheets.values.get({
-    spreadsheetId,
-    range: `${sheet}!${range}`,
-  });
-
-  return response.data.values;
-};
-
 const uploadCoffee = async () => {
-  const products = await Product.find({ productType: "coffee" }).select(
-    "image"
-  );
-
-  let data = [];
+  // image is like 'https://drive.google.com/uc?id=
+  const products = await Product.find({
+    productType: "coffee",
+    image: { $regex: /drive.google.com/ },
+  }).select("image _id");
+  console.log(`${products.length} products found.`);
+  if (products.length === 0) {
+    console.log("No data found.");
+    return;
+  }
   if (products.length) {
     console.log(`<<<<Coffee>>>>`);
-    const promises = products.map(async (product) => {
+    const promisesTuple = products.map(async (product) => {
       const url = product.image;
       const filePath = `public/images/${product._id}`;
-      return downloadImage(url, filePath);
+
+      return downloadImage(url, filePath, product._id);
     });
 
-    const images = await Promise.all(promises);
-    console.log(images);
+    const promisesDownloadImage = promisesTuple.map((promise) => promise[0]);
+    const promisesSaveToDB = promisesTuple.map((promise) => promise[1]);
+
+    await Promise.all(promisesDownloadImage);
+    await Promise.all(promisesSaveToDB);
   } else {
     console.log("No data found.");
   }
