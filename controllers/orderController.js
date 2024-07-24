@@ -141,6 +141,11 @@ const orderPaid = async (req, res) => {
   }
 };
 
+const orderCheck = async (req, res) => {
+  console.log(req.body, req.params);
+  res.status(200).json({ message: "Order check" });
+};
+
 module.exports = {
   index,
   orderById,
@@ -148,4 +153,5 @@ module.exports = {
   updateOrder,
   deleteOrder,
   orderPaid,
+  orderCheck,
 };
