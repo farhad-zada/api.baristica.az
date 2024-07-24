@@ -20,11 +20,11 @@ jobs:
 
       - name: Copy files to EC2
         run: |
-          rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./ {{secrets.EC2_USER}}@{{secrets.EC2_IP}}
+          rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./ ${{secrets.EC2_USER}}@${{secrets.EC2_IP}}
 
       - name: Restart application on EC2
         run: |
-          ssh -o StrictHostKeyChecking=no {{secrets.EC2_USER}}@{{secrets.EC2_IP}} 'bash -s' <<'EOF'
+          ssh -o StrictHostKeyChecking=no ${{secrets.EC2_USER}}@${{secrets.EC2_IP}} 'bash -s' <<'EOF'
           cd ./api
           git pull origin main
           ./pm2 reload api
