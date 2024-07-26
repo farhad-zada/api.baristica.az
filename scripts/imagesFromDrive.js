@@ -1,13 +1,12 @@
-const { google } = require("googleapis");
 const mongoose = require("mongoose");
-const config = require("../config");
 const mime = require("mime");
 require("dotenv").config();
 const fs = require("fs");
 const axios = require("axios");
 const Product = require("../models/productModel");
+const config = require("../config");
 
-// connect mongoDB
+// Connect to MongoDB
 mongoose
   .connect(config.db_uri(), {})
   .then(async () => {
@@ -20,7 +19,7 @@ mongoose
     process.exit(1); // Exit the process with a failure code
   });
 
-async function downloadImage(url, filePath, id) {
+async function downloadImage(url, filePath, productId, optionId) {
   const response = await axios({
     url,
     method: "GET",
@@ -32,38 +31,50 @@ async function downloadImage(url, filePath, id) {
   const writer = fs.createWriteStream(filePath + "." + extension);
   response.data.pipe(writer);
 
-  const image = `https://farhadzada.com/md/${id}.${extension}`;
+  const image = `https://farhadzada.com/md/${productId}${optionId}.${extension}`;
 
-  await Product.updateOne({ _id: id }, { image });
-  return;
-  new Promise((resolve, reject) => {
-    writer.on("finish", resolve);
+  return new Promise((resolve, reject) => {
+    writer.on("finish", () => resolve(image));
     writer.on("error", reject);
   });
 }
 
 const uploadCoffee = async () => {
-  // image is like 'https://drive.google.com/uc?id=
   const products = await Product.find({
     productType: "coffee",
-    image: { $regex: /drive.google.com/ },
-  }).select("image _id");
+    options: { $elemMatch: { image: { $regex: /drive.google.com/ } } },
+  }).select("options _id");
+
   console.log(`${products.length} products found.`);
   if (products.length === 0) {
     console.log("No data found.");
     return;
   }
-  if (products.length) {
-    console.log(`<<<<Coffee>>>>`);
-    const promises = products.map(async (product) => {
-      const url = product.image;
-      const filePath = `public/images/${product._id}`;
 
-      return await downloadImage(url, filePath, product._id);
-    });
+  for (const product of products) {
+    const updatedOptions = await Promise.all(
+      product.options.map(async (option) => {
+        if (/drive.google.com/.test(option.image)) {
+          const filePath = `public/images/${product._id}_${option._id}`;
+          const newImageUrl = await downloadImage(
+            option.image,
+            filePath,
+            product._id,
+            option._id
+          );
+          option.image = newImageUrl;
+        }
+        return option;
+      })
+    );
 
-    await Promise.all(promises);
-  } else {
-    console.log("No data found.");
+    // Update the product with the new image URLs
+    await Product.updateOne(
+      { _id: product._id },
+      { $set: { options: updatedOptions } }
+    );
+
+    console.log(`Product ${product._id} updated.`);
+    console.log(updatedOptions);
   }
 };
