@@ -96,6 +96,7 @@ const uploadCoffee = async () => {
         options.push({
           price: option[0],
           weight: option[1],
+          image: `https://drive.google.com/uc?id=${row[23]}`,
         });
       });
       data.push({
@@ -134,7 +135,6 @@ const uploadCoffee = async () => {
           ru: row[20],
           az: row[19],
         },
-        image: `https://drive.google.com/uc?id=${row[23]}`,
 
         productType: "coffee",
       });

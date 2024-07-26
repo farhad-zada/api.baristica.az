@@ -11,7 +11,7 @@ const validator = require("validator");
 async function me(req, res, next) {
   try {
     const user = await User.findById(req.user._id).select(
-      "+phone +email +name +role"
+      "+phone +email +name +role +lastname"
     );
     return successResponse(res, user);
   } catch (err) {

@@ -24,6 +24,9 @@ const option = {
     type: Number,
     min: [0, "There must be a valid weight"],
   },
+  image: {
+    type: String,
+  },
   // this needs to be in kopeks
   price: {
     type: Number,
@@ -81,10 +84,6 @@ const ProductSchema = new Schema(
     sweetness: {
       type: Number,
       min: [0, "There must be a valid sweetness"],
-    },
-    image: {
-      type: String,
-      required: true,
     },
     roastingTemperature: {
       type: Number,
