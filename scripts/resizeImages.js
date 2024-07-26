@@ -13,11 +13,10 @@ const resizeImage = async (path, id) => {
 
 const resizeImages = async () => {
   const images = fs.readdirSync("public/images");
-  const promises = images.map(async (image) => {
-    return await resizeImage(`${__dirname}/../public/images/`, image);
-  });
 
-  await Promise.all(promises);
+  for (const image of images) {
+    await resizeImage(`${__dirname}/../public/images/`, image);
+  }
 };
 
 resizeImages();
