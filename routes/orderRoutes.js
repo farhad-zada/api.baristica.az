@@ -1,6 +1,10 @@
 const router = require("express").Router();
 const auth = require("../middlewares/authMiddleware");
 const { validateOrder } = require("../middlewares/validateOrderMiddleware");
+const {
+  confirmStatus,
+  checkSignature,
+} = require("../middlewares/resultRequestMiddleware");
 
 const {
   index,
@@ -13,9 +17,9 @@ const {
 const { allowTo } = require("../middlewares/policies");
 const logger = require("../utils/logger");
 
-router.get("/", index);
-router.post("/check", orderCheck);
-router.get("/:orderId", orderById); // TODO: implement orderById
+router.get("/", auth(), index);
+router.post("/check", checkSignature, confirmStatus, orderCheck);
+router.get("/:orderId", auth(), orderById);
 router.post("/", auth(), validateOrder, createOrder); // product ids, product quantities,
 
 router.use(auth(), allowTo("baristica", "admin", "superadmin"));

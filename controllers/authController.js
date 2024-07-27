@@ -88,7 +88,7 @@ async function register(req, res, next) {
 function logout(req, res, next) {
   res.clearCookie("token");
   res.clearCookie("logged-in");
-  return successResponse(res, "Logged out successfully!");
+  return successResponse(res, "Logged out successfully!", 200);
 }
 
 /**
