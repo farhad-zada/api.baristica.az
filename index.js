@@ -8,6 +8,7 @@ const cors = require("cors");
 const app = express();
 const config = require("./config");
 const bot = require("./telegram");
+const logger = require("./utils/logger");
 config.validateConfig(config);
 const uri = config.db_uri();
 
@@ -29,7 +30,7 @@ mongoose
     app.use(express.json());
     app.use(mongoSanitize());
     app.use((req, res, next) => {
-      console.log(req.method, req.url);
+      logger.info(`${req.ip} ${req.method} ${req.url}`);
       next();
     });
 

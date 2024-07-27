@@ -10,10 +10,14 @@ const { errorResponse, successResponse } = require("../utils/responseHandlers");
  */
 const allFavorites = async (req, res) => {
   try {
-    const favorites = await Favorite.find({ user: req.user.id }).populate(
-      "product"
-    );
-    successResponse(res, favorites);
+    const favorites = await Favorite.find({ user: req.user.id })
+      .populate("product")
+      .lean();
+    const favoriteProducts = favorites.map((favorite) => {
+      favorite.product.favorited = true;
+      return favorite.product;
+    });
+    successResponse(res, favoriteProducts, 200);
   } catch (error) {
     errorResponse(res, error, 500);
   }
