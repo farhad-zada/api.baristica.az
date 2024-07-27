@@ -55,7 +55,7 @@ const uploadCoffee = async () => {
     const updatedOptions = await Promise.all(
       product.options.map(async (option) => {
         if (/drive.google.com/.test(option.image)) {
-          const filePath = `public/images/${product._id}_${option._id}`;
+          const filePath = `public/images/${product._id}${option._id}`;
           const newImageUrl = await downloadImage(
             option.image,
             filePath,
