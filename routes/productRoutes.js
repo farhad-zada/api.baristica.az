@@ -6,10 +6,10 @@ const { restrictTo, allowTo } = require("../middlewares/policies");
 const auth = require("../middlewares/authMiddleware");
 const checkQueryString = require("../middlewares/checkQueryString");
 
-router.get("/", checkQueryString, productControllers.allProducts);
-router.get("/:id", productControllers.productById);
+router.get("/", auth(true), checkQueryString, productControllers.allProducts);
+router.get("/:id", auth(true), productControllers.productById);
 
-router.use(auth, allowTo("baristica", "admin", "superadmin"));
+router.use(auth(), allowTo("baristica", "admin", "superadmin"));
 
 router.post("/", validateNewProduct, productControllers.createProduct);
 router.patch("/:id", productControllers.updateProduct);

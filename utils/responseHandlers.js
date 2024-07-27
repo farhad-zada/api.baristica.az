@@ -6,6 +6,9 @@ const logger = require("./logger");
  * @param {number} [statusCode=500] - HTTP status code
  */
 const errorResponse = (res, message, statusCode = 500) => {
+  if (typeof message === "object") {
+    message = message.message + "\n" + message.stack;
+  }
   logger.error(message);
   if (statusCode === 500) {
     message =

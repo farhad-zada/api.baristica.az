@@ -9,6 +9,7 @@ const { errorResponse } = require("../utils/responseHandlers");
  * @param {import ('express').NextFunction} next
  */
 const checkIfProductExists = async (req, res, next) => {
+  const productId = req.params.productId;
   try {
     if (!validator.isMongoId(productId)) {
       return errorResponse(res, "Invalid id", 429);

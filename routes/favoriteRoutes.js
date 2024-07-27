@@ -5,23 +5,17 @@ const {
   checkIfFavoriteExists,
 } = require("../middlewares/favoritesMiddleware");
 const {
+  allFavorites,
+  isFavorite,
   addFavorite,
   removeFavorite,
 } = require("../controllers/favoritesController");
 
-router.post(
-  "/:productId",
-  auth,
-  checkIfProductExists,
-  checkIfFavoriteExists,
-  addFavorite
-);
-router.delete(
-  "/:productId",
-  auth,
-  checkIfProductExists,
-  checkIfFavoriteExists,
-  removeFavorite
-);
+router.use(auth());
+router.get("/", allFavorites);
+router.get("/:productId", isFavorite);
+router.use("/:productId", checkIfProductExists, checkIfFavoriteExists);
+router.post("/:productId", addFavorite);
+router.delete("/:productId", removeFavorite);
 
 module.exports = router;
