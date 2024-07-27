@@ -35,10 +35,16 @@ const checkIfProductExists = async (req, res, next) => {
 const checkIfFavoriteExists = async (req, res, next) => {
   try {
     const productId = req.params.productId;
-    const favorite = await Favorite.findOne({
-      user: req.user.id,
+    if (!productId) {
+      return errorResponse(res, "Product id is required", 400);
+    }
+
+    const filter = {
       product: productId,
-    });
+      user: req.user.id,
+    };
+
+    const favorite = await Favorite.findOne(filter);
     if (!favorite && req.method === "DELETE") {
       return errorResponse(res, "Favorite not found", 404);
     } else if (favorite && req.method === "POST") {
