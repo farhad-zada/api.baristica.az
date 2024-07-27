@@ -1,5 +1,10 @@
 const crypto = require("crypto");
 
+// <<<<<<<<<<<<< ATTENTION >>>>>>>>>>>>>>
+// THIS IS ONLY USED FOR TESTING PURPOSES
+// DO NOT USE THIS IN PRODUCTION
+// <<<<<<<<<<<<< ATTENTION >>>>>>>>>>>>>>
+
 require("dotenv").config();
 
 const PUBLIC_KEY = process.env.PUBLIC_KEY;

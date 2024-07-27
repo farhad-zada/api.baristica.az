@@ -2,6 +2,8 @@ const { successResponse, errorResponse } = require("../utils/responseHandlers");
 const Order = require("../models/orderModel");
 const validator = require("validator");
 const logger = require("../utils/logger");
+const crypto = require("crypto");
+const config = require("../config");
 
 /**
  * @param {import ('express').Request} req
@@ -12,7 +14,10 @@ const index = async (req, res) => {
   try {
     let { pg, pl } = req.query;
     const skip = (pg - 1) * pl;
-    const orders = await Order.find()
+
+    const orders = await Order.find({
+      "customer.id": req.user._id,
+    })
       .skip(skip)
       .limit(pl)
       .populate("customer", "name email phone");
@@ -33,7 +38,10 @@ const orderById = async (req, res) => {
     if (!validator.isMongoId(orderId)) {
       return errorResponse(res, "Invalid id", 429);
     }
-    const order = await Order.findById(orderId);
+    const order = await Order.find({
+      _id: orderId,
+      "customer.id": req.user._id,
+    });
 
     if (!order) {
       return errorResponse(res, "Not found", 404);
@@ -54,7 +62,46 @@ const createOrder = async (req, res) => {
   const order = req.body.order;
   const newOrder = new Order(order);
   await newOrder.save();
-  successResponse(res, newOrder, 201);
+  let amount = newOrder.totalCost / 100;
+  if (process.env.NODE_ENV === "development") {
+    amount = amount / 100;
+  }
+  amount = amount.toFixed(2);
+
+  const epointData = {
+    order_id: newOrder._id,
+    public_key: config.epointPublicKey,
+    amount: amount,
+    currency: "AZN",
+    language: "az",
+    description: "Order payment",
+  };
+  const data64 = Buffer.from(JSON.stringify(epointData)).toString("base64");
+  const combinedData = `${config.epointPrivateKey}${data64}${config.epointPrivateKey}`;
+  const signature = crypto
+    .createHash("sha1")
+    .update(combinedData, "utf8")
+    .digest("base64");
+
+  const queryParams = new URLSearchParams({
+    data: data64,
+    signature,
+  });
+  const requestUrl = `${config.epointRequestUrl}?${queryParams.toString()}`;
+  logger.info(`Request URL: ${requestUrl}`);
+
+  const response = await fetch(requestUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  const responseJson = await response.json();
+  logger.info(`Response: ${JSON.stringify(responseJson)}`);
+  newOrder.transaction = responseJson.transaction;
+  await newOrder.save();
+  newOrder.transaction = undefined;
+  successResponse(res, { order: newOrder, epoint: responseJson }, 201);
 };
 
 /**
@@ -143,9 +190,9 @@ const orderPaid = async (req, res) => {
 };
 
 const orderCheck = async (req, res) => {
-  logger.info(`Body: ${JSON.stringify(req.body)}`);
-  logger.info(`Params: ${JSON.stringify(req.params)}`);
-  res.status(200).json({ message: "Order check" });
+  req.order.status = "paid";
+  await req.order.save();
+  successResponse(res, "Thanks! It was a helpful data and signature!", 200);
 };
 
 module.exports = {
