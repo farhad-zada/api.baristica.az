@@ -143,8 +143,8 @@ const orderPaid = async (req, res) => {
 };
 
 const orderCheck = async (req, res) => {
-  console.log(`Body: \n${req.body}\nParams: \n${req.params}`);
-  logger.info(`Body: \n${req.body}\nParams: \n${req.params}`);
+  logger.info(`Body: ${JSON.stringify(req.body)}`);
+  logger.info(`Params: ${JSON.stringify(req.params)}`);
   res.status(200).json({ message: "Order check" });
 };
 
