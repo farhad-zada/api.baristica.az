@@ -1,6 +1,7 @@
 const { successResponse, errorResponse } = require("../utils/responseHandlers");
 const Order = require("../models/orderModel");
 const validator = require("validator");
+const logger = require("../utils/logger");
 
 /**
  * @param {import ('express').Request} req
@@ -142,7 +143,8 @@ const orderPaid = async (req, res) => {
 };
 
 const orderCheck = async (req, res) => {
-  console.log(req.body, req.params);
+  console.log(`Body: \n${req.body}\nParams: \n${req.params}`);
+  logger.info(`Body: \n${req.body}\nParams: \n${req.params}`);
   res.status(200).json({ message: "Order check" });
 };
 
