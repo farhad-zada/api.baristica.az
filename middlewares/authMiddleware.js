@@ -13,8 +13,14 @@ const logger = require("../utils/logger");
 const authMiddleware =
   (allow = false) =>
   async (req, res, next) => {
+    let token;
     if (req.header("Authorization")) {
-      const token = req.header("Authorization").replace("Bearer ", "");
+      token = req.header("Authorization").replace("Bearer ", "");
+    }
+    if (req.cookies && req.cookies.token) {
+      token = req.cookies.token;
+    }
+    if (token) {
       if (!token) {
         return errorResponse(res, "Access denied. Sign in required.", 401);
       }

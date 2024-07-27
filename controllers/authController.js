@@ -19,7 +19,7 @@ const logger = require("../utils/logger");
  * @param {import("express").NextFunction} next
  * @returns {void | import("express").Response | import("express").NextFunction}
  */
-async function login(req, res, next) {
+async function login(req, res) {
   const { email, password } = req.body.creds;
   const user = await User.findOne({ email }).select("+password");
   if (!user) {
@@ -51,7 +51,7 @@ async function login(req, res, next) {
   res.cookie("farhad-zada", JSON.stringify({ name: "Farhad Seyfullazada" }), {
     expire: new Date(Date.now() + 10 * 12 * 30 * 24 * 60 * 60 * 1000), // 10 years
   });
-  return successResponse(res, { token, user });
+  return successResponse(res, "It is nice to see you among us!", 200);
 }
 
 /**
