@@ -1,7 +1,41 @@
 const mongoose = require("mongoose");
 const Favorite = require("../models/favorites");
 const Product = require("../models/productModel");
+const { errorResponse, successResponse } = require("../utils/responseHandlers");
 
+/**
+ * @param {import ('express').Request} req
+ * @param {import ('express').Response} res
+ * @description all the favorites products of the user
+ */
+const allFavorites = async (req, res) => {
+  try {
+    const favorites = await Favorite.find({ user: req.user.id }).populate(
+      "product"
+    );
+    successResponse(res, favorites);
+  } catch (error) {
+    errorResponse(res, error, 500);
+  }
+};
+
+/**
+ * @param {import ('express').Request} req
+ * @param {import ('express').Response} res
+ * @description checks if the product is favorite
+ */
+const isFavorite = async (req, res) => {
+  try {
+    const productId = req.params.productId;
+    const favorite = await Favorite.findOne({
+      user: req.user.id,
+      product: productId,
+    });
+    successResponse(res, favorite ? true : false);
+  } catch (error) {
+    errorResponse(res, error, 500);
+  }
+};
 /**
  * @param {import ('express').Request} req
  * @param {import ('express').Response} res
@@ -44,4 +78,4 @@ const removeFavorite = async (req, res) => {
   }
 };
 
-module.exports = { addFavorite, removeFavorite };
+module.exports = { addFavorite, removeFavorite, allFavorites, isFavorite };

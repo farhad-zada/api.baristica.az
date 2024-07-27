@@ -16,9 +16,9 @@ const logger = require("../utils/logger");
 router.get("/", index);
 router.post("/check", orderCheck);
 router.get("/:orderId", orderById); // TODO: implement orderById
-router.post("/", auth, validateOrder, createOrder); // product ids, product quantities,
+router.post("/", auth(), validateOrder, createOrder); // product ids, product quantities,
 
-router.use(auth, allowTo("baristica", "admin", "superadmin"));
+router.use(auth(), allowTo("baristica", "admin", "superadmin"));
 
 router.patch("/:orderId", updateOrder);
 router.delete("/:orderId", deleteOrder);

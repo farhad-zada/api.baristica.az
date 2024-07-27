@@ -1,5 +1,6 @@
 const { successResponse, errorResponse } = require("../utils/responseHandlers");
 const Product = require("../models/productModel");
+const Favorite = require("../models/favorites");
 
 /**
  * @param {import ('express').Request} req
@@ -12,7 +13,27 @@ const allProducts = async (req, res) => {
     const skip = (pg - 1) * lt;
     const products = await Product.find(ptp ? { productType: ptp } : {})
       .skip(skip)
-      .limit(lt);
+      .limit(lt)
+      .lean();
+
+    if (req.user !== undefined) {
+      const favorites = await Favorite.find({
+        user: req.user.id,
+        product: { $in: products },
+      });
+      products.forEach((product) => {
+        const found = favorites.find((fav) => {
+          return fav.product.toString() === product._id.toString();
+        });
+        if (found) {
+          product.favorited = true;
+          console.log(product);
+        } else {
+          product.favorited = false;
+        }
+      });
+    }
+
     successResponse(res, products);
   } catch (error) {
     errorResponse(res, error.message, 500);
@@ -27,9 +48,17 @@ const allProducts = async (req, res) => {
 const productById = async (req, res) => {
   try {
     const productId = req.params.id;
-    const product = await Product.findById(productId);
+    const product = await Product.findById(productId).lean();
     if (!product) {
       return errorResponse(res, "Product not found", 404);
+    }
+
+    if (req.user !== undefined) {
+      const favorite = await Favorite.findOne({
+        user: req.user.id,
+        product: productId,
+      });
+      product.favorited = favorite ? true : false;
     }
     successResponse(res, product);
   } catch (error) {
