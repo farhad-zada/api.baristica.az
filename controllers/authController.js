@@ -19,7 +19,7 @@ const logger = require("../utils/logger");
  * @param {import("express").NextFunction} next
  * @returns {void | import("express").Response | import("express").NextFunction}
  */
-async function login(req, res, next) {
+async function login(req, res) {
   const { email, password } = req.body.creds;
   const user = await User.findOne({ email }).select("+password");
   if (!user) {
@@ -39,12 +39,19 @@ async function login(req, res, next) {
     { expiresIn: token_expiration }
   );
   res.header("Authorization", `Bearer ${token}`);
+  const expires = new Date(Date.now() + 3 * 30 * 24 * 60 * 60 * 1000); // 3 months
   res.cookie("token", token, {
     httpOnly: cookie_http_only,
     secure: environment === "production",
-    expires: new Date(Date.now() + 3 * 30 * 24 * 60 * 60 * 1000), // 3 months
+    expires, // 3 months
   });
-  return successResponse(res, { token });
+  res.cookie("logged-in", true, {
+    expires, // 3 months
+  });
+  res.cookie("farhad-zada", JSON.stringify({ name: "Farhad Seyfullazada" }), {
+    expire: new Date(Date.now() + 10 * 12 * 30 * 24 * 60 * 60 * 1000), // 10 years
+  });
+  return successResponse(res, "It is nice to see you among us!", 200);
 }
 
 /**
@@ -77,6 +84,7 @@ async function register(req, res, next) {
  */
 function logout(req, res, next) {
   res.clearCookie("token");
+  res.clearCookie("logged-in");
   return successResponse(res, "Logged out successfully!");
 }
 

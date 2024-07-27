@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const { ServerApiVersion } = require("mongodb");
 const mongoSanitize = require("express-mongo-sanitize");
 const helmet = require("helmet");
+const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const app = express();
 const config = require("./config");
@@ -21,6 +22,7 @@ mongoose
   .then(() => {
     console.log("Successfully connected to the database");
 
+    app.use(cookieParser());
     app.use(cors());
     app.use(helmet());
     app.use(express.urlencoded({ extended: true }));
