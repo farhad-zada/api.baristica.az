@@ -43,15 +43,18 @@ async function login(req, res) {
   res.cookie("token", token, {
     httpOnly: cookie_http_only,
     secure: environment === "production",
-    expires, // 3 months
+    expires, // 3 months,
+    sameSite: "none",
   });
   res.cookie("logged-in", true, {
     expires, // 3 months
+    sameSite: "none",
   });
   res.cookie("farhad-zada", JSON.stringify({ name: "Farhad Seyfullazada" }), {
     expire: new Date(Date.now() + 10 * 12 * 30 * 24 * 60 * 60 * 1000), // 10 years
   });
-  return successResponse(res, "It is nice to see you among us!", 200);
+
+  return successResponse(res, { token }, 200);
 }
 
 /**
