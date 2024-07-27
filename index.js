@@ -23,12 +23,7 @@ mongoose
     console.log("Successfully connected to the database");
 
     app.use(cookieParser());
-    app.use(
-      cors({
-        origin: config.allowedOrigins,
-        credentials: true,
-      })
-    );
+    app.use(cors());
     app.use(helmet());
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json());
