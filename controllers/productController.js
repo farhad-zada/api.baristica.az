@@ -9,9 +9,18 @@ const Favorite = require("../models/favorites");
  */
 const allProducts = async (req, res) => {
   try {
-    let { pg, lt, ptp } = req.query;
+    let { pg, lt, ptp, key } = req.query;
     const skip = (pg - 1) * lt;
+
+    if (key === "new") {
+      key = "createdAt";
+    } else if (key === "popular") {
+      key = "sold";
+    } else {
+      key = "createdAt";
+    }
     const products = await Product.find(ptp ? { productType: ptp } : {})
+      .sort({ [key]: -1 })
       .skip(skip)
       .limit(lt)
       .lean();
@@ -27,14 +36,13 @@ const allProducts = async (req, res) => {
         });
         if (found) {
           product.favorited = true;
-          console.log(product);
         } else {
           product.favorited = false;
         }
       });
     }
 
-    successResponse(res, products);
+    successResponse(res, products, 200);
   } catch (error) {
     errorResponse(res, error.message, 500);
   }

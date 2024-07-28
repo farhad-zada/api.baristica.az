@@ -1,6 +1,60 @@
 const { Schema, model } = require("mongoose");
 const { isMobilePhone, isEmail } = require("validator");
 const bcrypt = require("bcrypt");
+
+const userStatistics = {
+  ordersCompleted: {
+    type: Number,
+    default: 0,
+  },
+  myDiscount: {
+    type: Number,
+    default: 0,
+  },
+  totalSpent: {
+    type: Number,
+    default: 0,
+  },
+  savedMoney: {
+    type: Number,
+    default: 0,
+  },
+  totalOrders: {
+    type: Number,
+    default: 0,
+  },
+  canceledOrders: {
+    type: Number,
+    default: 0,
+  },
+  weight: {
+    type: Number,
+    default: 0,
+  },
+  _id: false,
+};
+
+const address = {
+  name: String,
+  city: String,
+  entrance: String,
+  apartment: String,
+  lat: {
+    type: Number,
+    required: function () {
+      return this.lng !== undefined;
+    },
+  },
+  lng: {
+    type: Number,
+    required: function () {
+      return this.lat !== undefined;
+    },
+  },
+  notes: String,
+  isPrimary: Boolean,
+};
+
 const UserSchema = new Schema(
   {
     name: {
@@ -33,6 +87,8 @@ const UserSchema = new Schema(
         message: (props) => `${props.value} is not a valid email!`,
       },
     },
+    statistics: userStatistics,
+    addresses: [address],
     password: {
       type: String,
       required: true,

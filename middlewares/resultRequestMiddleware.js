@@ -3,6 +3,7 @@ const Order = require("../models/orderModel");
 const logger = require("../utils/logger");
 const crypto = require("crypto");
 const config = require("../config");
+const User = require("../models/userModel");
 
 /**
  * @param {import ('express').Request} req
@@ -50,6 +51,12 @@ const confirmStatus = async (req, res, next) => {
         "This order status is not compatible to be processed",
         400
       );
+    }
+    if (order.customer.id) {
+      const user = await User.findById(order.customer.id);
+      if (user) {
+        req.user = user;
+      }
     }
     req.order = order;
   } else {

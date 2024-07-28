@@ -117,6 +117,14 @@ const ProductSchema = new Schema(
       required: true,
       index: true,
     },
+    sold: {
+      type: Number,
+      default: 0,
+    },
+    stock: {
+      type: Number,
+      default: 0,
+    },
     deletedAt: {
       type: Date,
       default: null,

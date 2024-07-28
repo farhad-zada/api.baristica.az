@@ -4,6 +4,7 @@ const validator = require("validator");
 const logger = require("../utils/logger");
 const crypto = require("crypto");
 const config = require("../config");
+const Product = require("../models/productModel");
 
 /**
  * @param {import ('express').Request} req
@@ -192,6 +193,36 @@ const orderPaid = async (req, res) => {
 const orderCheck = async (req, res) => {
   req.order.status = "paid";
   await req.order.save();
+
+  req.order.items.forEach(async (item) => {
+    const product = await Product.findById(item.id);
+    if (product) {
+      if (!product.sold) product.sold = 0;
+      if (!product.stock) product.stock = 0;
+      const sold = item.options
+        .map((option) => option.quantity)
+        .reduce((a, b) => a + b, 0);
+      product.sold += sold;
+      product.stock -= sold;
+
+      if (product.stock < 0) {
+        product.stock = 0;
+      }
+
+      if (req.user) {
+        req.user.statistics.weight += item.options
+          .map((option) => option.weight)
+          .reduce((a, b) => a + b, 0);
+      }
+      await product.save({ validateBeforeSave: false });
+    }
+  });
+  if (req.user) {
+    req.user.statistics.totalOrders += 1;
+    req.user.statistics.totalSpent += req.order.totalCost;
+    req.user.statistics.ordersCompleted += 1;
+    await req.user.save();
+  }
   successResponse(res, "Thanks! It was a helpful data and signature!", 200);
 };
 
