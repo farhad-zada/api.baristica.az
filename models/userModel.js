@@ -67,7 +67,6 @@ const UserSchema = new Schema(
     phone: {
       type: String,
       required: true,
-      select: false,
       validate: {
         validator: function (v) {
           return isMobilePhone(v, "any");
@@ -79,7 +78,6 @@ const UserSchema = new Schema(
       type: String,
       required: true,
       unique: true,
-      select: false,
       validate: {
         validator: function (v) {
           return isEmail(v);
