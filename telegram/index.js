@@ -4,7 +4,6 @@ const commands = require("./commands");
 const { hello, info, addNewIds } = require("./hears");
 const { haveAccess } = require("./auth");
 const { callbackQuery, preCheckoutQuery } = require("./listeners");
-const Order = require("../models/orderModel");
 
 const bot = new Telegraf(process.env.TG_BOT_API_TOKEN);
 
@@ -34,19 +33,19 @@ bot.on("pre_checkout_query", preCheckoutQuery);
 
 bot.on("callback_query", callbackQuery);
 
-bot.hears(["my id", "My id"], (ctx) => ctx.reply(ctx.from.id));
+bot.hears(/my id/i, (ctx) => ctx.reply(ctx.from.id));
 
-bot.hears("Latest Orders", (ctx) => haveAccess(ctx, commands.latest));
+bot.hears(/latest orders/i, (ctx) => haveAccess(ctx, commands.latest));
 
-bot.hears("All Orders", (ctx) => haveAccess(ctx, commands.all));
+bot.hears(/all orders/i, (ctx) => haveAccess(ctx, commands.all));
 
-bot.hears(["Unpaid", "unpaid", "Unpaid Orders"], (ctx) =>
+bot.hears(["Unpaid", "unpaid", "Unpaid orders", "unpaid orders"], (ctx) =>
   haveAccess(ctx, commands.unpaid)
 );
 
-bot.hears(["hello", "Hello"], hello);
+bot.hears(/hello/i, hello);
 
-bot.hears(["info", "bot", "Bot", "Info"], info);
+bot.hears(/(info|bot)/i, info);
 
 bot.command("latest", (ctx) => haveAccess(ctx, commands.latest));
 

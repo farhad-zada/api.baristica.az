@@ -55,10 +55,28 @@ async function updateMe(req, res, next) {
  */
 const addAddress = async (req, res) => {
   try {
-    const { name, city, entrance, apartment, lat, lng, notes, isPrimary } =
-      req.body;
+    const {
+      name,
+      address,
+      city,
+      entrance,
+      apartment,
+      lat,
+      lng,
+      notes,
+      isPrimary,
+    } = req.body;
     const user = req.user;
-    user.addresses.push({ name, city, entrance, apartment, lat, lng, notes });
+    user.addresses.push({
+      name,
+      address,
+      city,
+      entrance,
+      apartment,
+      lat,
+      lng,
+      notes,
+    });
     if (isPrimary) {
       user.addresses.forEach((address) => {
         address.isPrimary = false;

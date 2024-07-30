@@ -4,7 +4,7 @@ const { getOrders, sendOrdersMessage } = require("./utils");
  */
 const latest = async (ctx) => {
   const orders = await getOrders("paid");
-
+  console.log(orders.length);
   sendOrdersMessage(ctx, orders);
 };
 
