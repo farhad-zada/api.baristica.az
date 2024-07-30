@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const slugify = require("slugify");
+const { validate } = require("./orderModel");
 
 const { Schema, model } = mongoose;
 
@@ -16,6 +17,7 @@ const multiLang = {
     type: String,
     required: true,
   },
+  _id: false,
 };
 
 const option = {
@@ -54,6 +56,12 @@ const ProductSchema = new Schema(
       type: multiLang,
       required: false,
     },
+    coffeeProcessingTypes: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "CoffeeProcessingType",
+      },
+    ],
     region: {
       type: String,
       required: false,
@@ -94,6 +102,10 @@ const ProductSchema = new Schema(
     roastingLevel: {
       type: [String],
       required: false,
+      validate: {
+        validator: () => true,
+        message: "There must be 3 roasting levels",
+      },
     },
 
     discount: {

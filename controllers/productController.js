@@ -1,6 +1,7 @@
 const { successResponse, errorResponse } = require("../utils/responseHandlers");
 const Product = require("../models/productModel");
 const Favorite = require("../models/favorites");
+const CoffeeProcessingType = require("../models/coffeeProcessingType");
 
 /**
  * @param {import ('express').Request} req
@@ -20,6 +21,7 @@ const allProducts = async (req, res) => {
       key = "createdAt";
     }
     const products = await Product.find(ptp ? { productType: ptp } : {})
+      .populate("coffeeProcessingTypes")
       .sort({ [key]: -1 })
       .skip(skip)
       .limit(lt)

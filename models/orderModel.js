@@ -36,6 +36,10 @@ const OptionSchema = new Schema({
       message: (props) => `${props.value} is not a valid cost!`,
     },
   },
+  coffeeProcessingType: {
+    type: Schema.Types.ObjectId,
+    ref: "CoffeeProcessingType",
+  },
 });
 
 const OrderItemSchema = new Schema({

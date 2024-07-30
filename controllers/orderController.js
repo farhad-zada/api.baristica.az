@@ -101,6 +101,10 @@ const createOrder = async (req, res) => {
   logger.info(`Response: ${JSON.stringify(responseJson)}`);
   newOrder.transaction = responseJson.transaction;
   await newOrder.save();
+  await newOrder.populate(
+    "items.id items.options.coffeeProcessingType",
+    "name"
+  );
   newOrder.transaction = undefined;
   successResponse(res, { order: newOrder, epoint: responseJson }, 201);
 };
