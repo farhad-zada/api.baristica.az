@@ -36,6 +36,7 @@ const userStatistics = {
 
 const address = {
   name: String,
+  address: String,
   city: String,
   entrance: String,
   apartment: String,
