@@ -15,7 +15,9 @@ bot.start((ctx) =>
     },
   })
 );
+
 bot.hears(["Test", "test"], (ctx) => {
+  console.log("Test Payment");
   // return payment
   ctx.sendInvoice({
     currency: "AZN",

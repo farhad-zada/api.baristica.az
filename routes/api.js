@@ -8,6 +8,11 @@ router.get("/", (req, res) => {
   });
 });
 
+router.get("delivery/fee", (req, res) => {
+  res.json({
+    fee: 500,
+  });
+});
 router.use("/products", require("./productRoutes"));
 router.use("/auth", require("./authRoutes"));
 router.use("/users", require("./userRoutes"));
