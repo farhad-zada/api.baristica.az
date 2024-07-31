@@ -8,7 +8,7 @@ router.get("/", (req, res) => {
   });
 });
 
-routes.get("delivery/fee", (req, res) => {
+router.get("delivery/fee", (req, res) => {
   res.json({
     fee: 500,
   });
