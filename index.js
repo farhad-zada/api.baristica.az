@@ -47,11 +47,13 @@ mongoose
       bot.launch();
     });
 
-    const shutdown = () => {
-      console.log("Shutting down gracefully...");
+    const shutdown = (reason) => {
+      console.log(`[${reason}] Shutting down gracefully...`);
+      bot.stop("SIGINT");
       server.close(() => {
         console.log("HTTP server closed.");
       });
+      process.exit(0);
     };
 
     process.on("SIGINT", shutdown);

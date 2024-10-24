@@ -98,14 +98,17 @@ function logout(req, res, next) {
  * @returns {void | import("express").Response | import("express").NextFunction}
  */
 async function updatePassword(req, res, next) {
-  const { password, passwordConfirm } = req.body.creds;
+  const { oldPassword, password, passwordConfirm } = req.body.creds;
+  if (!oldPassword) {
+    return errorResponse(res, "Old password is required!", 400);
+  }
   if (password !== passwordConfirm) {
-    return errorResponse(res, "Passwords do not match!", 400);
+    return errorResponse(res, "Password and password confiration do not match!", 400);
   }
   try {
     const user = await User.findById(req.user._id).select("+password");
-    const validPassword = await bcrypt.compare(password, user.password);
-    if (validPassword) {
+    const passwordIsValid = await bcrypt.compare(password, user.password);
+    if (passwordIsValid) {
       return errorResponse(res, "New password should be different!", 400);
     }
     user.password = password;

@@ -56,32 +56,75 @@ async function updateMe(req, res, next) {
 const addAddress = async (req, res) => {
   try {
     const {
-      name,
-      address,
       city,
-      entrance,
+      street,
       apartment,
-      lat,
-      lng,
-      notes,
       isPrimary,
     } = req.body;
     const user = req.user;
     user.addresses.push({
-      name,
-      address,
       city,
-      entrance,
+      street,
       apartment,
-      lat,
-      lng,
-      notes,
     });
     if (isPrimary) {
       user.addresses.forEach((address) => {
         address.isPrimary = false;
       });
       user.addresses[user.addresses.length - 1].isPrimary = true;
+    }
+    await user.save();
+    successResponse(res, user, 201);
+  } catch (error) {
+    if (error.name === "ValidationError") {
+      logger.error(error + "\n" + error.stack);
+      return errorResponse(
+        res,
+        "Invalid input data. Please enter valid data! If you think this is a mistake, please contact us.",
+        400
+      );
+    }
+    errorResponse(res, error.message, 500);
+  }
+};
+
+/**
+ * @param {import ('express').Request} req
+ * @param {import ('express').Response} res
+ * @returns {void | import ('express').Response | import ('express').NextFunction}
+ * @description add address for user
+ */
+const updateAddress = async (req, res) => {
+  try {
+    const addressId  = req.params.id;
+    const user = req.user;
+
+    const {
+      city,
+      street,
+      apartment,
+      isPrimary,
+    } = req.body;
+    user.addresses.filter((address) => {
+      if (address._id.toString() == addressId) {
+        if (city) {
+          address.city = city;
+        } 
+        if (street) {
+          address.street = street;
+        }
+    
+        if (apartment) {
+          address.apartment = apartment;
+        }
+      }
+    });
+
+
+    if (isPrimary) {
+      user.addresses.forEach((address) => {
+        address.isPrimary = address._id.toString() == addressId;
+      });
     }
     await user.save();
     successResponse(res, user, 201);
@@ -121,5 +164,6 @@ module.exports = {
   me,
   updateMe,
   addAddress,
+  updateAddress,
   removeAddress,
 };

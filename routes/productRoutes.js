@@ -8,6 +8,7 @@ const checkQueryString = require("../middlewares/checkQueryString");
 
 router.get("/", auth(true), checkQueryString, productControllers.allProducts);
 router.get("/:id", auth(true), productControllers.productById);
+router.post("/:id/rate", auth(), require("../controllers/ratingController").rate);
 
 router.use(auth(), allowTo("baristica", "admin", "superadmin"));
 
