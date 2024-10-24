@@ -57,7 +57,4 @@ bot.command("info", info);
 
 bot.command("unpaid", (ctx) => haveAccess(ctx, commands.unpaid));
 
-process.once("SIGINT", () => bot.stop("SIGINT"));
-process.once("SIGTERM", () => bot.stop("SIGTERM"));
-
 module.exports = bot;

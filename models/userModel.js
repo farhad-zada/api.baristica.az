@@ -35,24 +35,9 @@ const userStatistics = {
 };
 
 const address = {
-  name: String,
-  address: String,
   city: String,
-  entrance: String,
+  street: String,
   apartment: String,
-  lat: {
-    type: Number,
-    required: function () {
-      return this.lng !== undefined;
-    },
-  },
-  lng: {
-    type: Number,
-    required: function () {
-      return this.lat !== undefined;
-    },
-  },
-  notes: String,
   isPrimary: Boolean,
 };
 
@@ -61,9 +46,6 @@ const UserSchema = new Schema(
     name: {
       type: String,
       required: true,
-    },
-    lastname: {
-      type: String,
     },
     phone: {
       type: String,

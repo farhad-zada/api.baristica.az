@@ -22,8 +22,8 @@ const validateNewUserMiddleware = async (req, res, next) => {
     } else if (password.length < 8) {
       throw new Error("Password should be at least 8 characters long");
     }
-    if (!name || !validator.isAlpha(name)) {
-      throw new Error("Name is required and should be alphabetic");
+    if (!name || !/^[a-zA-Z\s]+$/.test(name)) {
+      throw new Error("Name is required and should contain only alphabetic characters and spaces");
     }
     if (!phone || !validator.isMobilePhone(phone, "any")) {
       throw new Error("Phone is required");
@@ -32,7 +32,15 @@ const validateNewUserMiddleware = async (req, res, next) => {
       throw new Error("Lastname should be alphabetic");
     }
 
-    req.body.user = { email, password, name, lastname, phone, passwordConfirm };
+    req.body.user = {
+      email,
+      password,
+      name,
+      lastname,
+      phone,
+      passwordConfirm,
+      image,
+    };
     req.body.user.role = "default";
     next();
   } catch (error) {
