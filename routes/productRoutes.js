@@ -1,19 +1,60 @@
 const { Router } = require("express");
-const productControllers = require("../controllers/productController");
-const { validateNewProduct } = require("../middlewares/productMiddlewares");
+const productController = require("../controllers/productController");
+const {
+  allowedProducts,
+  attachProductTypeById,
+  getProductModel,
+  checkQueryString,
+  attachProduct,
+} = require("../middlewares/productMiddlewares");
 const router = Router();
 const { restrictTo, allowTo } = require("../middlewares/policies");
 const auth = require("../middlewares/authMiddleware");
-const checkQueryString = require("../middlewares/checkQueryString");
+const rateController = require("../controllers/ratingController");
 
-router.get("/", auth(true), checkQueryString, productControllers.allProducts);
-router.get("/:id", auth(true), productControllers.productById);
-router.post("/:id/rate", auth(), require("../controllers/ratingController").rate);
+router.get(
+  "/",
+  auth(true),
+  checkQueryString,
+  getProductModel,
+  productController.findAll
+);
+router.post(
+  "/",
+  auth(),
+  allowTo("baristica", "admin", "superadmin"),
+  allowedProducts("coffee", "accessory", "machine"),
+  getProductModel,
+  productController.createProduct
+);
 
-router.use(auth(), allowTo("baristica", "admin", "superadmin"));
+router.post(
+  "/link/:id",
+  auth(),
+  allowTo("baristica", "admin", "superadmin"),
+  attachProductTypeById,
+  getProductModel,
+  productController.linkProducts
+);
 
-router.post("/", validateNewProduct, productControllers.createProduct);
-router.patch("/:id", productControllers.updateProduct);
-router.delete("/:id", productControllers.deleteProduct);
+router.delete(
+  "/link/:id",
+  auth(),
+  allowTo("baristica", "admin", "superadmin"),
+  attachProductTypeById,
+  getProductModel,
+  attachProduct,
+  productController.removeLink
+);
+
+router.use("/:id", attachProductTypeById, getProductModel);
+router.get("/:id", auth(true), productController.findById);
+
+router.use(auth());
+router.post("/:id/rate", rateController.rate);
+
+router.use(allowTo("baristica", "admin", "superadmin"));
+router.patch("/:id", productController.updateProduct);
+router.delete("/:id", productController.deleteProduct);
 
 module.exports = router;

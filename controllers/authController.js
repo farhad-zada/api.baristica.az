@@ -20,7 +20,10 @@ const logger = require("../utils/logger");
  * @returns {void | import("express").Response | import("express").NextFunction}
  */
 async function login(req, res) {
-  const { email, password } = req.body.creds;
+  const { email, password } = req.body;
+  if (!email | !password) {
+    return errorResponse(res, "Bad request", 400);
+  }
   const user = await User.findOne({ email }).select("+password");
   if (!user) {
     return errorResponse(res, "User not found!", 404);

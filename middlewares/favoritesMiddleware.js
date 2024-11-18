@@ -11,11 +11,8 @@ const { errorResponse } = require("../utils/responseHandlers");
 const checkIfProductExists = async (req, res, next) => {
   const productId = req.params.productId;
   try {
-    if (!validator.isMongoId(productId)) {
-      return errorResponse(res, "Invalid id", 429);
-    }
-
-    const favoriteProduct = await Product.findById(productId);
+    const Model = req.Model;
+    const favoriteProduct = await Model.findById(productId);
 
     if (!favoriteProduct) {
       return errorResponse(res, "Product not found", 404);

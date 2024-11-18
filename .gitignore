@@ -5,3 +5,4 @@ logs
 telegram/trusted.json
 public/images/*
 .creds
+api

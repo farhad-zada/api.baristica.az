@@ -101,10 +101,6 @@ const createOrder = async (req, res) => {
   logger.info(`Response: ${JSON.stringify(responseJson)}`);
   newOrder.transaction = responseJson.transaction;
   await newOrder.save();
-  await newOrder.populate(
-    "items.id items.options.coffeeProcessingType",
-    "name"
-  );
   newOrder.transaction = undefined;
   successResponse(res, { order: newOrder, epoint: responseJson }, 201);
 };
@@ -201,23 +197,12 @@ const orderCheck = async (req, res) => {
   req.order.items.forEach(async (item) => {
     const product = await Product.findById(item.id);
     if (product) {
-      if (!product.sold) product.sold = 0;
-      if (!product.stock) product.stock = 0;
-      const sold = item.options
-        .map((option) => option.quantity)
-        .reduce((a, b) => a + b, 0);
-      product.sold += sold;
-      product.stock -= sold;
-
-      if (product.stock < 0) {
-        product.stock = 0;
-      }
+      product.statistics.sold = product.statistics.sold + 1;
 
       if (req.user) {
-        req.user.statistics.weight += item.options
-          .map((option) => option.weight)
-          .reduce((a, b) => a + b, 0);
+        req.user.statistics.weight += product.weight;
       }
+      
       await product.save({ validateBeforeSave: false });
     }
   });

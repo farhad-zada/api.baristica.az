@@ -13,6 +13,8 @@ router.get("delivery/fee", (req, res) => {
     fee: 500,
   });
 });
+
+router.use("/media", require("./mediaRoutes"));
 router.use("/products", require("./productRoutes"));
 router.use("/auth", require("./authRoutes"));
 router.use("/users", require("./userRoutes"));
