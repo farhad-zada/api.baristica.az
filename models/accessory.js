@@ -27,10 +27,10 @@ const accessorySchema = new Schema(
   },
 );
 
-accessorySchema.pre(/^find/, function (next) {
-  this.find({ deleted: { $ne: true }, productType: "accessory" });
-  next();
-});
+// accessorySchema.pre(/^find/, function (next) {
+//   this.find({ deleted: { $ne: true }, productType: "accessory" });
+//   next();
+// });
 
 
 const Accessory = Product.discriminator("Accessory", accessorySchema);

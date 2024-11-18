@@ -27,10 +27,10 @@ const machineSchema = new Schema(
   },
 );
 
-machineSchema.pre(/^find/, function (next) {
-  this.find({ deleted: { $ne: true }, productType: "machine"});
-  next();
-});
+// machineSchema.pre(/^find/, function (next) {
+//   this.find({ deleted: { $ne: true }, productType: "machine"});
+//   next();
+// });
 
 const Machine = Product.discriminator("Machine", machineSchema);
 

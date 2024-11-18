@@ -16,14 +16,13 @@ const findAll = async (req, res) => {
     const skip = (pg - 1) * lt;
 
     if (key === "popular") {
-      key = sold;
+      key = "statistics.sold";
     } else {
       key = "createdAt";
     }
 
     const products = await Model.find(ptp ? { productType: ptp } : {})
-      //   .populate("coffeeProcessingTypes")
-      .sort({ [key]: -1 })
+      .sort({ [key]: -1 }) 
       .skip(skip)
       .limit(lt)
       .lean();
@@ -47,7 +46,7 @@ const findAll = async (req, res) => {
 
     successResponse(res, products, 200);
   } catch (error) {
-    errorResponse(res, error.message, 500);
+    errorResponse(res, error, 500);
   }
 };
 
