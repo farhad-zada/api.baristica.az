@@ -62,7 +62,7 @@ const ProductSchema = new Schema(
     discriminatorKey: "productType",
     timeseries: true,
     virtuals: true,
-    collation: "products",
+    collection: "products",
   }
 );
 

@@ -47,10 +47,10 @@ const coffeeSchema = new Schema(
   },
 );
 
-coffeeSchema.pre(/^find/, function (next) {
-  this.find({ deleted: { $ne: true }, productType: "coffee" });
-  next();
-});
+// coffeeSchema.pre(/^find/, function (next) {
+//   this.find({ deleted: { $ne: true }, productType: "Coffee" });
+//   next();
+// });
 
 // const Coffee = model("Coffee", coffeeSchema, "products");
 const Coffee = Product.discriminator("Coffee", coffeeSchema);
