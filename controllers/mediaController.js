@@ -1,6 +1,6 @@
 const sharp = require("sharp");
-const { ObjectId } = require("mongoose").Types;
 const { successResponse } = require("../utils/responseHandlers");
+const { v4: uuidv4 } = require("uuid"); // For generating unique IDs
 const {media} = require('../config');
 const logger = require("../utils/logger");
 
@@ -18,7 +18,7 @@ module.exports = (req, res) => {
 
   const returns = photos.map((photo) => {
     const extension = photo.mimetype.split("/")[1];
-    const photoName = `${new ObjectId().toString()}.${extension}`;
+    const photoName = `${uuidv4()}.${extension}`;
     const fileOut = `${__dirname}/../public/images/${photoName}`;
 
     logger.info("[New Image] " + fileOut);

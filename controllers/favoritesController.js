@@ -3,6 +3,23 @@ const Favorite = require("../models/favorites");
 const Product = require("../models/productModel");
 const { errorResponse, successResponse } = require("../utils/responseHandlers");
 
+const populateProducts = async (favorites) => {
+  const productCollection = mongoose.connection.collection("products");
+
+  const populatedFavorites = await Promise.all(
+    favorites.map(async (fav) => {
+      const product = await productCollection.findOne({
+        _id: fav.product,
+        deleted: false,
+      });
+      product.favorited = true;
+      return product;
+    })
+  );
+
+  return populatedFavorites;
+};
+
 /**
  * @param {import ('express').Request} req
  * @param {import ('express').Response} res
@@ -10,13 +27,8 @@ const { errorResponse, successResponse } = require("../utils/responseHandlers");
  */
 const allFavorites = async (req, res) => {
   try {
-    const favorites = await Favorite.find({ user: req.user.id })
-      .populate("product")
-      .lean();
-    const favoriteProducts = favorites.map((favorite) => {
-      favorite.product.favorited = true;
-      return favorite.product;
-    });
+    const favorites = await Favorite.find({ user: req.user.id }, {product: 1});
+    const favoriteProducts = await populateProducts(favorites);
     successResponse(res, favoriteProducts, 200);
   } catch (error) {
     errorResponse(res, error, 500);
@@ -35,7 +47,7 @@ const isFavorite = async (req, res) => {
       user: req.user.id,
       product: productId,
     });
-    successResponse(res, favorite ? true : false);
+    successResponse(res, {is_favorite: favorite ? true : false});
   } catch (error) {
     errorResponse(res, error, 500);
   }

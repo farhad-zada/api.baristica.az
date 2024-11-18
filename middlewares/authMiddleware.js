@@ -47,7 +47,6 @@ const authMiddleware =
 
         user.passwordChangedAt = undefined;
         req.user = user;
-
         next();
       } catch (ex) {
         logger.error(ex);

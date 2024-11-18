@@ -60,7 +60,7 @@ const addAddress = async (req, res) => {
       street,
       apartment,
       isPrimary,
-    } = req.body;
+    } = req.body.address;
     const user = req.user;
     user.addresses.push({
       city,
@@ -104,7 +104,13 @@ const updateAddress = async (req, res) => {
       street,
       apartment,
       isPrimary,
-    } = req.body;
+    } = req.body.address;
+
+    const addressExists = user.addresses.find((address) => address.id == addressId);
+    if (!addressExists) {
+      return errorResponse(res, "Address not found!", 404);
+    }
+    
     user.addresses.filter((address) => {
       if (address._id.toString() == addressId) {
         if (city) {

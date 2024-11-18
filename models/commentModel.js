@@ -9,8 +9,8 @@ const commentSchema = new Schema(
       index: true,
     },
     product: {
-      type: Schema.Types.ObjectId,
-      ref: "Product",
+      type: String,
+      ref: "products",
       required: true,
       index: true,
     },
@@ -18,6 +18,9 @@ const commentSchema = new Schema(
       type: String,
       required: true,
     },
+    photourls: {
+      type: [String]
+    }
   },
   {
     timestamps: true,

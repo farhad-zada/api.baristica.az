@@ -1,102 +1,14 @@
 const { Schema, model } = require("mongoose");
 const validator = require("validator");
 
-const OptionSchema = new Schema({
-  id: {
-    type: Schema.Types.ObjectId,
-    ref: "Product.option",
-    required: true,
-  },
-  quantity: {
-    type: Number,
-    required: true,
-    validate: {
-      validator: function (v) {
-        return typeof v === "number" && v > 0;
-      },
-      message: (props) => `${props.value} is not a valid quantity!`,
-    },
-  },
-  price: {
-    type: Number,
-    required: true,
-    validate: {
-      validator: function (v) {
-        return typeof v === "number" && v > 0;
-      },
-      message: (props) => `${props.value} is not a valid price!`,
-    },
-  },
-  cost: {
-    type: Number,
-    validate: {
-      validator: function (v) {
-        return typeof v === "number" && v > 0;
-      },
-      message: (props) => `${props.value} is not a valid cost!`,
-    },
-  },
-  coffeeProcessingType: {
-    type: Schema.Types.ObjectId,
-    ref: "CoffeeProcessingType",
-  },
-});
-
-const OrderItemSchema = new Schema({
-  id: {
-    type: Schema.Types.ObjectId,
-    ref: "Product",
-    required: true,
-  },
-  options: {
-    type: [OptionSchema],
-    required: true,
-    validate: {
-      validator: function (v) {
-        return v.length > 0;
-      },
-      message: (props) => `Order item must have at least one option!`,
-    },
-  },
-  discount: {
-    type: Number,
-    default: 0,
-  },
-  discountType: {
-    type: String,
-    enum: ["percentage", "fixed"],
-  },
-  cost: {
-    type: Number,
-    validate: {
-      validator: function (v) {
-        return typeof v === "number" && v > 0;
-      },
-      message: (props) => `${props.value} is not a valid cost!`,
-    },
-  },
-  totalCost: {
-    type: Number,
-    validate: {
-      validator: function (v) {
-        return typeof v === "number" && v > 0;
-      },
-      message: (props) => `${props.value} is not a valid total cost!`,
-    },
-  },
-});
-
 const CustomerSchema = new Schema({
-  id: {
+  _id: {
     type: Schema.Types.ObjectId,
     ref: "User",
   },
   name: {
     type: String,
     required: true,
-  },
-  email: {
-    type: String,
   },
   phone: {
     type: String,
@@ -111,6 +23,38 @@ const CustomerSchema = new Schema({
   },
 });
 
+const OrderItemSchema = new Schema(
+  {
+    product: {
+      type: String,
+      refPath: "productType",
+      required: true,
+    },
+    productType: {
+      type: String, 
+      enum: ["Coffee", "Machine", "Accessory"],
+      required: [true, "Product type is mandatory"]
+    },
+    quantity: {
+      type: Number,
+      required: true,
+      immutable: [true, "Trying to update quantity which is not allowed! 🤨"],
+    },
+    price: {
+      type: Number,
+      required: true,
+      immutable: [true, "Trying to update price which is not allowed! 🤨"],
+    },
+  },
+  {
+    virtuals: true,
+  }
+);
+
+OrderItemSchema.virtual("cost").get(function () {
+  return (this.price * this.quantity).toPrecision(2);
+});
+
 const deliveryRequiredField = function () {
   return this.deliveryMethod === "delivery";
 };
@@ -119,47 +63,11 @@ const OrderSchema = new Schema(
   {
     customer: {
       type: CustomerSchema,
-      required: true,
-    },
-    orderFor: {
-      type: String,
-    },
-    deliveryHours: {
-      from: {
-        type: String,
-        required: deliveryRequiredField(),
-      },
-      to: {
-        type: String,
-        required: deliveryRequiredField(),
-      },
-      _id: false,
-    },
-    deliveryDate: {
-      type: Date,
-      required: deliveryRequiredField(),
-    },
-    deliveryAddress: {
-      type: String,
-      required: deliveryRequiredField(),
-    },
-    deliveryEnterance: {
-      type: String,
-    },
-    deliveryFloor: {
-      type: String,
-    },
-    deliveryApartment: {
-      type: String,
-    },
-    deliveryMethod: {
-      type: String,
-      enum: ["delivery", "pickup"],
-      required: true,
+      required: [true, "Customer data is required!"],
     },
     items: {
       type: [OrderItemSchema],
-      required: true,
+      required: [true, "Items is required!"],
       validate: {
         validator: function (v) {
           return v.length > 0;
@@ -167,14 +75,29 @@ const OrderSchema = new Schema(
         message: (props) => `Order must have at least one item!`,
       },
     },
-    discount: {
-      type: Number,
-      default: 0,
-    },
-    discountType: {
+    deliveryHour: {
       type: String,
-      enum: ["percentage", "fixed"],
-      default: "percentage",
+      validate: {
+        validator: function (v) {
+          return /^([0-1]?[0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$/.test(v); // Regex for HH:mm or HH:mm:ss
+        },
+        message: (props) => `${props.value} is not a valid time!`,
+      },
+      required: [deliveryRequiredField, "Delivery hour is required"],
+    },
+    deliveryDate: {
+      type: Date,
+      required: deliveryRequiredField,
+    },
+    deliveryAddress: {
+      type: Schema.Types.ObjectId,
+      ref: "User.addresses",
+      required: [deliveryRequiredField, "Delivery address is required"],
+    },
+    deliveryMethod: {
+      type: String,
+      enum: ["delivery", "pickup"],
+      required: [true, "Delivery method not specified!"],
     },
     cost: {
       type: Number,
@@ -184,6 +107,8 @@ const OrderSchema = new Schema(
         },
         message: (props) => `${props.value} is not a valid cost!`,
       },
+      required: [true, "Cost must be specified!"],
+      immutable: true
     },
     totalCost: {
       type: Number,
@@ -193,6 +118,8 @@ const OrderSchema = new Schema(
         },
         message: (props) => `${props.value} is not a valid total cost!`,
       },
+      required: [true, "Total cost must be specified!"],
+      immutable: true
     },
     deliveryFee: {
       type: Number,
@@ -214,7 +141,6 @@ const OrderSchema = new Schema(
       enum: [
         "initiated",
         "paid",
-        "shipped",
         "delivered",
         "cancelled by customer",
         "cancelled by baristica",
@@ -223,6 +149,12 @@ const OrderSchema = new Schema(
     },
     transaction: {
       type: String,
+      required: [
+        function () {
+          this.status !== "initiated";
+        },
+        "Transaction is required!",
+      ],
     },
     notes: {
       type: String,
@@ -237,6 +169,7 @@ const OrderSchema = new Schema(
   },
   {
     timestamps: true,
+    virtuals: true,
   }
 );
 
@@ -248,6 +181,15 @@ OrderSchema.pre("delete", function (next) {
 
 OrderSchema.pre(/^find/, function (next) {
   this.find({ deleted: { $ne: true } });
+
+  // Check if the 'user' field is being populated
+  if (this.getPopulatedPaths().includes("user")) {
+    this.populate({
+      path: "user",
+      select: "name email", 
+    });
+  }
+
   next();
 });
 

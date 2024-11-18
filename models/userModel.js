@@ -119,6 +119,10 @@ const UserSchema = new Schema(
   }
 );
 
+UserSchema.methods.getDefaultAddress = function () {
+  return this.addresses.find((address) => address.isPrimary === true);
+};
+
 UserSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
     this.password = await bcrypt.hash(this.password, 12);

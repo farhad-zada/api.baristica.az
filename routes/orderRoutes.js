@@ -15,14 +15,16 @@ const {
   orderCheck,
 } = require("../controllers/orderController");
 const { allowTo } = require("../middlewares/policies");
-const logger = require("../utils/logger");
 
-router.get("/", auth(), index);
-router.post("/check", checkSignature, confirmStatus, orderCheck);
-router.get("/:orderId", auth(), orderById);
-router.post("/", auth(), validateOrder, createOrder); // product ids, product quantities,
+// router.post("/check", checkSignature, confirmStatus, orderCheck);
 
-router.use(auth(), allowTo("baristica", "admin", "superadmin"));
+router.use(auth()); // all authenticated
+
+router.get("/", index);
+router.get("/:orderId", orderById);
+router.post("/", validateOrder, createOrder); // product ids, product quantities,
+
+router.use(allowTo("baristica", "admin", "superadmin")); // admin routes
 
 router.patch("/:orderId", updateOrder);
 router.delete("/:orderId", deleteOrder);
