@@ -3,6 +3,7 @@ const { errorResponse } = require("../utils/responseHandlers");
 const { delivery_fee } = require("../config");
 const findProductModelFromType = require("../utils/findProductModelFromType");
 const humanReadableError = require("../utils/humanReadableError");
+const findProductTypeFromId = require("../utils/findProductTypeFromId");
 require("dotenv").config();
 
 const calcTotalCost = (cost, discount, discountType) => {
@@ -27,7 +28,7 @@ const validateOrder = async (req, res, next) => {
     req.body.order.deliveryFee = delivery_fee;
 
     const itemsPromises = req.body.order.items.map(async (item) => {
-      const Model = findProductModelFromType(item.product);
+      const Model = findProductModelFromType(findProductTypeFromId(item.product));
       return Model.findById(item.product);
     });
 
