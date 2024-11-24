@@ -27,19 +27,21 @@ const checkQueryString = (req, res, next) => {
   } else {
     req.query.lt = 10;
   }
+  console.log(ptp);
   if (ptp) {
     if (
       ![
-        "coffee",
-        "grinder",
-        "grinder-commandate",
-        "coffee-machine",
-        "accessory",
+        "Coffee",
+        "Machine",
+        "Accessory",
       ].includes(ptp)
     ) {
       return errorResponse(res, "Invalid product type", 400);
     }
+  } else {
+    ptp = "Coffee";
   }
+  req.productType = ptp;
 
   next();
 };

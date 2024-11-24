@@ -15,7 +15,6 @@ function findProductModelFromType(productType) {
     Accessory: Accessory,
     Machine: Machine,
   };
-  console.log(productType);
   if (productModels[productType]) {
     return productModels[productType];
   } else {

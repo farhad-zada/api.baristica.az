@@ -126,10 +126,12 @@ const checkQueryString = (req, res, next) => {
     req.query.lt = 10;
   }
   if (ptp) {
-    if (!["coffee", "machine", "accessory"].includes(ptp)) {
+    if (!["Coffee", "Machine", "Accessory"].includes(ptp)) {
       return errorResponse(res, "Invalid product type", 400);
     }
     req.productType = ptp;
+  } else {
+    req.productType = "Coffee";
   }
 
   next();

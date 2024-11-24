@@ -17,7 +17,7 @@ GET {{root}}?ptp=accessory
 
 
 ### find machines
-GET {{root}}?ptp=machine
+GET {{root}}?ptp=Machine
 
 
 
