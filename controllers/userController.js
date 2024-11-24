@@ -77,7 +77,6 @@ const addAddress = async (req, res) => {
     successResponse(res, user, 201);
   } catch (error) {
     if (error.name === "ValidationError") {
-      logger.error(error + "\n" + error.stack);
       return errorResponse(
         res,
         "Invalid input data. Please enter valid data! If you think this is a mistake, please contact us.",
@@ -136,7 +135,6 @@ const updateAddress = async (req, res) => {
     successResponse(res, user, 201);
   } catch (error) {
     if (error.name === "ValidationError") {
-      logger.error(error + "\n" + error.stack);
       return errorResponse(
         res,
         "Invalid input data. Please enter valid data! If you think this is a mistake, please contact us.",

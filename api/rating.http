@@ -1,0 +1,17 @@
+@root = {{baseUrl}}/products
+@authToken = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzM2ZTIzYzljMWU5NjdmOWNlMGI5ODMiLCJlbWFpbCI6ImZhcmhhZEBnbWFpbC5jb20iLCJpYXQiOjE3MzE2NTAxMDksImV4cCI6MTczOTQyNjEwOX0.8krrYm5SnZJo7DzAtDgGI_Wp742OyeaTtBI00qFAhAk
+
+
+
+### rate product
+
+@productId = coffee_34713695-619c-4062-8db1-05c4f30a642d
+
+# @name rate
+POST {{root}}/{{productId}}/rate 
+Content-Type: application/json
+Authorization: {{authToken}}
+
+{
+    "rating": 5
+}

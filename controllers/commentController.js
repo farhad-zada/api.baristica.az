@@ -69,7 +69,6 @@ async function create(req, res, next) {
 
     return successResponse(res, { comment }, 200);
   } catch (error) {
-    logger.error(error);
     return errorResponse(
       res,
       "Something went wrong on our side! Comment could not be added.",
@@ -117,7 +116,6 @@ async function update(req, res, next) {
 
     return successResponse(res, { comment }, 200);
   } catch (error) {
-    logger.error(error.message, error.trace);
     return errorResponse(
       res,
       "Something went wrong on our side! Please contact support!",

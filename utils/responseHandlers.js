@@ -2,14 +2,17 @@ const logger = require("./logger");
 /**
  * Sends an error response.
  * @param {import('express').Response} res - Express response object
- * @param {string} message - Error message
+ * @param {Object | String} message - Error message
  * @param {number} [statusCode=500] - HTTP status code
  */
 const errorResponse = (res, message, statusCode = 500) => {
   if (typeof message === "object") {
-    message = message.message + "\n" + message.stack;
+    logger.error(message.toString());
+    message = message.message;
+  } else {
+    logger.error(message);
   }
-  logger.error(message);
+
   if (statusCode === 500) {
     message =
       "Something went wrong. Please try again later or contact support.";

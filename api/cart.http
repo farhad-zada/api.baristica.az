@@ -1,0 +1,72 @@
+@root = {{baseUrl}}/cart 
+@authToken = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzM2ZTIzYzljMWU5NjdmOWNlMGI5ODMiLCJlbWFpbCI6ImZhcmhhZEBnbWFpbC5jb20iLCJpYXQiOjE3MzE2NTAxMDksImV4cCI6MTczOTQyNjEwOX0.8krrYm5SnZJo7DzAtDgGI_Wp742OyeaTtBI00qFAhAk
+
+@productA = coffee_34713695-619c-4062-8db1-05c4f30a642d
+
+@productB = coffee_fb01864d-893b-441d-8589-1579437735cd
+
+
+
+
+
+### get items from the cart
+
+# @name find
+GET {{root}}
+Content-Type: application/json
+Authorization: {{authToken}}
+
+
+
+
+
+### find item by product id in the cart of mine
+
+# @name findById
+GET {{root}}/{{productA}}
+Content-Type: application/json
+Authorization: {{authToken}}
+
+
+
+
+
+### add a product to the cart 
+
+# @name addToCart
+POST {{root}}
+Content-Type: application/json
+Authorization: {{authToken}}
+
+{
+    "product": {
+        "id": "{{productA}}",
+        "quantity": 1
+    }
+}
+
+
+
+
+
+### remove a product from the cart 
+
+# @name removeFromCart
+DELETE {{root}}/{{productA}}
+Content-Type: application/json
+Authorization: {{authToken}}
+
+
+
+
+
+### update quantity of a product
+
+# @name requantify
+PATCH {{root}}/{{productA}}
+Content-Type: application/json
+Authorization: {{authToken}}
+
+{
+    "quantity": -1
+}

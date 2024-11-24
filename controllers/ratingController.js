@@ -6,32 +6,34 @@ const Accessory = require("../models/accessory");
 const Machine = require("../models/machine");
 
 /**
- * 
- * @param {Coffee | Accessory | Machine} product 
+ *
+ * @param {Coffee | Accessory | Machine} product
  */
-async function updateProductAverageRating (product) {
+async function updateProductAverageRating(product) {
   try {
     const avgRatings = await Rating.aggregate([
       {
-        $match: {product: product.id}
+        $match: { product: product.id },
       },
       {
         $group: {
           _id: "product",
-          averageRating: {$avg: "$rating"
-          }
-        }, 
-
-      }
+          averageRating: { $avg: "$rating" },
+        },
+      },
     ]);
     if (avgRatings.length == 0) {
       logger.error("Aggregation returned zero results for " + product);
     }
-    const {averageRating} = avgRatings[0];
+    const { averageRating } = avgRatings[0];
     product.statistics.ratings = averageRating;
     await product.save();
-    logger.info(`Updated product rating successfully! PRODUCT ID: ${product.id}`);
-  } catch (error) {logger.error(error.message);}
+    logger.info(
+      `Updated product rating successfully! PRODUCT ID: ${product.id}`
+    );
+  } catch (error) {
+    logger.error(error);
+  }
 }
 
 /**
@@ -41,7 +43,6 @@ async function updateProductAverageRating (product) {
  * @returns {void | import("express").Response | import("express").NextFunction}
  */
 async function rate(req, res, next) {
-
   try {
     const { rating } = req.body;
     const productId = req.params.id;
@@ -49,8 +50,7 @@ async function rate(req, res, next) {
     const Model = req.Model;
 
     if (rating != undefined && rating != null) {
-
-      if ((rating > 5) | (rating < 1) | typeof(rating) != "number") {
+      if ((rating > 5) | (rating < 1) | (typeof rating != "number")) {
         return errorResponse(
           res,
           "Rating can only be 1, 2, 3, 4, 5. Given: `" + rating + "`",
@@ -76,7 +76,7 @@ async function rate(req, res, next) {
         product: productId,
         rating,
       });
-      product.statistics.rating = (product.statistics.rating + rating)
+      product.statistics.rating = product.statistics.rating + rating;
     } else if (rating) {
       existingRating.rating = rating;
       await existingRating.save();
@@ -87,8 +87,7 @@ async function rate(req, res, next) {
     updateProductAverageRating(product);
     return successResponse(res, { response, rating: existingRating }, 200);
   } catch (error) {
-    logger.error(error.message);
-    console.log(error);
+    logger.error(error);
     return errorResponse(
       res,
       "Something went wrong on our side! Rating could not be saved.",

@@ -1,0 +1,150 @@
+@root = {{baseUrl}}/products?ptp=coffee
+@authToken = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzM2ZTIzYzljMWU5NjdmOWNlMGI5ODMiLCJlbWFpbCI6ImZhcmhhZEBnbWFpbC5jb20iLCJpYXQiOjE3MzE2NTAxMDksImV4cCI6MTczOTQyNjEwOX0.8krrYm5SnZJo7DzAtDgGI_Wp742OyeaTtBI00qFAhAk
+
+
+
+
+### find all coffee
+
+# @name coffees
+GET {{root}}
+Content-Type: application/json
+
+
+
+
+### find an coffee by id
+
+# @name coffeeById
+GET {{baseUrl}}/products/coffee_2d7b2a4f-13b8-4cd5-9562-83feb7825beb
+
+
+
+
+
+### create an coffee
+
+# @name createCoffee
+POST {{baseUrl}}/products
+Content-Type: application/json
+Authorization: {{authToken}}
+
+{
+    "productType": "coffee",
+    "product": {
+        "code":  "F20001", 
+        "category": "filter", 
+        "weight": 1000,
+        "price": 2500,
+        "name": {
+            "az": "COLOMBIA GEISHA ANCESTRO", 
+            "en": "COLOMBIA GEISHA ANCESTRO", 
+            "ru": "COLOMBIA GEISHA ANCESTRO"
+        }, 
+        "profile": {
+            "az": "BERQAMOT - MARAKUYYA - QIZIL GÜL - VANİL", 
+            "en": "БЕРГАМОТ - МАРАКУЙЯ - РОЗА - ВАНИЛЬ", 
+            "ru": "COLOMBIA GEISHA ANCESTRO"
+        }, 
+        "description": {
+            "az": "Это кофе отличается сложным вкусовым профилем и утончёнными ароматами, которые привлекают внимание ценителей со всего мира.", 
+            "en": "Это кофе отличается сложным вкусовым профилем и утончёнными ароматами, которые привлекают внимание ценителей со всего мира.", 
+            "ru": "Это кофе отличается сложным вкусовым профилем и утончёнными ароматами, которые привлекают внимание ценителей со всего мира."
+        }, 
+        "viscocity": 70, 
+        "sweetness": 60, 
+        "acidity": 76,
+        "images": [
+            "https://farhadzada.com/md/baristica/coffee/sksjs-q2oakoa-akskks"
+        ],
+        "attributes": [
+            {
+                "name": {
+                    "az": "Qovurma dərəcəsi",
+                    "en": "Roasting level",
+                    "ru": "Степень обжарки"
+                },
+                "value": {
+                    "az": "Orta",
+                    "en": "Mid",
+                    "ru": "Средняя"
+                }
+            },
+            {
+                "name": {
+                    "az": "Qovurma dərəcəsi",
+                    "en": "Roasting level",
+                    "ru": "Степень обжарки"
+                },
+                "value": {
+                    "az": "Orta",
+                    "en": "Mid",
+                    "ru": "Средняя"
+                }
+            }
+        ]
+    }
+}
+
+
+
+
+### update an coffee
+
+# @name updateCoffee
+PATCH {{baseUrl}}/products/coffee_2d7b2a4f-13b8-4cd5-9562-83feb7825beb
+Content-Type: application/json
+Authorization: {{authToken}}
+
+{
+    "product": {
+        "attributes": []
+    }
+}
+
+
+
+
+
+### delete a coffee
+
+# @name deleteCoffee
+DELETE {{baseUrl}}/products/coffee_2d7b2a4f-13b8-4cd5-9562-83feb7825beb
+Authorization: {{authToken}}
+
+
+
+
+
+### link two coffees
+
+# @name link
+POST {{baseUrl}}/products/link/coffee_09f0d447-e32c-4725-9a7f-67acaf0cff4d
+Content-Type: application/json
+
+{
+    "link": {
+        "product": "coffee_252a4dd5-f216-48e5-ac6a-0a4b75e67b9d", 
+        "field": "weight"
+    }
+}
+
+
+
+
+
+
+### link two coffees
+
+# @name link
+DELETE {{baseUrl}}/products/link/coffee_09f0d447-e32c-4725-9a7f-67acaf0cff4d
+Content-Type: application/json
+
+{
+    "link": {
+        "product": "coffee_252a4dd5-f216-48e5-ac6a-0a4b75e67b9d", 
+        "field": "weight"
+    }
+}
+
+### coffee_09f0d447-e32c-4725-9a7f-67acaf0cff4d coffee_d1eb63db-745c-4c53-8cb1-76fcdf902a56

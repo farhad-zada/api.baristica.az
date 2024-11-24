@@ -7,7 +7,6 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const app = express();
 const config = require("./config");
-// const bot = require("./telegram");
 const logger = require("./utils/logger");
 config.validateConfig(config);
 const uri = config.db_uri();
@@ -44,20 +43,7 @@ mongoose
 
     const server = app.listen(config.port, () => {
       console.log(`Server is running on port ${config.port}`);
-      // bot.launch();
     });
-
-    const shutdown = (reason) => {
-      console.log(`[${reason}] Shutting down gracefully...`);
-      // bot.stop("SIGINT");
-      server.close(() => {
-        console.log("HTTP server closed.");
-      });
-      process.exit(0);
-    };
-
-    process.on("SIGINT", shutdown);
-    process.on("SIGTERM", shutdown);
   })
 
   .catch((err) => {

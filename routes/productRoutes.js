@@ -52,6 +52,7 @@ router.get("/:id", auth(true), productController.findById);
 
 router.use(auth());
 router.post("/:id/rate", rateController.rate);
+router.all("/:id/favorite", (req, res, next) => res.redirect("/api/v1/favorites"));
 
 router.use(allowTo("baristica", "admin", "superadmin"));
 router.patch("/:id", productController.updateProduct);

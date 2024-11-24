@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Favorite = require("../models/favorites");
 const Product = require("../models/productModel");
 const { errorResponse, successResponse } = require("../utils/responseHandlers");
+const logger = require("../utils/logger");
 
 const populateProducts = async (favorites) => {
   const productCollection = mongoose.connection.collection("products");
