@@ -1,0 +1,88 @@
+@root = {{baseUrl}}/users
+
+@authToken = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzM2ZTIzYzljMWU5NjdmOWNlMGI5ODMiLCJlbWFpbCI6ImZhcmhhZEBnbWFpbC5jb20iLCJpYXQiOjE3MzE2NTAxMDksImV4cCI6MTczOTQyNjEwOX0.8krrYm5SnZJo7DzAtDgGI_Wp742OyeaTtBI00qFAhAk
+
+
+
+### my profile
+
+# @name me
+GET {{root}}/me
+Content-Type: application/json
+Authorization: {{authToken}}
+
+
+
+
+
+### add address
+
+# @name addAddress
+POST {{root}}/me/address
+Content-Type: application/json
+Authorization: {{authToken}}
+
+{
+    "address": {
+        "city": "Guneshli", 
+        "street": "Ehmed Cavad 7D", 
+        "apartment": "Dann", 
+        "isPrimary": true
+    }
+}
+
+
+
+
+### update address
+
+@addressId=673f9a11a8acb3ca39aa81af
+# @name updateAddress
+PATCH {{root}}/me/address/{{addressId}}
+Content-Type: application/json
+Authorization: {{authToken}}
+
+{
+    "address": {
+        "city": "Baku", 
+        "street": "Ehmed Cavad 7D", 
+        "apartment": "Romeo", 
+        "isPrimary": true
+    }
+}
+
+
+
+
+
+### delete address
+
+@addressId=673f9a11a8acb3ca39aa81af
+# @name deleteAddress
+DELETE {{root}}/me/address/{{addressId}}
+Content-Type: application/json
+Authorization: {{authToken}}
+
+
+
+
+
+
+### my comments 
+
+# @name comments
+GET {{root}}/comments
+Content-Type: application/json
+Authorization: {{authToken}}
+
+
+
+
+### my orders 
+
+# @name orders
+GET {{root}}/orders
+Content-Type: application/json
+Authorization: {{authToken}}
+
+

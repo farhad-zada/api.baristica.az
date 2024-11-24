@@ -1,0 +1,162 @@
+@accessoriesBaseUrl = {{baseUrl}}/products/accessories
+@authToken = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzM2ZTIzYzljMWU5NjdmOWNlMGI5ODMiLCJlbWFpbCI6ImZhcmhhZEBnbWFpbC5jb20iLCJpYXQiOjE3MzE2NTAxMDksImV4cCI6MTczOTQyNjEwOX0.8krrYm5SnZJo7DzAtDgGI_Wp742OyeaTtBI00qFAhAk
+
+
+
+### find all accessories
+
+# @name allAccessories
+GET {{baseUrl}}/products?ptp=accessory
+Content-Type: application/json
+
+
+
+
+### find an accessory by id
+
+# @name accessoryById
+GET {{accessoriesBaseUrl}}/1
+
+
+
+
+
+### create an accessory
+
+# @name createAccessory
+POST {{baseUrl}}/products
+Content-Type: application/json
+Authorization: {{authToken}}
+
+{
+    "productType": "accessory",
+    "product": {
+        "code": "P5001S",
+        "category": "barista",
+        "price": 7000,
+        "name": {
+            "az": "MHW-BOMBER Pitcer 5.0", 
+            "en": "MHW-BOMBER Pitcher 5.0", 
+            "ru": "MHW-BOMBER Питчер 5.0"
+        }, 
+        "description": {
+            "az": "Металлический глянцевый питчер объёмом 400 мл для вспенивания молока с уникальным дизайном горлышка в форме крокодила с двойным изгибом.", 
+            "en": "Металлический глянцевый питчер объёмом 400 мл для вспенивания молока с уникальным дизайном горлышка в форме крокодила с двойным изгибом.", 
+            "ru": "Металлический глянцевый питчер объёмом 400 мл для вспенивания молока с уникальным дизайном горлышка в форме крокодила с двойным изгибом."
+        },
+        "attributes": [
+            {
+                "name": {
+                    "az": "Material", 
+                    "en": "Material", 
+                    "ru": "Material"
+                }, 
+                "value": {
+                    "az": "Paslanmaz polad 304", 
+                    "en": "Paslanmaz polad 304", 
+                    "ru": "Paslanmaz polad 304"
+                }
+                },
+                {
+                "name": {
+                    "az": "Color", 
+                    "en": "Color", 
+                    "ru": "Color"
+                }, 
+                "value": {
+                    "az": "Parlaq", 
+                    "en": "Parlaq", 
+                    "ru": "Parlaq"
+                }
+                },
+                {
+                "name": {
+                    "az": "Weight", 
+                    "en": "Weight", 
+                    "ru": "Weight"
+                }, 
+                "value": {
+                    "az": "170", 
+                    "en": "170", 
+                    "ru": "170"
+                }
+                },
+                {
+                "name": {
+                    "az": "Hecmi", 
+                    "en": "Hecmi", 
+                    "ru": "Hecmi"
+                }, 
+                "value": {
+                    "az": "400 ml", 
+                    "en": "400 ml", 
+                    "ru": "400 ml"
+                }
+                },
+                {
+                "name": {
+                    "az": "Sizes", 
+                    "en": "Sizes", 
+                    "ru": "Sizes"
+                }, 
+                "value": {
+                    "az": "80 x 94 mm", 
+                    "en": "80 x 94 mm", 
+                    "ru": "80 x 94 mm"
+                }
+            }
+        ]
+    }
+}
+
+
+
+
+### update an accessory
+
+# @name updateAccessory
+PATCH {{baseUrl}}/products/accessory_e78520ba-24d7-4926-8355-9f3befde9c07
+Content-Type: application/json
+Authorization: {{authToken}}
+
+{
+    "product": {
+        "attributes": [
+            {
+                "name": {
+                    "az": "Material", 
+                    "en": "Material", 
+                    "ru": "Material"
+                }, 
+                "value": {
+                    "az": "Paslanmaz polad 304", 
+                    "en": "Paslanmaz polad 304", 
+                    "ru": "Paslanmaz polad 304"
+                }
+            },
+            {
+                "name": {
+                    "az": "Weight", 
+                    "en": "Weight", 
+                    "ru": "Weight"
+                }, 
+                "value": {
+                    "az": "170", 
+                    "en": "170", 
+                    "ru": "170"
+                }
+            }
+        ]
+    }
+}
+
+
+
+
+
+### delete an accessory
+
+# @name deleteAccessory
+DELETE {{baseUrl}}/products/accessory_e78520ba-24d7-4926-8355-9f3befde9c07
+Authorization: {{authToken}}
+

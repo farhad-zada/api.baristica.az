@@ -5,6 +5,10 @@ const { Schema, model } = mongoose;
 
 const ProductSchema = new Schema(
   {
+    _id: {
+      type: String, 
+      required: true,
+    },
     code: { type: String, required: true },
     category: {
       type: String,

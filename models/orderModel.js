@@ -2,7 +2,8 @@ const { Schema, model } = require("mongoose");
 const validator = require("validator");
 
 const CustomerSchema = new Schema({
-  _id: {
+  _id: false,
+  id: {
     type: Schema.Types.ObjectId,
     ref: "User",
   },

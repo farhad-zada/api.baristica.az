@@ -1,0 +1,130 @@
+@root = {{baseUrl}}/products
+@contentType = application/json
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjViMDQ3OTE4OGY0NjhjOTRmY2JkYmMiLCJlbWFpbCI6ImZhcmhhZC5zemRAZ21haWwuY29tIiwiaWF0IjoxNzMxNDg4ODAzLCJleHAiOjE3MzkyNjQ4MDN9.G3RGtq85pCTTWiXP3v8x-FC7w85HfmVE1PV9BsfLahU
+
+
+// NOTICE: valid product types: Coffee, Accessory, Machine
+
+### find products (default product type - ptp is set to Coffee)
+# @name products
+GET {{root}}
+
+
+
+### find accessories
+GET {{root}}?ptp=accessory
+
+
+
+### find machines
+GET {{root}}?ptp=machine
+
+
+
+
+### Find ceffees limit 5
+GET {{root}}?lt=5&pg=1&ptp=accessory
+Authorization: {{authToken}}
+
+
+
+### link two products
+
+@productA = coffee_34713695-619c-4062-8db1-05c4f30a642d
+@productB = coffee_fb01864d-893b-441d-8589-1579437735cd
+# @name link
+POST {{root}}/link/{{productA}}
+Content-Type: application/json
+
+{
+    "link": {
+        "product": "{{productB}}", 
+        "field": "weight"
+    }
+}
+
+
+
+
+
+
+### unlink two products
+
+# @name link
+DELETE {{baseUrl}}/products/link/coffee_09f0d447-e32c-4725-9a7f-67acaf0cff4d
+Content-Type: application/json
+
+{
+    "link": {
+        "product": "coffee_252a4dd5-f216-48e5-ac6a-0a4b75e67b9d", 
+        "field": "weight"
+    }
+}
+
+
+
+### update a product
+
+@productId = coffee_34713695-619c-4062-8db1-05c4f30a642d
+
+# @name update
+PATCH {{baseUrl}}/products/{{productId}}
+Content-Type: application/json
+Authorization: {{authToken}}
+
+{
+    "product": {
+        "attributes": [
+        {
+          "name": {
+            "az": "Qovurma dərəcəsi",
+            "en": "Roasting level",
+            "ru": "Степень обжарки"
+          },
+          "value": {
+            "az": "Orta",
+            "en": "Mid",
+            "ru": "Средняя"
+          }
+        },
+        {
+          "name": {
+            "az": "Qovurma dərəcəsi",
+            "en": "Roasting level",
+            "ru": "Степень обжарки"
+          },
+          "value": {
+            "az": "Orta",
+            "en": "Mid",
+            "ru": "Средняя"
+          }
+        }
+      ]
+    }
+}
+
+
+
+
+### delete product
+
+@productId = coffee_34713695-619c-4062-8db1-05c4f30a642d
+# @name delete
+DELETE {{baseUrl}}/products/{{productId}}
+Authorization: {{authToken}}
+
+
+
+
+### rate product
+
+@productId = coffee_34713695-619c-4062-8db1-05c4f30a642d
+
+# @name rate
+POST {{root}}/{{productId}}/rate 
+Content-Type: application/json
+Authorization: {{authToken}}
+
+{
+    "rating": 5
+}

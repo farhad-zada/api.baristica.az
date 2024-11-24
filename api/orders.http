@@ -1,0 +1,59 @@
+@authToken = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjViMDQ3OTE4OGY0NjhjOTRmY2JkYmMiLCJlbWFpbCI6ImZhcmhhZC5zemRAZ21haWwuY29tIiwiaWF0IjoxNzMxNTkxNzkxLCJleHAiOjE3MzkzNjc3OTF9.1GWo8uv81Wh80mQ3R_TKDGWuqXvx5tHcS5ODHeBD2BU
+
+@root = {{baseUrl}}/orders
+
+
+
+### create a new order
+
+@productA = coffee_34713695-619c-4062-8db1-05c4f30a642d
+@productB = coffee_fb01864d-893b-441d-8589-1579437735cd
+
+# @name order
+POST {{root}}
+Content-Type: application/json
+Authorization: {{authToken}}
+
+{
+    "language": "en",
+    "order": {
+        "customer": {
+            "name": "Farhad Seyfulla",
+            "phone": "+994557367001"
+        },
+        "deliveryMethod": "pickup",
+        
+        "items": [
+            {
+                "product": "{{productA}}",
+                "quantity": 1
+            },
+            {
+                "product": "{{productB}}",
+                "quantity": 2
+            }
+        ]
+    }
+}
+
+
+
+
+
+### my orders
+
+# @name orders
+GET {{root}}
+Content-Type: application/json
+Authorization: {{authToken}}
+
+
+
+
+
+### find order by id
+
+# @name byId
+GET {{root}}/{{orders.response.body.data.orders[0]._id}}
+Content-Type: application/json
+Authorization: {{authToken}}

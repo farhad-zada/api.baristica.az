@@ -3,6 +3,8 @@ const Accessory = require("../models/accessory");
 const Coffee = require("../models/coffee");
 const Machine = require("../models/machine");
 const { Model } = require("mongoose");
+const findProductTypeFromId = require("../utils/findProductTypeFromId");
+const findProductModelFromId = require("../utils/findProductModelFromType");
 
 /**
  * @param {import ('express').Request} req
@@ -10,18 +12,8 @@ const { Model } = require("mongoose");
  * @param {import ('express').NextFunction} next
  */
 function getProductModel(req, res, next) {
-  const type = req.productType ?? req.body.productType;
-  if (type === "coffee") {
-    req.Model = Coffee;
-  } else if (type === "accessory") {
-    req.Model = Accessory;
-  } else if (type === "machine") {
-    req.Model = Machine;
-  } else if (req.method === "GET") {
-    req.Model = Coffee;
-  } else {
-    throw new Error("Unknown product type!");
-  }
+  const productType = req.productType ?? req.body.productType;
+  req.Model = findProductModelFromId(productType);
   next();
 }
 
@@ -32,15 +24,7 @@ function getProductModel(req, res, next) {
  */
 const attachProductTypeById = (req, res, next) => {
   const id = req.params.id ?? req.params.productId;
-  if (id.startsWith("coffee")) {
-    req.productType = "coffee";
-  } else if (id.startsWith("accessory")) {
-    req.productType = "accessory";
-  } else if (id.startsWith("machine")) {
-    req.productType = "machine";
-  } else {
-    throw new Error("Unknown product type!");
-  }
+  req.productType = findProductTypeFromId(id);
   next();
 };
 /**

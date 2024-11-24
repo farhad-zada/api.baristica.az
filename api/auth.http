@@ -1,0 +1,102 @@
+@root = {{baseUrl}}/auth
+
+
+
+
+### register new user
+
+# @name register
+POST {{root}}/register
+Content-Type: application/json 
+
+{
+    "creds": {
+        "name": "Farhad Seyfullazada",
+        "phone": "+994557367002",
+        "email": "farhad.szd@gmail.com", 
+        "password": "123492192",
+        "passwordConfirm": "123492192"
+    }
+}
+
+
+
+
+### login
+
+# @name login
+POST {{root}}/login
+Content-Type: application/json
+
+{
+    "creds": {
+        "email": "farhad@gmail.com",
+        "password": "123492192"
+    }
+}
+
+
+
+
+
+### logout
+
+# @name logout
+POST {{root}}/login
+Content-Type: application/json
+Authorization: {{login.response.headers.Authorization}}
+
+
+
+
+
+### forgot password
+
+# @name forgot
+POST {{root}}/forgot-password
+Content-Type: application/json
+
+{
+    "email": "farhad.szd@gmail.com"
+}
+
+
+
+
+### reset password
+
+# @name reset
+
+@resetToken=f1fbaedb2a2421bc44ed2098ac85b64fea7135331297cfa31d826ec55229bb5e
+POST {{root}}/reset-password/{{resetToken}}
+Content-Type: application/json
+
+{
+   "creds": {
+        "password": "DmsjksSIw292",
+        "passwordConfirm": "DmsjksSIw292"
+   }
+}
+
+
+
+
+
+### update password
+
+# @name updatePassword
+PATCH  {{root}}/update-password
+Content-Type: application/json
+Authorization: {{login.response.headers.Authorization}}
+
+{
+    "creds": {
+        "oldPassword": "DmsjksSIw292",
+        "password": "DmsjksSIw293",
+        "passwordConfirm": "DmsjksSIw293"
+    }
+}
+
+
+
+

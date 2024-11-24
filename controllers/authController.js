@@ -20,7 +20,7 @@ const logger = require("../utils/logger");
  * @returns {void | import("express").Response | import("express").NextFunction}
  */
 async function login(req, res) {
-  const { email, password } = req.body;
+  const { email, password } = req.body.creds ?? {};
   if (!email | !password) {
     return errorResponse(res, "Bad request", 400);
   }
@@ -101,12 +101,12 @@ function logout(req, res, next) {
  * @returns {void | import("express").Response | import("express").NextFunction}
  */
 async function updatePassword(req, res, next) {
-  const { oldPassword, password, passwordConfirm } = req.body.creds;
+  const { oldPassword, password, passwordConfirm } = req.body.creds ?? {};
   if (!oldPassword) {
-    return errorResponse(res, "Old password is required!", 400);
+    return errorResponse(res, "'oldPassword' password is required!", 400);
   }
   if (password !== passwordConfirm) {
-    return errorResponse(res, "Password and password confiration do not match!", 400);
+    return errorResponse(res, "'password' and 'passwordConfirm' do not match!", 400);
   }
   try {
     const user = await User.findById(req.user._id).select("+password");
@@ -119,7 +119,6 @@ async function updatePassword(req, res, next) {
     req.body.creds = { email: user.email, password };
     return login(req, res, next);
   } catch (error) {
-    logger.error(error);
     return errorResponse(
       res,
       "Something went wrong on our side! Please contact support!",
@@ -163,17 +162,18 @@ async function forgotPassword(req, res, next) {
 
     const subject = "Baristica ⚙️ Reset Password";
 
-    const text = `Click to reset your password: ${resetURL}`;
+    const text = `Click to reset your password`;
 
     await sendEmail({
       to,
       subject,
       text,
-    });
+      link: resetURL,
+    }, null);
 
     return successResponse(res, "Reset password link sent to your email!", 200);
   } catch (error) {
-    return errorResponse(res, error.message, 500);
+    return errorResponse(res, error, 500);
   }
 }
 
@@ -186,7 +186,7 @@ async function forgotPassword(req, res, next) {
 async function resetPassword(req, res, next) {
   try {
     const { token } = req.params;
-    const { password, passwordConfirm } = req.body.creds;
+    const { password, passwordConfirm } = req.body.creds ?? {};
 
     if (password.length < 8 || passwordConfirm.length < 8) {
       return errorResponse(

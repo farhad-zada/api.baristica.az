@@ -18,11 +18,12 @@ const index = async (req, res) => {
 
     const orders = await Order.find({
       "customer.id": req.user._id,
+      status: { $nin: ["initiated", "cancelled by customer", "cancelled by baristica"]},
     })
       .skip(skip)
       .limit(pl)
       .populate("customer", "name email phone");
-    successResponse(res, orders, 200);
+    successResponse(res, { orders }, 200);
   } catch (error) {
     errorResponse(res, error.message, 500);
   }
@@ -48,7 +49,7 @@ const orderById = async (req, res) => {
       return errorResponse(res, "Not found", 404);
     }
 
-    successResponse(res, order, 200);
+    successResponse(res, { order }, 200);
   } catch (error) {
     errorResponse(res, error, 500);
   }
@@ -132,7 +133,7 @@ const updateOrder = async (req, res) => {
       new: true,
     });
 
-    successResponse(res, updatedOrder, 200);
+    successResponse(res, { updatedOrder }, 200);
   } catch (error) {
     if (error.name === "ValidationError") {
       return errorResponse(res, error.message, 400);
@@ -162,7 +163,7 @@ const deleteOrder = async (req, res) => {
   order.deleted = true;
   await order.save();
 
-  successResponse(res, "Order deleted successfully", 200);
+  successResponse(res, { message: "Order deleted successfully" }, 200);
 };
 
 /**
@@ -184,7 +185,7 @@ const orderPaid = async (req, res) => {
     await order.save();
 
     // here we will implement a direct to telegeam bot so the order will be sent to telegram group
-    successResponse(res, "Order paid successfully", 200);
+    successResponse(res, { message: "Order paid successfully" }, 200);
   } catch (error) {
     errorResponse(res, error.message, 500);
   }
@@ -202,7 +203,7 @@ const orderCheck = async (req, res) => {
       if (req.user) {
         req.user.statistics.weight += product.weight;
       }
-      
+
       await product.save({ validateBeforeSave: false });
     }
   });
@@ -212,7 +213,11 @@ const orderCheck = async (req, res) => {
     req.user.statistics.ordersCompleted += 1;
     await req.user.save();
   }
-  successResponse(res, "Thanks! It was a helpful data and signature!", 200);
+  successResponse(
+    res,
+    { message: "Thanks! It was a helpful data and signature!" },
+    200
+  );
 };
 
 module.exports = {
