@@ -1,10 +1,7 @@
 const { errorResponse } = require("../utils/responseHandlers");
-const Accessory = require("../models/accessory");
-const Coffee = require("../models/coffee");
-const Machine = require("../models/machine");
 const { Model } = require("mongoose");
 const findProductTypeFromId = require("../utils/findProductTypeFromId");
-const findProductModelFromId = require("../utils/findProductModelFromType");
+const findProductModelFromType = require("../utils/findProductModelFromType");
 
 /**
  * @param {import ('express').Request} req
@@ -12,8 +9,8 @@ const findProductModelFromId = require("../utils/findProductModelFromType");
  * @param {import ('express').NextFunction} next
  */
 function getProductModel(req, res, next) {
-  const productType = req.productType ?? req.body.productType;
-  req.Model = findProductModelFromId(productType);
+  const productType = req.productType ?? req.body.productType ?? "Coffee";
+  req.Model = findProductModelFromType(productType);
   next();
 }
 
