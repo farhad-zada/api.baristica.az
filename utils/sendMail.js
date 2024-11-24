@@ -14,7 +14,9 @@ module.exports = async (options, templatePath=null) => {
   templatePath = __dirname + "/../public/mailTemplates/forgotPassword.html";
   let emailTemplate = fs.readFileSync(templatePath, "utf8");
   emailTemplate = emailTemplate.replace("{{message}}", options.text);
-  emailTemplate = emailTemplate.replace("{{buttonLink}}", options.link);
+  if (options.link) {
+    emailTemplate = emailTemplate.replace("{{buttonLink}}", options.link);
+  }
   const mailOptions = {
     from: config.email_username,
     to: options.to,
