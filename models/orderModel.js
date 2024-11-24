@@ -160,6 +160,7 @@ const OrderSchema = new Schema(
     notes: {
       type: String,
     },
+    seen: [Number],
     deleted: {
       type: Boolean,
       default: false,
