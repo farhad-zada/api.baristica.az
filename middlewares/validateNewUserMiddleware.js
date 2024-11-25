@@ -9,11 +9,12 @@ const validator = require("validator");
 const validateNewUserMiddleware = async (req, res, next) => {
   try {
     const { email, password, passwordConfirm, name, lastname, phone, image } =
-      req.body;
+      req.body.creds;
+    console.log(1);
     if (!validator.isEmail(email)) {
       throw new Error("Invalid email");
     }
-    const user = await User.findOne({ email: req.body.email });
+    const user = await User.findOne({ email: email });
     if (user) {
       throw new Error("User with this email already exists!");
     }
@@ -44,7 +45,7 @@ const validateNewUserMiddleware = async (req, res, next) => {
     req.body.user.role = "default";
     next();
   } catch (error) {
-    errorResponse(res, error.message, 400);
+    errorResponse(res, error, 400);
   }
 };
 

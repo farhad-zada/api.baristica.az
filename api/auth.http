@@ -13,7 +13,7 @@ Content-Type: application/json
     "creds": {
         "name": "Farhad Seyfullazada",
         "phone": "+994557367002",
-        "email": "farhad.szd@gmail.com", 
+        "email": "farhadszd@gmail.com", 
         "password": "123492192",
         "passwordConfirm": "123492192"
     }

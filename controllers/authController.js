@@ -57,7 +57,10 @@ async function login(req, res) {
     expire: new Date(Date.now() + 10 * 12 * 30 * 24 * 60 * 60 * 1000), // 10 years
   });
 
-  return successResponse(res, { token }, 200);
+  user.password = undefined;
+  user.passwordConfirm = undefined;
+  
+  return successResponse(res, { token, user }, 200);
 }
 
 /**
