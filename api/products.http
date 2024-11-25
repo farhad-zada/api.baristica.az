@@ -23,7 +23,7 @@ GET {{root}}?ptp=Machine
 
 
 ### Find ceffees limit 5
-GET {{root}}?lt=5&pg=1&ptp=accessory
+GET {{root}}?lt=5&pg=1&ptp=Accessory
 Authorization: {{authToken}}
 
 
