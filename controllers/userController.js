@@ -30,10 +30,10 @@ async function updateMe(req, res, next) {
   try {
     const { name, lastname, phone, email } = req.body;
     if (phone && !validator.isMobilePhone(phone, "any")) {
-      return errorResponse(res, "Invalid phone number!", 400);
+      return errorResponse(res, `${phone} is not a valid phone number!`, 400);
     }
     if (email && !validator.isEmail(email)) {
-      return errorResponse(res, "Invalid email!", 400);
+      return errorResponse(res, `${email} is not a valid email address!`, 400);
     }
     const userData = { name, lastname, phone, email };
 
@@ -41,7 +41,7 @@ async function updateMe(req, res, next) {
       new: true,
       runValidators: true,
     }).select("+phone +email +name +role");
-    successResponse(res, userUpdated);
+    successResponse(res, {user: userUpdated});
   } catch (error) {
     errorResponse(res, error.message, 500);
   }
@@ -55,6 +55,9 @@ async function updateMe(req, res, next) {
  */
 const addAddress = async (req, res) => {
   try {
+    if (!req.body.address) {
+      return errorResponse(res, `address field is empty`, 400);
+    }
     const {
       city,
       street,
@@ -62,6 +65,9 @@ const addAddress = async (req, res) => {
       isPrimary,
     } = req.body.address;
     const user = req.user;
+    if (!city && !street && !apartment) {
+      return errorResponse("City, street or apartment should be provided!", 400);
+    }
     user.addresses.push({
       city,
       street,
@@ -95,6 +101,9 @@ const addAddress = async (req, res) => {
  */
 const updateAddress = async (req, res) => {
   try {
+    if (!req.body.address) {
+      return errorResponse(res, `address field is empty`, 400);
+    }
     const addressId  = req.params.id;
     const user = req.user;
 
