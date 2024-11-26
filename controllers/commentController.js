@@ -33,14 +33,16 @@ async function all(req, res) {
  */
 async function create(req, res, next) {
   try {
-    // TODO: add media handling
+    if (!req.body.comment) {
+      return errorResponse(res, `comment field is not provided!`, 400);
+    }
     let { text, productId, photourls } = req.body.comment;
     if (!productId) {
       return errorResponse(res, "Product ID not found!", 400);
     }
 
     if (!text) {
-      return errorResponse(res, "Cannot put an empty comment!", 400);
+      return errorResponse(res, "Cannot put an empty comment text!", 400);
     }
 
     if ((photourls != undefined) & !Array.isArray(photourls)) {
@@ -58,7 +60,7 @@ async function create(req, res, next) {
     const product = await connection.collection("products").findOne({_id: productId});
 
     if (!product) {
-      return errorResponse(res, "Product not found!", 404);
+      return errorResponse(res, "Product not found!" + `ID: ${productId}` , 404);
     }
     const comment = await Comment.create({
       user: req.user.id,
@@ -92,13 +94,13 @@ async function update(req, res, next) {
     }
 
     if (!validator.isMongoId(commentId)) {
-      return errorResponse(res, "Invalid comment id!", 400);
+      return errorResponse(res, `${commentId} is not a valid mongoDB id!`, 400);
     }
 
     const { text } = req.body;
 
     if (!text) {
-      return errorResponse(res, "Cannot put an empty comment!", 400);
+      return errorResponse(res, "Cannot put an empty comment text!", 400);
     }
 
     const comment = await Comment.findOne({
@@ -107,7 +109,7 @@ async function update(req, res, next) {
     });
 
     if (!comment) {
-      return errorResponse(res, "Comment not found!", 404);
+      return errorResponse(res, `Comment not found for this ID: ${commentId}`, 404);
     }
 
     comment.text = text;
@@ -139,7 +141,7 @@ async function remove(req, res, next) {
     }
 
     if (!validator.isMongoId(commentId)) {
-      return errorResponse(res, "Invalid comment id!", 400);
+      return errorResponse(res, `${commentId} is not a valid mongoDB id!`, 400);
     }
 
     const comment = await Comment.findOneAndDelete({

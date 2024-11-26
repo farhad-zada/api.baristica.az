@@ -34,7 +34,7 @@ const validateOrder = async (req, res, next) => {
 
     const items = await Promise.all(itemsPromises);
     if (items.some((item) => !item)) {
-      return errorResponse(res, "Invalid product id", 400);
+      return errorResponse(res, "Invalid product id provided!", 400);
     }
 
     req.body.order.items.map((item, idx) => {

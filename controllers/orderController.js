@@ -38,7 +38,7 @@ const orderById = async (req, res) => {
   try {
     const orderId = req.params.orderId;
     if (!validator.isMongoId(orderId)) {
-      return errorResponse(res, "Invalid id", 429);
+      return errorResponse(res, `ID: ${orderId} is not a valid ID!`, 429);
     }
     const order = await Order.find({
       _id: orderId,
@@ -46,7 +46,7 @@ const orderById = async (req, res) => {
     });
 
     if (!order) {
-      return errorResponse(res, "Not found", 404);
+      return errorResponse(res, `Order not found for ID: ${orderId}`, 404);
     }
 
     successResponse(res, { order }, 200);
@@ -106,41 +106,6 @@ const createOrder = async (req, res) => {
   successResponse(res, { order: newOrder, epoint: responseJson }, 201);
 };
 
-/**
- * @param {import ('express').Request} req
- * @param {import ('express').Response} res
- * @description The request is already validated by the middleware
- */
-const updateOrder = async (req, res) => {
-  try {
-    const orderId = req.params.orderId;
-    const status = req.body.order.status;
-    if (!status) {
-      return errorResponse(res, "Status is required", 400);
-    }
-    if (!validator.isMongoId(orderId)) {
-      return errorResponse(res, "Invalid id", 429);
-    }
-    const order = await Order.findById(orderId);
-    if (!order) {
-      return errorResponse(res, "Not found", 404);
-    }
-    order.status = status;
-    await order.validate();
-
-    const updatedOrder = await order.save({
-      validateBeforeSave: true,
-      new: true,
-    });
-
-    successResponse(res, { updatedOrder }, 200);
-  } catch (error) {
-    if (error.name === "ValidationError") {
-      return errorResponse(res, error.message, 400);
-    }
-    errorResponse(res, error.message, 500);
-  }
-};
 
 /**
  * @param {import ('express').Request} req
@@ -150,11 +115,11 @@ const updateOrder = async (req, res) => {
 const deleteOrder = async (req, res) => {
   const orderId = req.params.orderId;
   if (!validator.isMongoId(orderId)) {
-    return errorResponse(res, "Invalid id", 429);
+    return errorResponse(res, `ID: ${orderId} is not a valid MongoDB ID!`, 429);
   }
   const order = await Order.findById(orderId);
   if (!order) {
-    return errorResponse(res, "Not found", 404);
+    return errorResponse(res, `No order found for ID: ${orderId}`, 404);
   }
 
   if (order.customer.toString() !== req.user._id.toString()) {
@@ -175,11 +140,11 @@ const orderPaid = async (req, res) => {
   try {
     const { orderId } = req.body;
     if (!validator.isMongoId(orderId)) {
-      return errorResponse(res, "Invalid id", 429);
+      return errorResponse(res, `ID: ${orderId} is not a valid MongoDB ID!`, 429);
     }
     const order = await Order.findById(orderId);
     if (!order) {
-      return errorResponse(res, "Not found", 404);
+      return errorResponse(res, `No order found for ID: ${orderId}`, 404);
     }
     order.status = "paid";
     await order.save();
@@ -224,7 +189,6 @@ module.exports = {
   index,
   orderById,
   createOrder,
-  updateOrder,
   deleteOrder,
   orderPaid,
   orderCheck,
