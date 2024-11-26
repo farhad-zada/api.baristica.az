@@ -14,7 +14,7 @@ router.get("delivery/fee", (req, res) => {
   });
 });
 
-router.use("/media", require("./mediaRoutes"));
+router.use("/media", require("./mediaRoutes")); // done
 router.use("/products", require("./productRoutes"));
 router.use("/auth", require("./authRoutes"));
 router.use("/users", require("./userRoutes"));

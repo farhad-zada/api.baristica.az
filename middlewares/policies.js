@@ -10,12 +10,12 @@ const logger = require("../utils/logger");
 const restrictTo = (...roles) => {
   return (req, res, next) => {
     if (!req.user) {
-      return errorResponse(res, "Unauthorized access", 403);
+      return errorResponse(res, "Not logged in!", 403);
     } else if (!user.role) {
-      return errorResponse(res, "Unauthorized access", 403);
+      return errorResponse(res, "User roles are not defined!", 403);
     } else if (!roles.includes(req.user.role)) {
       logger.error("Unauthorized access");
-      return errorResponse(res, "Unauthorized access", 403);
+      return errorResponse(res, `Unauthorized access. User's role ${req.user.role} do not have the previleges to proceed this action!`, 403);
     }
     next();
   };
@@ -30,12 +30,12 @@ const restrictTo = (...roles) => {
 const allowTo = (...roles) => {
   return (req, res, next) => {
     if (!req.user) {
-      return errorResponse(res, "Unauthorized access", 403);
+      return errorResponse(res, "Not logged in!", 403);
     } else if (!req.user.role) {
-      return errorResponse(res, "Unauthorized access", 403);
+      return errorResponse(res, "User roles are not defined!", 403);
     } else if (!roles.includes(req.user.role)) {
       logger.error("Unauthorized access");
-      return errorResponse(res, "Unauthorized access", 403);
+      return errorResponse(res, "Unauthorized access. User's role do not have the previleges to proceed this action!", 403);
     }
     next();
   };
