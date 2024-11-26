@@ -50,6 +50,9 @@ async function findByProductId(req, res) {
  */
 async function addToCart(req, res) {
   try {
+    if (!req.body.product) {
+      return errorResponse(res, "product field should be provided.", 400);
+    }
     /**
      * @typedef {Object} _Product
      * @property {String} id
@@ -65,7 +68,7 @@ async function addToCart(req, res) {
       logger.error(
         "`id` and `quantity` is required!" + ` id: ${id}, quantity: ${quantity}`
       );
-      return errorResponse(res, "Bad request!", 400);
+      return errorResponse(res,  "`id` and `quantity` is required!" + ` id: ${id}, quantity: ${quantity}`, 400);
     }
 
     const productType = findProductTypeFromId(id);
@@ -100,6 +103,9 @@ async function addToCart(req, res) {
  */
 async function removeFromCart(req, res) {
   try {
+    if (!req.body.product) {
+      return errorResponse(res, "product field should be provided.", 400);
+    }
     /**
      * @type {String}
      */
@@ -111,7 +117,7 @@ async function removeFromCart(req, res) {
     const customer = req.user.id;
 
     if (!product | !customer) {
-      return errorResponse(res, "Bad request!", 400);
+      return errorResponse(res,  "`id` and `quantity` is required!" + ` id: ${id}, quantity: ${quantity}`, 400);
     }
     await Cart.findOneAndDelete({ product, customer });
     return successResponse(res, {
