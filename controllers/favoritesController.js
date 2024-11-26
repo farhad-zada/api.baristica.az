@@ -28,7 +28,10 @@ const populateProducts = async (favorites) => {
  */
 const allFavorites = async (req, res) => {
   try {
-    const favorites = await Favorite.find({ user: req.user.id }, {product: 1});
+    const favorites = await Favorite.find(
+      { user: req.user.id },
+      { product: 1 }
+    );
     const favoriteProducts = await populateProducts(favorites);
     successResponse(res, favoriteProducts, 200);
   } catch (error) {
@@ -48,7 +51,7 @@ const isFavorite = async (req, res) => {
       user: req.user.id,
       product: productId,
     });
-    successResponse(res, {is_favorite: favorite ? true : false});
+    successResponse(res, { is_favorite: favorite ? true : false });
   } catch (error) {
     errorResponse(res, error, 500);
   }
@@ -61,14 +64,20 @@ const isFavorite = async (req, res) => {
 const addFavorite = async (req, res) => {
   try {
     const productId = req.params.productId;
-
+    const favorite = Favorite.findOne({
+      user: req.user.id,
+      product: productId,
+    });
+    if (favorite) {
+      return successResponse(res, { favorite }, 201);
+    }
     const newFavorite = new Favorite({
       user: req.user.id,
       product: productId,
     });
 
     await newFavorite.save();
-    successResponse(res, newFavorite, 201);
+    successResponse(res, { favorite: newFavorite }, 201);
   } catch (error) {
     errorResponse(res, error, 500);
   }
