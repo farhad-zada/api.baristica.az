@@ -12,7 +12,7 @@ GET {{root}}
 
 
 ### find accessories
-GET {{root}}?ptp=accessory
+GET {{root}}?ptp=Accessory
 
 
 

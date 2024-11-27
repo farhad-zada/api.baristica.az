@@ -18,9 +18,9 @@ async function all(req, res) {
 
   let comments = [];
   if (product) {
-    comments = await Comment.find({ product });
+    comments = await Comment.find({ product }).populate("user", "name").exec();
   } else if (req.user) {
-    comments = await Comment.find({ user: req.user.id }).skip(skip).limit(lt);
+    comments = await Comment.find({ user: req.user.id }).populate("user", "name").skip(skip).limit(lt).exec();
   }
 
   return successResponse(res, { comments }, 200);
