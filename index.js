@@ -25,16 +25,11 @@ mongoose
     console.log("Successfully connected to the database");
 
     app.use(cookieParser());
-    app.use(cors({
-      origin: (origin, callback) => {
-        if (!origin || process.env.ALLOWED_ORIGINS.split(",").includes(origin)) {
-          callback(null, true);
-        } else {
-          callback(new Error("Not allowed by CORS"));
-        }
-      },
-      credentials: true,
-    }));
+    app.use(
+      cors({
+        origin: "*",
+      })
+    );
     app.use(
       helmet({
         contentSecurityPolicy: false, // Disable CSP if it's conflicting
