@@ -53,8 +53,7 @@ Authorization: {{authToken}}
 ### get my comments on a product
 
 # @name myCommentsOnProduct
-
-GET {{root}}/coffee_2d7b2a4f-13b8-4cd5-9562-83feb7825beb
+GET {{root}}/coffee_34713695-619c-4062-8db1-05c4f30a642d
 Content-Type: application/json
 Authorization: {{authToken}}
 
