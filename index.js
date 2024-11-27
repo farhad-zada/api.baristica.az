@@ -11,6 +11,7 @@ const logger = require("./utils/logger");
 const bot = require("./telegram");
 config.validateConfig(config);
 const uri = config.db_uri();
+require("dotenv").config();
 
 mongoose
   .connect(uri, {
@@ -24,8 +25,21 @@ mongoose
     console.log("Successfully connected to the database");
 
     app.use(cookieParser());
-    app.use(cors());
-    app.use(helmet());
+    app.use(cors({
+      origin: (origin, callback) => {
+        if (!origin || process.env.ALLOWED_ORIGINS.split(",").includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error("Not allowed by CORS"));
+        }
+      },
+      credentials: true,
+    }));
+    app.use(
+      helmet({
+        contentSecurityPolicy: false, // Disable CSP if it's conflicting
+      })
+    );
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json());
     app.use(mongoSanitize());
