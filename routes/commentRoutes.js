@@ -9,9 +9,9 @@ const {
   remove,
 } = require("../controllers/commentController");
 
+router.get("/:productId", auth(true), checkQueryString, all);
 router.use(auth());
 router.get("/", auth(), checkQueryString, all);
-router.get("/:productId", checkQueryString, all);
 router.post("/", auth(), create);
 router.patch("/:id", auth(), update);
 router.delete("/:id", auth(), remove);

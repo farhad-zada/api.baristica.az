@@ -1,0 +1,17 @@
+@root = {{baseUrl}}/media
+
+@authToken = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzM2ZTIzYzljMWU5NjdmOWNlMGI5ODMiLCJlbWFpbCI6ImZhcmhhZEBnbWFpbC5jb20iLCJpYXQiOjE3MzE2NTAxMDksImV4cCI6MTczOTQyNjEwOX0.8krrYm5SnZJo7DzAtDgGI_Wp742OyeaTtBI00qFAhAk
+
+
+### upload
+# @name upload
+POST {{baseUrl}}/media
+Authorization: {{authToken}}
+Content-Type: multipart/form-data; boundary=boundary123
+
+--boundary123
+Content-Disposition: form-data; name="photos"; filename="0c7ad0a8caf5fb7109eb737a4028375c.jpg"
+Content-Type: image/jpeg
+
+< /Users/nous/nebula/baristica/api.baristica.az/api/media/0c7ad0a8caf5fb7109eb737a4028375c.jpg
+--boundary123--
