@@ -10,13 +10,12 @@ const {
   index,
   orderById,
   createOrder,
-  updateOrder,
   deleteOrder,
   orderCheck,
 } = require("../controllers/orderController");
 const { allowTo } = require("../middlewares/policies");
 
-// router.post("/check", checkSignature, confirmStatus, orderCheck);
+router.post("/check", checkSignature, confirmStatus, orderCheck);
 
 router.use(auth()); // all authenticated
 
@@ -26,7 +25,6 @@ router.post("/", validateOrder, createOrder); // product ids, product quantities
 
 router.use(allowTo("baristica", "admin", "superadmin")); // admin routes
 
-router.patch("/:orderId", updateOrder);
-router.delete("/:orderId", deleteOrder);
+// router.delete("/:orderId", deleteOrder);
 
 module.exports = router;

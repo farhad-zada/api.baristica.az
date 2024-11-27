@@ -23,7 +23,7 @@ router.post(
   "/",
   auth(),
   allowTo("baristica", "admin", "superadmin"),
-  allowedProducts("coffee", "accessory", "machine"),
+  allowedProducts("Coffee", "Accessory", "Machine"),
   getProductModel,
   productController.createProduct
 );

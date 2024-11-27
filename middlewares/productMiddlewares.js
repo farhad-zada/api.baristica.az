@@ -42,7 +42,7 @@ const allowedProducts =
       return next();
     }
 
-    return errorResponse(res, "This product type is not supported!", 400);
+    return errorResponse(res, "This product type is not supported! Supported product types are Coffee, Accessory, Machine. Case sencitive!", 400);
   };
 
 /**
@@ -112,7 +112,7 @@ const checkQueryString = (req, res, next) => {
 
   if (pg) {
     if (isNaN(pg) || pg < 1 || pg > 20) {
-      return errorResponse(res, "Invalid page", 400);
+      return errorResponse(res, "Invalid page. Page should be in range {1..20}", 400);
     }
   } else {
     req.query.pg = 1;
@@ -120,14 +120,14 @@ const checkQueryString = (req, res, next) => {
 
   if (lt) {
     if (isNaN(lt) || lt < 5 || lt > 50) {
-      return errorResponse(res, "Invalid limit", 400);
+      return errorResponse(res, "Invalid limit. Limit should be in range {5...50}", 400);
     }
   } else {
     req.query.lt = 10;
   }
   if (ptp) {
     if (!["Coffee", "Machine", "Accessory"].includes(ptp)) {
-      return errorResponse(res, "Invalid product type", 400);
+      return errorResponse(res, "Invalid product type. Valid product types are 'Coffee', 'Accessory', 'Machine'. Case sencitive!", 400);
     }
     req.productType = ptp;
   } else {
@@ -164,7 +164,7 @@ const attachProduct = async (req, res, next) => {
   const product = await Model.findOne({ _id: productId });
 
   if (!product) {
-    return errorResponse(res, "Product not found!", 404);
+    return errorResponse(res, "No product found for ID provided!", 404);
   }
 
   req.product = product;

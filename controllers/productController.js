@@ -22,7 +22,7 @@ const findAll = async (req, res) => {
     }
 
     const products = await Model.find(ptp ? { productType: ptp } : {})
-      .sort({ [key]: -1 }) 
+      .sort({ [key]: -1 })
       .skip(skip)
       .limit(lt)
       .lean();
@@ -61,7 +61,7 @@ const findById = async (req, res) => {
     const productId = req.params.id;
     const product = await Model.findById(productId).lean();
     if (!product) {
-      return errorResponse(res, "Not found!", 404);
+      return errorResponse(res, "No product found for the ID provided!", 404);
     }
 
     if (req.user !== undefined) {
@@ -87,7 +87,7 @@ const createProduct = async (req, res) => {
     const Model = req.Model;
     const product = new Model(req.body.product);
     await product.save();
-    successResponse(res, {product});
+    successResponse(res, { product });
   } catch (error) {
     errorResponse(res, error, 500);
   }
@@ -108,7 +108,7 @@ const updateProduct = async (req, res) => {
       { runValidators: true, new: true }
     );
     if (!productUpdated) {
-      return errorResponse(res, "Not found!", 404);
+      return errorResponse(res, "Not product found for the ID provided!", 404);
     }
     successResponse(res, productUpdated);
   } catch (error) {
@@ -127,7 +127,11 @@ const linkProducts = async (req, res) => {
     const thisProductId = req.params.id;
     const { product: otherProductId, field } = req.body.link;
     if (!otherProductId || !field) {
-      return errorResponse(res, "Bad request!", 400);
+      return errorResponse(
+        res,
+        "Bad request! `otherProductId` or `field` is not provided!",
+        400
+      );
     }
 
     const thisProduct = await Model.findById(thisProductId);
@@ -156,7 +160,11 @@ const linkProducts = async (req, res) => {
       linkTo(otherProduct, thisProductId, field, thisFieldValue),
     ]);
 
-    return successResponse(res, "linked successfully!", 200);
+    return successResponse(
+      res,
+      { message: "Linked successfully!", thisProduct, otherProduct },
+      200
+    );
   } catch (error) {
     errorResponse(res, error.message, 500);
   }
@@ -227,7 +235,7 @@ const removeLink = async (req, res) => {
 
     await thisProduct.save();
   } else {
-    return errorResponse(res, "No links found!", 404);
+    return errorResponse(res, "These products are not linked!", 404);
   }
 
   /**
@@ -260,7 +268,11 @@ const removeLink = async (req, res) => {
     );
   }
 
-  return successResponse(res, "Unlinked successfully!", 200);
+  return successResponse(
+    res,
+    { message: "Unlinked successfully!", thisProduct, otherProduct },
+    200
+  );
 };
 /**
  * @param {import ('express').Request} req
@@ -277,7 +289,7 @@ const deleteProduct = async (req, res) => {
     });
 
     if (!productDeleted) {
-      return errorResponse(res, "Not found!", 404);
+      return errorResponse(res, "No product found for ID provided!", 404);
     }
     successResponse(res, "Product deleted successfully");
   } catch (error) {

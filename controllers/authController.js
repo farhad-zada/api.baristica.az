@@ -20,13 +20,20 @@ const logger = require("../utils/logger");
  * @returns {void | import("express").Response | import("express").NextFunction}
  */
 async function login(req, res) {
-  const { email, password } = req.body.creds ?? {};
-  if (!email | !password) {
-    return errorResponse(res, "Bad request", 400);
+  if (!req.body.creds) {
+    return errorRespnonse(res, "Credentials should be provided under 'creds' field.", 400);
   }
+  const { email, password } = req.body.creds ?? {};
+  if (!email) {
+    return errorResponse(res, `"email" is not provided!`, 400);
+  }
+  if (!password) {
+    return errorResponse(res, `"password" is not provided!`, 400);
+  }
+
   const user = await User.findOne({ email }).select("+password");
   if (!user) {
-    return errorResponse(res, "User not found!", 404);
+    return errorResponse(res, `No user found for this email: "${email}"!`, 404);
   }
   const validPassword = await bcrypt.compare(password, user.password);
   if (!validPassword) {
@@ -108,6 +115,12 @@ async function updatePassword(req, res, next) {
   if (!oldPassword) {
     return errorResponse(res, "'oldPassword' password is required!", 400);
   }
+  if (!password) {
+    return errorResponse(res, "'password' password is required!", 400);
+  }
+  if (!passwordConfirm) {
+    return errorResponse(res, "'passwordConfirm' password is required!", 400);
+  }
   if (password !== passwordConfirm) {
     return errorResponse(res, "'password' and 'passwordConfirm' do not match!", 400);
   }
@@ -115,7 +128,7 @@ async function updatePassword(req, res, next) {
     const user = await User.findById(req.user._id).select("+password");
     const passwordIsValid = await bcrypt.compare(password, user.password);
     if (passwordIsValid) {
-      return errorResponse(res, "New password should be different!", 400);
+      return errorResponse(res, "New password should be different than previous password!", 400);
     }
     user.password = password;
     await user.save();
@@ -140,12 +153,12 @@ async function forgotPassword(req, res, next) {
   try {
     const { email } = req.body;
     if (!validator.isEmail(email)) {
-      return errorResponse(res, "Invalid email!", 400);
+      return errorResponse(res, `"${email}" is not a valid email!`, 400);
     }
 
     const user = await User.findOne({ email });
     if (!user) {
-      return errorResponse(res, "User not found!", 404);
+      return errorResponse(res, `No user found for this email: ${email}`, 404);
     }
 
     const resetToken = crypto.randomBytes(32).toString("hex");
@@ -174,7 +187,7 @@ async function forgotPassword(req, res, next) {
       link: resetURL,
     }, null);
 
-    return successResponse(res, "Reset password link sent to your email!", 200);
+    return successResponse(res, {message: "Reset password link sent to your email!"}, 200);
   } catch (error) {
     return errorResponse(res, error, 500);
   }
@@ -189,6 +202,12 @@ async function forgotPassword(req, res, next) {
 async function resetPassword(req, res, next) {
   try {
     const { token } = req.params;
+    if  (!token) {
+      return errorResponse(res, `"token" not provided`, 400);
+    }
+    if (req.body.creds) {
+      return errorResponse(res, `Credentials should be provided under 'creds' field.`, 400);
+    }
     const { password, passwordConfirm } = req.body.creds ?? {};
 
     if (password.length < 8 || passwordConfirm.length < 8) {
@@ -199,7 +218,7 @@ async function resetPassword(req, res, next) {
       );
     }
     if (password !== passwordConfirm) {
-      return errorResponse(res, "Passwords do not match!", 400);
+      return errorResponse(res, "Password and password confirmation do not match!", 400);
     }
 
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
@@ -209,7 +228,7 @@ async function resetPassword(req, res, next) {
     }).select("+email");
 
     if (!user) {
-      return errorResponse(res, "Url is invalid or has expired!", 400);
+      return errorResponse(res, "Reset token is invalid or has expired!", 400);
     }
     user.password = password;
     user.resetPasswordToken = undefined;
