@@ -49,7 +49,7 @@ async function create(req, res, next) {
       return errorResponse(res, `'photourls' must be array of URLs!`, 400);
     }
 
-    const urlRegex = /^https:\/\/baristica\.az\/md\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\.[a-zA-Z0-9]+$/i;
+    const urlRegex = /^https:\/\/api\.baristica\.az\/md\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\.[a-zA-Z0-9]+$/i;
 
     for (url of photourls) {
       if (!urlRegex.test(url)) {
