@@ -15,3 +15,9 @@ Content-Type: image/jpeg
 
 < /Users/nous/nebula/baristica/api.baristica.az/api/media/0c7ad0a8caf5fb7109eb737a4028375c.jpg
 --boundary123--
+
+
+### get images 
+
+# @name list
+GET http://127.0.0.1:8181/md/e7b5004b-7c8e-472e-a629-573a295a3d4f.jpeg
