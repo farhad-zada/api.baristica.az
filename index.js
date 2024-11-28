@@ -29,6 +29,8 @@ mongoose
     app.use(
       cors({
         origin: "*",
+        allowedHeaders: ["Content-Type", "Authorization"],
+        exposedHeaders: ["Cross-Origin-Resource-Policy"], // If needed
       })
     );
     app.use(
@@ -47,7 +49,14 @@ mongoose
     // Serve static files in /md from the images directory
     const imagesPath = path.join(__dirname, "public/images");
 
-    app.use("/md", express.static(imagesPath));
+    app.use(
+      "/md",
+      (req, res, next) => {
+        res.setHeader("Cross-Origin-Resource-Policy", "cross-origin"); // Allow cross-origin access
+        next();
+      },
+      express.static(imagesPath)
+    );
 
     app.use("/api/v1", require("./routes/api"));
 
