@@ -24,7 +24,7 @@ module.exports = (req, res) => {
     logger.info("[New Image] " + fileOut);
 
     sharp(photo.buffer).resize(media.width, media.height).toFile(fileOut);
-    const photourl = `https://baristica.az/md/${photoName}`;
+    const photourl = `https://api.baristica.az/md/${photoName}`;
     const {originalname} = photo;
     return { originalname, photourl };
   });
