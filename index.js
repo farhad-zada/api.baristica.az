@@ -9,6 +9,7 @@ const app = express();
 const config = require("./config");
 const logger = require("./utils/logger");
 const bot = require("./telegram");
+const path = require("path");
 config.validateConfig(config);
 const uri = config.db_uri();
 require("dotenv").config();
@@ -42,6 +43,11 @@ mongoose
       logger.info(`${req.ip} ${req.method} ${req.url}`);
       next();
     });
+
+    // Serve static files in /md from the images directory
+    const imagesPath = path.join(__dirname, "public/images");
+
+    app.use("/md", express.static(imagesPath));
 
     app.use("/api/v1", require("./routes/api"));
 
