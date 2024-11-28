@@ -20,4 +20,4 @@ Content-Type: image/jpeg
 ### get images 
 
 # @name list
-GET http://127.0.0.1:8181/md/e7b5004b-7c8e-472e-a629-573a295a3d4f.jpeg
+GET https://api.baristica.az/md/d7a1db7f-abcd-49de-bbfa-6ad0af29e211.png

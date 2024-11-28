@@ -30,7 +30,7 @@ Content-Type: application/json
 Authorization: {{authToken}}
 
 {
-    "productType": "coffee",
+    "productType": "Coffee",
     "product": {
         "code":  "F20001", 
         "category": "filter", 

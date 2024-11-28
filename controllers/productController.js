@@ -2,7 +2,9 @@ const { successResponse, errorResponse } = require("../utils/responseHandlers");
 const { Document, Model, connection } = require("mongoose");
 const Favorite = require("../models/favorites");
 const logger = require("../utils/logger");
-const Product = require("../models/productModel");
+const { v4: uuidv4 } = require("uuid"); // For generating unique IDs
+const humanReadableError = require("../utils/humanReadableError");
+
 
 /**
  * @param {import ('express').Request} req
@@ -85,11 +87,14 @@ const findById = async (req, res) => {
 const createProduct = async (req, res) => {
   try {
     const Model = req.Model;
-    const product = new Model(req.body.product);
-    await product.save();
+    const id = `${req.body.productType.toLowerCase()}_${uuidv4()}`
+    req.body.product._id = id;
+    const product = await Model.create(req.body.product);
+    // await product.save();
     successResponse(res, { product });
   } catch (error) {
-    errorResponse(res, error, 500);
+    console.log(error)
+    errorResponse(res, erorr, 500);
   }
 };
 
