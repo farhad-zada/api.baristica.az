@@ -29,7 +29,6 @@ mongoose
     app.use(
       cors({
         origin: "*",
-        allowedHeaders: ["Content-Type", "Authorization"],
         exposedHeaders: ["Cross-Origin-Resource-Policy"], // If needed
       })
     );
