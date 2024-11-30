@@ -29,10 +29,11 @@ const errorResponse = (res, message, statusCode = 500) => {
  * @param {Object} data - Response data
  * @param {number} [statusCode=200] - HTTP status code
  */
-const successResponse = (res, data, statusCode = 200) => {
+const successResponse = (res, data, statusCode = 200, count = null) => {
   return res.status(statusCode).json({
     success: true,
     data,
+    count: count
   });
 };
 

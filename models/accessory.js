@@ -14,7 +14,7 @@ const accessorySchema = new Schema(
       type: String,
       required: [true, "A valid category must be provided!"],
       index: true, 
-      enum: ["barista", "scale", "brewing", "kettle", "tableware"],
+      enum: ["barista", "scale", "for brewing", "teapot", "tableware", "grinder"],
     },
     deletedAt: {
       type: Date,

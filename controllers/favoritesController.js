@@ -64,7 +64,7 @@ const isFavorite = async (req, res) => {
 const addFavorite = async (req, res) => {
   try {
     const productId = req.params.productId;
-    const favorite = Favorite.findOne({
+    const favorite = await Favorite.findOne({
       user: req.user.id,
       product: productId,
     });

@@ -1,7 +1,7 @@
 module.exports = {
     en: {
       type: String,
-      required: true,
+      // required: true,
     },
     ru: {
       type: String,
