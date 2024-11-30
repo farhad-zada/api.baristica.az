@@ -28,6 +28,7 @@ const findAll = async (req, res) => {
       .skip(skip)
       .limit(lt)
       .lean();
+    const count = await Model.countDocuments();
 
     if (req.user !== undefined) {
       const favorites = await Favorite.find({
@@ -46,8 +47,9 @@ const findAll = async (req, res) => {
       });
     }
 
-    successResponse(res, products, 200);
+    successResponse(res, products, 200, count);
   } catch (error) {
+    console.log(error)
     errorResponse(res, error, 500);
   }
 };

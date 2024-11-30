@@ -1,13 +1,13 @@
 @root = {{baseUrl}}/favorites
 @authToken = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzM2ZTIzYzljMWU5NjdmOWNlMGI5ODMiLCJlbWFpbCI6ImZhcmhhZEBnbWFpbC5jb20iLCJpYXQiOjE3MzE2NTAxMDksImV4cCI6MTczOTQyNjEwOX0.8krrYm5SnZJo7DzAtDgGI_Wp742OyeaTtBI00qFAhAk
 
-@productId = coffee_34713695-619c-4062-8db1-05c4f30a642d
+@productId = coffee_f306c828-0674-4367-8d1d-26cd34896fb2
 
 
 ### add a product to favorites
 
 # @name addFav
-POST {{root}}/accessory_e78520ba-24d7-4926-8355-9f3befde9c07
+POST {{root}}/coffee_f306c828-0674-4367-8d1d-26cd34896fb2
 
 
 
@@ -16,7 +16,7 @@ POST {{root}}/accessory_e78520ba-24d7-4926-8355-9f3befde9c07
 ### remove a product from favorites
 
 # @name rmFav
-DELETE {{root}}/accessory_e78520ba-24d7-4926-8355-9f3befde9c07
+DELETE {{root}}/{{productId}}
 
 
 
@@ -36,17 +36,3 @@ GET {{root}}
 GET {{root}}/{{productId}}
 
 
-
-
-### add favorite
-
-# @name @addFav
-POST {{root}}/{{productId}}
-
-
-
-
-### remove favorite
-
-# @name @rmFav
-DELETE {{root}}/{{productId}}

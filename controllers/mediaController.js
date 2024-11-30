@@ -1,13 +1,12 @@
 const sharp = require("sharp");
 const { successResponse } = require("../utils/responseHandlers");
 const { v4: uuidv4 } = require("uuid"); // For generating unique IDs
-const {media} = require('../config');
+const { media } = require("../config");
 const logger = require("../utils/logger");
 
-
 /**
- * @param {import('express').Request} req 
- * @param {import('express').Response} res 
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
  * @returns {Function}
  */
 module.exports = (req, res) => {
@@ -23,9 +22,16 @@ module.exports = (req, res) => {
 
     logger.info("[New Image] " + fileOut);
 
-    sharp(photo.buffer).resize(media.width, media.height).toFile(fileOut);
+    if (extension === "png") {
+      sharp(photo.buffer)
+        .resize(media.width, media.height)
+        .png({ force: true })
+        .toFile(fileOut);
+    } else {
+      sharp(photo.buffer).resize(media.width, media.height).toFile(fileOut);
+    }
     const photourl = `https://api.baristica.az/md/${photoName}`;
-    const {originalname} = photo;
+    const { originalname } = photo;
     return { originalname, photourl };
   });
 
