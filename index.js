@@ -29,7 +29,7 @@ mongoose
     app.use(
       cors({
         origin: "*",
-        exposedHeaders: ["Cross-Origin-Resource-Policy"], // If needed
+        optionsSuccessStatus: 200
       })
     );
     app.use(

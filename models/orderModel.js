@@ -60,6 +60,11 @@ const deliveryRequiredField = function () {
   return this.deliveryMethod === "delivery";
 };
 
+
+const cardRequiredField = function () {
+  return this.paymentMethod === "card";
+}
+
 const OrderSchema = new Schema(
   {
     customer: {
@@ -132,6 +137,12 @@ const OrderSchema = new Schema(
         message: (props) => `${props.value} is not a valid delivery fee!`,
       },
     },
+    paymentMethod: {
+      type: String, 
+      required: true, 
+      enum: ["cash", "card"],
+      index: true
+    },
     language: {
       type: String,
       enum: ["az", "en", "ru"],
@@ -141,6 +152,7 @@ const OrderSchema = new Schema(
       type: String,
       enum: [
         "initiated",
+        "card",
         "paid",
         "delivered",
         "cancelled by customer",
@@ -149,13 +161,7 @@ const OrderSchema = new Schema(
       default: "initiated",
     },
     transaction: {
-      type: String,
-      required: [
-        function () {
-          this.status !== "initiated";
-        },
-        "Transaction is required!",
-      ],
+      type: String
     },
     notes: {
       type: String,

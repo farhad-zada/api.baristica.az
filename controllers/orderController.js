@@ -6,6 +6,10 @@ const crypto = require("crypto");
 const config = require("../config");
 const Product = require("../models/productModel");
 
+
+
+
+
 /**
  * @param {import ('express').Request} req
  * @param {import ('express').Response} res
@@ -63,7 +67,13 @@ const orderById = async (req, res) => {
 const createOrder = async (req, res) => {
   const order = req.body.order;
   const newOrder = new Order(order);
+  if (order.paymentMethod == "card") {
+    order.status = "card";
+    await newOrder.save();
+    return successResponse(res, {order: newOrder, redirect: "https://baristica.az/success"});
+  }
   await newOrder.save();
+
   let amount = newOrder.totalCost / 100;
   if (process.env.NODE_ENV === "development") {
     amount = amount / 100;
@@ -102,8 +112,8 @@ const createOrder = async (req, res) => {
   logger.info(`Response: ${JSON.stringify(responseJson)}`);
   newOrder.transaction = responseJson.transaction;
   await newOrder.save();
-  newOrder.transaction = undefined;
-  successResponse(res, { order: newOrder, epoint: responseJson }, 201);
+  newOrder.transaction = undefined; 
+  successResponse(res, { order: newOrder, redirect: responseJson }, 201);
 };
 
 
