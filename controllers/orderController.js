@@ -67,8 +67,8 @@ const orderById = async (req, res) => {
 const createOrder = async (req, res) => {
   const order = req.body.order;
   const newOrder = new Order(order);
-  if (order.paymentMethod == "card") {
-    order.status = "card";
+  if (order.paymentMethod == "cash") {
+    order.status = "cash";
     await newOrder.save();
     return successResponse(res, {order: newOrder, redirect: "https://baristica.az/success"});
   }

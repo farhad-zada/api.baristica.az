@@ -2,12 +2,48 @@
 
 @root = {{baseUrl}}/orders
 
-
+@productA = coffee_85b5ee47-a732-4d19-aed8-ec93eb80a108
+@productB = accessory_7e6d3080-1f15-4fff-ac12-6a95c8d1f8dd
 
 ### create a new order
+@deliveryAddress = 67388a335a6eddd19fa90f4f
 
-@productA = coffee_34713695-619c-4062-8db1-05c4f30a642d
-@productB = coffee_fb01864d-893b-441d-8589-1579437735cd
+# @name order
+POST {{root}}
+Content-Type: application/json
+Authorization: {{authToken}}
+
+{
+    "language": "en",
+    "order": {
+        "customer": {
+            "name": "Farhad Seyfulla",
+            "phone": "+994557367001"
+        },
+        "deliveryMethod": "delivery",
+        "deliveryAddress": "{{deliveryAddress}}",
+        "deliveryHour": "15:00", 
+        "deliveryDate": "2024-12-03",
+        "paymentMethod": "card",
+        "items": [
+            {
+                "product": "{{productA}}",
+                "quantity": 1
+            },
+            {
+                "product": "{{productB}}",
+                "quantity": 2
+            }
+        ]
+    }
+}
+
+
+
+
+
+
+### create a new delivery order
 
 # @name order
 POST {{root}}
@@ -22,12 +58,9 @@ Authorization: {{authToken}}
             "phone": "+994557367001"
         },
         "deliveryMethod": "pickup",
+        "paymentMethod": "cash",
         
         "items": [
-            {
-                "product": "{{productA}}",
-                "quantity": 1
-            },
             {
                 "product": "{{productB}}",
                 "quantity": 2
