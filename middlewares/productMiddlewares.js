@@ -111,7 +111,7 @@ const checkQueryString = (req, res, next) => {
   const { pg, lt, ptp } = req.query;
 
   if (pg) {
-    if (isNaN(pg) || pg < 1 || pg > 20) {
+    if (isNaN(pg) || pg < 1 || pg > 200) {
       return errorResponse(res, "Invalid page. Page should be in range {1..20}", 400);
     }
   } else {
@@ -119,11 +119,11 @@ const checkQueryString = (req, res, next) => {
   }
 
   if (lt) {
-    if (isNaN(lt) || lt < 5 || lt > 50) {
+    if (isNaN(lt) || lt < 2 || lt > 500) {
       return errorResponse(res, "Invalid limit. Limit should be in range {5...50}", 400);
     }
   } else {
-    req.query.lt = 10;
+    req.query.lt = 5;
   }
   if (ptp) {
     if (!["Coffee", "Machine", "Accessory"].includes(ptp)) {

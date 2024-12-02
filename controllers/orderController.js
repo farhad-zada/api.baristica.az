@@ -6,10 +6,6 @@ const crypto = require("crypto");
 const config = require("../config");
 const Product = require("../models/productModel");
 
-
-
-
-
 /**
  * @param {import ('express').Request} req
  * @param {import ('express').Response} res
@@ -20,14 +16,19 @@ const index = async (req, res) => {
     let { pg, pl } = req.query;
     const skip = (pg - 1) * pl;
 
-    const orders = await Order.find({
+    const filter = {
       "customer.id": req.user._id,
-      status: { $nin: ["initiated", "cancelled by customer", "cancelled by baristica"]},
-    })
+      status: {
+        $nin: ["initiated", "cancelled by customer", "cancelled by baristica"],
+      },
+    };
+    const orders = await Order.find(filter)
       .skip(skip)
       .limit(pl)
       .populate("customer", "name email phone");
-    successResponse(res, { orders }, 200);
+    const count = await Order.countDocuments(filter);
+    const pagesCount = Math.ceil(count / lt);
+    successResponse(res, { orders }, 200, count, pagesCount);
   } catch (error) {
     errorResponse(res, error.message, 500);
   }
@@ -70,7 +71,10 @@ const createOrder = async (req, res) => {
   if (order.paymentMethod == "cash") {
     order.status = "cash";
     await newOrder.save();
-    return successResponse(res, {order: newOrder, redirect: "https://baristica.az/success"});
+    return successResponse(res, {
+      order: newOrder,
+      redirect: "https://baristica.az/success",
+    });
   }
   await newOrder.save();
 
@@ -112,10 +116,9 @@ const createOrder = async (req, res) => {
   logger.info(`Response: ${JSON.stringify(responseJson)}`);
   newOrder.transaction = responseJson.transaction;
   await newOrder.save();
-  newOrder.transaction = undefined; 
+  newOrder.transaction = undefined;
   successResponse(res, { order: newOrder, redirect: responseJson }, 201);
 };
-
 
 /**
  * @param {import ('express').Request} req
@@ -150,7 +153,11 @@ const orderPaid = async (req, res) => {
   try {
     const { orderId } = req.body;
     if (!validator.isMongoId(orderId)) {
-      return errorResponse(res, `ID: ${orderId} is not a valid MongoDB ID!`, 429);
+      return errorResponse(
+        res,
+        `ID: ${orderId} is not a valid MongoDB ID!`,
+        429
+      );
     }
     const order = await Order.findById(orderId);
     if (!order) {
