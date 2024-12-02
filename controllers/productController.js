@@ -46,8 +46,9 @@ const findAll = async (req, res) => {
         }
       });
     }
+    const pagesCount = Math.ceil(count / lt);
 
-    successResponse(res, products, 200, count, pg);
+    successResponse(res, products, 200, count, pagesCount);
   } catch (error) {
     console.log(error)
     errorResponse(res, error, 500);

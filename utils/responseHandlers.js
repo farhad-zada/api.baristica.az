@@ -29,12 +29,12 @@ const errorResponse = (res, message, statusCode = 500) => {
  * @param {Object} data - Response data
  * @param {number} [statusCode=200] - HTTP status code
  */
-const successResponse = (res, data, statusCode = 200, count = null, page = null) => {
+const successResponse = (res, data, statusCode = 200, count = null, pageCount = null) => {
   return res.status(statusCode).json({
     success: true,
     data,
     count: count, 
-    page: page
+    page_count: pageCount
   });
 };
 

@@ -14,8 +14,8 @@ Authorization: {{authToken}}
 {
     "comment": {
         "text": "Nice coffee!", 
-        "photourls": ["https://baristica.az/md/550e8400-e29b-41d4-a716-446655440000.png"], 
-        "productId": "coffee_34713695-619c-4062-8db1-05c4f30a642d"
+        "photourls": [],
+        "productId": "coffee_b2c4774c-41b1-4946-8937-61431af57594"
     }
 }
 

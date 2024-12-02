@@ -4,6 +4,8 @@ const Product = require("../models/productModel");
 const { errorResponse, successResponse } = require("../utils/responseHandlers");
 const logger = require("../utils/logger");
 const { connection } = require("mongoose");
+const findProductModelFromType = require("../utils/findProductModelFromType");
+const findProductTypeFromId = require("../utils/findProductTypeFromId");
 
 /**
  * @param {import('express').Request} req
@@ -18,9 +20,24 @@ async function all(req, res) {
 
   let comments = [];
   if (product) {
-    comments = await Comment.find({ product }).populate("user", "name").exec();
+    comments = await Comment.find({ product })
+      .populate("user", "name")
+      .skip(skip)
+      .limit(lt)
+      .exec();
   } else if (req.user) {
-    comments = await Comment.find({ user: req.user.id }).populate("user", "name").skip(skip).limit(lt).exec();
+    comments = await Comment.find({ user: req.user.id })
+      .populate("user", "name")
+      .skip(skip)
+      .limit(lt)
+      .exec();
+  }
+
+  for (let i = 0; i < comments.length; i++) {
+    let Model = findProductModelFromType(findProductTypeFromId(comments[i].product));
+    comments[i].product = await Model.findById(comments[i].product);
+    console.log(comments[i].product);
+
   }
 
   return successResponse(res, { comments }, 200);
@@ -49,7 +66,8 @@ async function create(req, res, next) {
       return errorResponse(res, `'photourls' must be array of URLs!`, 400);
     }
 
-    const urlRegex = /^https:\/\/api\.baristica\.az\/md\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\.[a-zA-Z0-9]+$/i;
+    const urlRegex =
+      /^https:\/\/api\.baristica\.az\/md\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\.[a-zA-Z0-9]+$/i;
 
     for (url of photourls) {
       if (!urlRegex.test(url)) {
@@ -57,16 +75,18 @@ async function create(req, res, next) {
       }
     }
 
-    const product = await connection.collection("products").findOne({_id: productId});
+    const product = await connection
+      .collection("products")
+      .findOne({ _id: productId });
 
     if (!product) {
-      return errorResponse(res, "Product not found!" + `ID: ${productId}` , 404);
+      return errorResponse(res, "Product not found!" + `ID: ${productId}`, 404);
     }
     const comment = await Comment.create({
       user: req.user.id,
       product: productId,
       text,
-      photourls
+      photourls,
     });
 
     return successResponse(res, { comment }, 200);
@@ -109,7 +129,11 @@ async function update(req, res, next) {
     });
 
     if (!comment) {
-      return errorResponse(res, `Comment not found for this ID: ${commentId}`, 404);
+      return errorResponse(
+        res,
+        `Comment not found for this ID: ${commentId}`,
+        404
+      );
     }
 
     comment.text = text;
