@@ -23,7 +23,7 @@ const findAll = async (req, res) => {
       key = "createdAt";
     }
 
-    const products = await Model.find(ptp ? { productType: ptp } : {})
+    const products = await Model.find()
       .sort({ [key]: -1 })
       .skip(skip)
       .limit(lt)
@@ -47,7 +47,7 @@ const findAll = async (req, res) => {
       });
     }
 
-    successResponse(res, products, 200, count);
+    successResponse(res, products, 200, count, pg);
   } catch (error) {
     console.log(error)
     errorResponse(res, error, 500);
