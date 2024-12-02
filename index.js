@@ -28,8 +28,9 @@ mongoose
     app.use(cookieParser());
     app.use(
       cors({
-        origin: "*",
-        optionsSuccessStatus: 200
+        origin: true,
+        methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+        credentials: true
       })
     );
     app.use(
@@ -37,6 +38,7 @@ mongoose
         contentSecurityPolicy: false, // Disable CSP if it's conflicting
       })
     );
+    
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json());
     app.use(mongoSanitize());
