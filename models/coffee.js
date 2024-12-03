@@ -30,6 +30,13 @@ const coffeeSchema = new Schema(
     viscocity: coffeeFeature,
     sweetness: coffeeFeature,
     acidity: coffeeFeature,
+    qGrader: coffeeFeature,
+    processingMethod: {
+      type: String,
+      required: true, 
+      index: true, 
+      enum: ["washed", "natural", "anaerobic washed", "carbonic maceration"]
+    },
     weight: {
       type: Number,
       required: true,
@@ -47,12 +54,8 @@ const coffeeSchema = new Schema(
   },
 );
 
-// coffeeSchema.pre(/^find/, function (next) {
-//   this.find({ deleted: { $ne: true }, productType: "Coffee" });
-//   next();
-// });
 
-// const Coffee = model("Coffee", coffeeSchema, "products");
+
 const Coffee = Product.discriminator("Coffee", coffeeSchema);
 
 module.exports = Coffee;
