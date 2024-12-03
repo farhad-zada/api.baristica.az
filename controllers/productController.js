@@ -5,7 +5,6 @@ const logger = require("../utils/logger");
 const { v4: uuidv4 } = require("uuid"); // For generating unique IDs
 const humanReadableError = require("../utils/humanReadableError");
 
-
 /**
  * @param {import ('express').Request} req
  * @param {import ('express').Response} res
@@ -13,21 +12,45 @@ const humanReadableError = require("../utils/humanReadableError");
  */
 const findAll = async (req, res) => {
   try {
+    const directions = { asc: 1, desc: -1 };
+    const levels = { low: [1, 2], medium: [3], high: [4, 5] };
     const Model = req.Model;
-    let { pg, lt, ptp, key } = req.query;
+
+    let {
+      pg,
+      lt,
+      qGrader,
+      rating,
+      processingMethod,
+      acidity,
+      viscocity,
+      country,
+    } = req.query; // Accept 'keys' as a query parameter for multiple sorting fields
     const skip = (pg - 1) * lt;
 
-    if (key === "popular") {
-      key = "statistics.sold";
-    } else {
-      key = "createdAt";
+    let query = Model.find();
+    if (rating && rating in directions) {
+      query = query.sort({ "statistics.rating": directions[rating] });
     }
 
-    const products = await Model.find()
-      .sort({ [key]: -1 })
-      .skip(skip)
-      .limit(lt)
-      .lean();
+    if (qGrader && qGrader in directions) {
+      query = query.sort({ qGrader: directions[qGrader] });
+    }
+
+    if (viscocity && viscocity in levels) {
+      query = query.find({ viscocity: { $in: levels[viscocity] } });
+    }
+    if (acidity && acidity in levels) {
+      query = query.find({ acidity: { $in: levels[acidity] } });
+    }
+
+    query = query.find({
+      processingMethod,
+      country,
+    });
+
+    const products = await query.skip(skip).limit(lt).lean();
+
     const count = await Model.countDocuments();
 
     if (req.user !== undefined) {
@@ -50,7 +73,7 @@ const findAll = async (req, res) => {
 
     successResponse(res, products, 200, count, pagesCount);
   } catch (error) {
-    console.log(error)
+    console.log(error);
     errorResponse(res, error, 500);
   }
 };
@@ -90,13 +113,13 @@ const findById = async (req, res) => {
 const createProduct = async (req, res) => {
   try {
     const Model = req.Model;
-    const id = `${req.body.productType.toLowerCase()}_${uuidv4()}`
+    const id = `${req.body.productType.toLowerCase()}_${uuidv4()}`;
     req.body.product._id = id;
     const product = await Model.create(req.body.product);
     // await product.save();
     successResponse(res, { product });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     errorResponse(res, erorr, 500);
   }
 };

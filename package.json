@@ -9,7 +9,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "upload": "node scripts/upload.js",
     "resize": "node scripts/resizeImages.js",
-    "fetch": "node scripts/imagesFromDrive.js"
+    "fetch": "node scripts/imagesFromDrive.js",
+    "update-coffee-fields": "node commands/updateCoffeeFields.js"
   },
   "keywords": [],
   "author": "",
