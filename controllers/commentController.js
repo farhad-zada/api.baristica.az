@@ -33,14 +33,17 @@ async function all(req, res) {
       .exec();
   }
 
-  for (let i = 0; i < comments.length; i++) {
-    let Model = findProductModelFromType(findProductTypeFromId(comments[i].product));
-    comments[i].product = await Model.findById(comments[i].product);
-    console.log(comments[i].product);
-
+  let products = {};
+  for (let comment of comments) {
+    if (!products[comment.product]) {
+      let Model = findProductModelFromType(
+        findProductTypeFromId(comment.product)
+      );
+      products[comment.product] = await Model.findById(comment.product);
+    }
   }
 
-  return successResponse(res, { comments }, 200);
+  return successResponse(res, { comments, products }, 200);
 }
 /**
  * @param {import('express').Request} req
