@@ -7,7 +7,7 @@
 
 ### find products (default product type - ptp is set to Coffee)
 # @name products
-GET {{root}}?ptp=Coffee&qGrader=asc&rating=desc&processingMethod=washed&country=Columbia&viscocity=low&acidity=high
+GET {{root}}?ptp=Coffee&rating=desc
 
 
 

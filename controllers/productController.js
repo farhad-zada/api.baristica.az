@@ -25,12 +25,13 @@ const findAll = async (req, res) => {
       acidity,
       viscocity,
       country,
+      popular,
     } = req.query; // Accept 'keys' as a query parameter for multiple sorting fields
     const skip = (pg - 1) * lt;
 
     let query = Model.find();
     if (rating && rating in directions) {
-      query = query.sort({ "statistics.rating": directions[rating] });
+      query = query.sort({ "statistics.ratings": directions[rating] });
     }
 
     if (qGrader && qGrader in directions) {
@@ -44,10 +45,12 @@ const findAll = async (req, res) => {
       query = query.find({ acidity: { $in: levels[acidity] } });
     }
 
-    query = query.find({
-      processingMethod,
-      country,
-    });
+    if (processingMethod) {
+      query = query.find({ processingMethod });
+    }
+    if (country) {
+      query = query.find({ country });
+    }
 
     const products = await query.skip(skip).limit(lt).lean();
 
