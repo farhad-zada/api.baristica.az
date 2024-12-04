@@ -25,11 +25,16 @@ const findAll = async (req, res) => {
       acidity,
       viscocity,
       country,
-      popular,
+      price,
     } = req.query; // Accept 'keys' as a query parameter for multiple sorting fields
     const skip = (pg - 1) * lt;
 
     let query = Model.find();
+
+    if (price && price in directions) {
+      query = query.sort({ price: directions[price] });
+    }
+
     if (rating && rating in directions) {
       query = query.sort({ "statistics.ratings": directions[rating] });
     }
@@ -38,18 +43,39 @@ const findAll = async (req, res) => {
       query = query.sort({ qGrader: directions[qGrader] });
     }
 
-    if (viscocity && viscocity in levels) {
-      query = query.find({ viscocity: { $in: levels[viscocity] } });
+    if (viscocity) {
+      let vals = viscocity
+        .split(",")
+        .map((visc) => {
+          if (visc in levels) {
+            return levels[visc];
+          }
+        })
+        .filter((val) => val !== null && val !== undefined)
+        .flat();
+
+      query = query.find({ viscocity: { $in: vals } });
     }
-    if (acidity && acidity in levels) {
-      query = query.find({ acidity: { $in: levels[acidity] } });
+    if (acidity) {
+      let vals = acidity
+        .split(",")
+        .map((acd) => {
+          if (acd in levels) {
+            return levels[acd];
+          }
+        })
+        .filter((val) => val !== null && val !== undefined)
+        .flat();
+      query = query.find({ acidity: { $in: vals } });
     }
 
     if (processingMethod) {
-      query = query.find({ processingMethod });
+      let vals = processingMethod.split(",");
+      query = query.find({ processingMethod: { $in: vals } });
     }
     if (country) {
-      query = query.find({ country });
+      let vals = country.split(",");
+      query = query.find({ country: { $in: vals } });
     }
 
     const products = await query.skip(skip).limit(lt).lean();

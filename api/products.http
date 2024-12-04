@@ -7,7 +7,7 @@
 
 ### find products (default product type - ptp is set to Coffee)
 # @name products
-GET {{root}}?ptp=Coffee&rating=desc
+GET {{root}}?ptp=Coffee&acidity=low
 
 
 
@@ -128,3 +128,67 @@ Authorization: {{authToken}}
 {
     "rating": 5
 }
+
+
+
+
+
+
+
+
+### order by price asc
+
+GET {{root}}?ptp=Coffee&price=asc
+
+
+### order by price desc
+
+GET {{root}}?ptp=Coffee&price=desc
+
+
+### find products order by rating asc
+
+GET {{root}}?ptp=Coffee&rating=asc
+
+### find products order by rating desc
+
+GET {{root}}?ptp=Coffee&rating=desc
+
+
+### by single processing methods
+
+GET {{root}}?ptp=Coffee&processingMethod=washed
+
+
+### by multiple processing methods
+
+GET {{root}}?ptp=Coffee&processingMethod=washed,natural
+
+
+### by single country
+
+GET {{root}}?ptp=Coffee&country=Columbia
+
+
+### by multiple country
+
+GET {{root}}?ptp=Coffee&country=Columbia,Kenya
+
+
+### order by Q-Grader asc
+
+GET {{root}}?ptp=Coffee&qGrader=asc
+
+### order by Q-Grader desc
+
+GET {{root}}?ptp=Coffee&qGrader=desc
+
+
+### by acidity levels
+
+GET {{root}}?ptp=Coffee&acidity=low,medium
+
+
+### by viscocity levels
+
+GET {{root}}?ptp=Coffee&viscocity=low,medium
