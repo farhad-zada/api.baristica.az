@@ -14,6 +14,18 @@ const findAll = async (req, res) => {
   try {
     const directions = { asc: 1, desc: -1 };
     const levels = { low: [1, 2], medium: [3], high: [4, 5] };
+    const coffeeTypes = {
+      "bright espresso": {
+        acidity: { $in: levels.high },
+        category: "espresso",
+      },
+      "balanced espresso": {
+        acidity: { $in: levels.low },
+        category: "espresso",
+      },
+      "bright filter": { acidity: { $in: levels.high }, category: "filter" },
+      "balanced filter": { acidity: { $in: levels.low }, category: "filter" },
+    };
     const Model = req.Model;
 
     let {
@@ -26,6 +38,8 @@ const findAll = async (req, res) => {
       viscocity,
       country,
       price,
+      coffeeType,
+      category,
     } = req.query; // Accept 'keys' as a query parameter for multiple sorting fields
     const skip = (pg - 1) * lt;
 
@@ -76,6 +90,19 @@ const findAll = async (req, res) => {
     if (country) {
       let vals = country.split(",");
       query = query.find({ country: { $in: vals } });
+    }
+
+    if (coffeeType) {
+      coffeeType.split(",").forEach((value) => {
+        if (value in coffeeTypes) {
+          query = query.find(coffeeTypes[value]);
+        }
+      });
+    }
+
+    if (category) {
+      let vals = category.split(",");
+      query = query.find({ category: { $in: vals } });
     }
 
     const products = await query.skip(skip).limit(lt).lean();
