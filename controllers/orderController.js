@@ -13,7 +13,7 @@ const Product = require("../models/productModel");
  */
 const index = async (req, res) => {
   try {
-    let { pg, pl } = req.query;
+    let { pg, pl, lt } = req.query;
     const skip = (pg - 1) * pl;
 
     const filter = {

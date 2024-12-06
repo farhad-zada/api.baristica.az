@@ -46,6 +46,7 @@ const OrderItemSchema = new Schema(
       required: true,
       immutable: [true, "Trying to update price which is not allowed! 🤨"],
     },
+    grindingOption: String,
   },
   {
     virtuals: true,

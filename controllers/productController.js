@@ -17,14 +17,20 @@ const findAll = async (req, res) => {
     const coffeeTypes = {
       "bright espresso": {
         acidity: { $in: levels.high },
-        category: "espresso",
+        category: { $in: ["espresso"] },
       },
       "balanced espresso": {
         acidity: { $in: levels.low },
-        category: "espresso",
+        category: { $in: ["espresso"] },
       },
-      "bright filter": { acidity: { $in: levels.high }, category: "filter" },
-      "balanced filter": { acidity: { $in: levels.low }, category: "filter" },
+      "bright filter": {
+        acidity: { $in: levels.high },
+        category: { $in: ["filter"] },
+      },
+      "balanced filter": {
+        acidity: { $in: levels.low },
+        category: { $in: ["filter"] },
+      },
     };
     const Model = req.Model;
 
@@ -100,14 +106,23 @@ const findAll = async (req, res) => {
       });
     }
 
+    if (!category) {
+      if (req.productType == "Machine") {
+        category = "1_group,2_group,grinder";
+      }
+    }
+
+    if (req.productType == "Coffee") {
+      query = query.find({ weight: 200 });
+    }
+
     if (category) {
       let vals = category.split(",");
       query = query.find({ category: { $in: vals } });
     }
 
+    const count = await Model.countDocuments(query.getFilter());
     const products = await query.skip(skip).limit(lt).lean();
-
-    const count = await Model.countDocuments();
 
     if (req.user !== undefined) {
       const favorites = await Favorite.find({
