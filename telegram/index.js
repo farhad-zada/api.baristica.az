@@ -1,10 +1,12 @@
-const { Telegraf } = require("telegraf");
 require("dotenv").config();
 const commands = require("./commands");
 const { haveAccess } = require("./auth");
 const updateStatus = require(`${__dirname}/utils/updateStatus`);
 
-const bot = new Telegraf(process.env.TG_BOT_API_TOKEN);
+/**
+ * @type {Telegraf<import("telegraf").Context<import("telegraf").Update>>}
+ */
+const bot = require(`${__dirname}/bot`);
 
 const startMessages = {
   ru: "Привет! Я Бот Администратор Baristica. Вы можете получать уведомления о заказах через этот чат.",
@@ -47,8 +49,6 @@ bot.hears(["Unpaid", "unpaid", "Unpaid orders", "unpaid orders"], (ctx) =>
 
 bot.command("orders", (ctx) => haveAccess(ctx, commands.orders));
 
-bot.action(/update_status_(.+)_(.+)/, (ctx) =>
-  haveAccess(ctx, updateStatus)
-);
+bot.action(/update_status_(.+)_(.+)/, (ctx) => haveAccess(ctx, updateStatus));
 
 module.exports = bot;

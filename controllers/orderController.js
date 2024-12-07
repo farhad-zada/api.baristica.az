@@ -5,6 +5,10 @@ const logger = require("../utils/logger");
 const crypto = require("crypto");
 const config = require("../config");
 const Product = require("../models/productModel");
+/**
+ * @type {import("telegraf").Telegraf<import("telegraf").Context<import("telegraf").Updates>>}
+ */
+const bot = require("../telegram");
 
 /**
  * @param {import ('express').Request} req
@@ -13,7 +17,7 @@ const Product = require("../models/productModel");
  */
 const index = async (req, res) => {
   try {
-    let { pg, pl } = req.query;
+    let { pg, pl, lt } = req.query;
     const skip = (pg - 1) * pl;
 
     const filter = {
@@ -71,6 +75,7 @@ const createOrder = async (req, res) => {
   if (order.paymentMethod == "cash") {
     order.status = "cash";
     await newOrder.save();
+    // bot.telegram.sendMessage(config.tg.chatId, JSON.stringify(newOrder))
     return successResponse(res, {
       order: newOrder,
       redirect: "https://baristica.az/success",
