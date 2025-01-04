@@ -31,6 +31,11 @@ const coffeeSchema = new Schema(
     sweetness: coffeeFeature,
     acidity: coffeeFeature,
     qGrader: coffeeFeature,
+    country: {
+      type: String,
+      required: true,
+      index: true,
+    },
     processingMethod: {
       type: String,
       required: true, 
