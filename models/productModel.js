@@ -44,7 +44,7 @@ const ProductSchema = new Schema(
       },
       ratings: {
         type: Number,
-        default: 0,
+        default: 5,
       },
     },
     productType: {
