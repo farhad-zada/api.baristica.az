@@ -75,7 +75,9 @@ const createOrder = async (req, res) => {
   if (order.paymentMethod == "cash") {
     order.status = "cash";
     await newOrder.save();
-    // bot.telegram.sendMessage(config.tg.chatId, JSON.stringify(newOrder))
+    if (config.tg.chatId) {
+      bot.telegram.sendMessage(config.tg.chatId, `New order! \n${newOrder._id}\n${order.totalCost}`);
+    }
     return successResponse(res, {
       order: newOrder,
       redirect: "https://baristica.az/success",

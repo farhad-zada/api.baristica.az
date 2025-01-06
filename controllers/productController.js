@@ -107,7 +107,7 @@ const findAll = async (req, res) => {
     }
 
     if (!category) {
-      if (req.productType == "Machine") {
+      if (req.productType === "Machine") {
         category = "1_group,2_group,grinder";
       }
     }
@@ -286,7 +286,7 @@ const linkTo = async (product, linkingProductId, field, fieldValue) => {
     fieldValue,
   };
   const linkExists = product.linked.find(
-    (link) => (link.product === linkingProductId) & (link.field = field)
+    (link) => (link.product === linkingProductId) & (link.field === field)
   );
 
   if (!linkExists) {
