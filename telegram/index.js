@@ -19,32 +19,32 @@ bot.start((ctx) => {
     startMessages[ctx.from.language_code] || startMessages["en"],
     {
       reply_markup: {
-        keyboard: [["Latest Orders", "All Orders"]],
+        keyboard: [["orders"]],
         resize_keyboard: true,
       },
     }
   );
 });
 
-bot.hears(["Test", "test"], (ctx) => {
-  console.log("Test Payment");
-  console.log(ctx.message);
-  ctx.sendInvoice({
-    currency: "AZN",
-    chat_id: ctx.from.id,
-    title: "Test Payment",
-    description: "Test Payment Description",
-    provider_token: process.env.PAYMENT_PROVIDER_TOKEN,
-    payload: "test",
-    prices: [{ label: "Test Payment", amount: 300 }],
-    start_parameter: "test",
-  });
-});
+// bot.hears(["Test", "test"], (ctx) => {
+//   console.log("Test Payment");
+//   console.log(ctx.message);
+//   ctx.sendInvoice({
+//     currency: "AZN",
+//     chat_id: ctx.from.id,
+//     title: "Test Payment",
+//     description: "Test Payment Description",
+//     provider_token: process.env.PAYMENT_PROVIDER_TOKEN,
+//     payload: "test",
+//     prices: [{ label: "Test Payment", amount: 300 }],
+//     start_parameter: "test",
+//   });
+// });
 
 bot.hears(/my id/i, (ctx) => ctx.reply(ctx.from.id));
 
-bot.hears(["Unpaid", "unpaid", "Unpaid orders", "unpaid orders"], (ctx) =>
-  haveAccess(ctx, commands.unpaid)
+bot.hears(["orders"], (ctx) =>
+  haveAccess(ctx, commands.orders)
 );
 
 bot.command("orders", (ctx) => haveAccess(ctx, commands.orders));
