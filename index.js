@@ -49,6 +49,13 @@ mongoose
 
     // Serve static files in /md from the images directory
     const imagesPath = path.join(__dirname, "public/images");
+    app.use(
+      (req, res, next) => {
+        res.setHeader("Access-Control-Allow-Origin", "*"); 
+        next();
+      },
+      express.static(imagesPath)
+    );
 
     app.use(
       "/md",
