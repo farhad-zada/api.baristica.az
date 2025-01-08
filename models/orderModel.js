@@ -154,12 +154,12 @@ const OrderSchema = new Schema(
       enum: [
         "initiated",
         "card",
+        "cash",
         "paid",
         "delivered",
         "cancelled by customer",
         "cancelled by baristica",
       ],
-      default: "initiated",
     },
     transaction: {
       type: String

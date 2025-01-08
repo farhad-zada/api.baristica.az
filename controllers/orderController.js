@@ -22,14 +22,14 @@ const index = async (req, res) => {
 
     const filter = {
       "customer.id": req.user._id,
-      status: {
-        $nin: ["initiated", "cancelled by customer", "cancelled by baristica"],
-      },
+      // status: {
+      //   $nin: ["initiated", "cancelled by customer", "cancelled by baristica"],
+      // },
     };
     const orders = await Order.find(filter)
-      .skip(skip)
-      .limit(pl)
-      .populate("customer", "name email phone");
+    .skip(skip)
+    .limit(pl)
+    .populate("customer", "name email phone");
     const count = await Order.countDocuments(filter);
     const pagesCount = Math.ceil(count / lt);
     successResponse(res, { orders }, 200, count, pagesCount);
@@ -73,10 +73,10 @@ const createOrder = async (req, res) => {
   const order = req.body.order;
   const newOrder = new Order(order);
   if (order.paymentMethod == "cash") {
-    order.status = "cash";
+    newOrder.status = "cash";
     await newOrder.save();
     if (config.tg.chatId) {
-      bot.telegram.sendMessage(config.tg.chatId, `New order! \n${newOrder._id}\n${order.totalCost}`);
+      bot.telegram.sendMessage(config.tg.chatId, `New order! \n${newOrder._id}\n${(order.totalCost/100).toFixed(2)}`);
     }
     return successResponse(res, {
       order: newOrder,
