@@ -5,7 +5,7 @@
 @productA = coffee_85b5ee47-a732-4d19-aed8-ec93eb80a108
 @productB = accessory_7e6d3080-1f15-4fff-ac12-6a95c8d1f8dd
 
-### create a new order
+### create a new delivery order
 @deliveryAddress = 67388a335a6eddd19fa90f4f
 
 # @name order
@@ -43,7 +43,7 @@ Authorization: {{authToken}}
 
 
 
-### create a new delivery order
+### create a new pickup order
 
 # @name order
 POST {{root}}
@@ -76,7 +76,7 @@ Authorization: {{authToken}}
 ### my orders
 
 # @name orders
-GET {{root}}?status=active&lt=10&pg=3
+GET {{root}}?status=active&lt=10&pg=1
 Content-Type: application/json
 Authorization: {{authToken}}
 

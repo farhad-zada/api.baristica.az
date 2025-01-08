@@ -25,6 +25,7 @@ const calcTotalCost = (cost, discount, discountType) => {
 const validateOrder = async (req, res, next) => {
   try {
     req.body.order.customer.id = req.user.id;
+    req.body.order.deliveryFee = 0;
     if (req.body.order.deliveryMethod == "delivery") {
       req.body.order.deliveryFee = delivery_fee;
     }
