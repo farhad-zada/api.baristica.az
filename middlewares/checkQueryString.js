@@ -27,7 +27,6 @@ const checkQueryString = (req, res, next) => {
   } else {
     req.query.lt = 5;
   }
-  console.log(ptp);
   if (ptp) {
     if (
       ![

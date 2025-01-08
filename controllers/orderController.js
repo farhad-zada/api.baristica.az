@@ -17,8 +17,8 @@ const bot = require("../telegram");
  */
 const index = async (req, res) => {
   try {
-    let { pg, pl, lt } = req.query;
-    const skip = (pg - 1) * pl;
+    let { pg, lt } = req.query;
+    const skip = (pg - 1) * lt;
     let { status } = req.query;
     if (!status) {
       status = "active";
@@ -40,10 +40,10 @@ const index = async (req, res) => {
     };
     const orders = await Order.find(filter)
       .skip(skip)
-      .limit(pl)
+      .limit(lt)
       .populate("customer", "name email phone");
     const count = await Order.countDocuments(filter);
-    const pageCount = Math.ceil(count / (lt ? lt : 1));
+    const pageCount = Math.ceil(count / lt);
     successResponse(res, { orders }, 200, count, pageCount);
   } catch (error) {
     errorResponse(res, error.message, 500);
