@@ -25,10 +25,14 @@ const calcTotalCost = (cost, discount, discountType) => {
 const validateOrder = async (req, res, next) => {
   try {
     req.body.order.customer.id = req.user.id;
-    req.body.order.deliveryFee = delivery_fee;
+    if (req.body.order.deliveryMethod == "delivery") {
+      req.body.order.deliveryFee = delivery_fee;
+    }
 
     const itemsPromises = req.body.order.items.map(async (item) => {
-      const Model = findProductModelFromType(findProductTypeFromId(item.product));
+      const Model = findProductModelFromType(
+        findProductTypeFromId(item.product)
+      );
       return Model.findById(item.product);
     });
 
@@ -38,9 +42,11 @@ const validateOrder = async (req, res, next) => {
     }
 
     req.body.order.items.map((item, idx) => {
-      product =  items[idx];
+      product = items[idx];
       item.price = product.price;
-      item.productType = `${product.productType.charAt(0).toUpperCase()}${product.productType.slice(1)}` 
+      item.productType = `${product.productType
+        .charAt(0)
+        .toUpperCase()}${product.productType.slice(1)}`;
     });
 
     req.body.order.cost = 0;
@@ -51,7 +57,10 @@ const validateOrder = async (req, res, next) => {
     req.body.order.totalCost = req.body.order.cost + req.body.order.deliveryFee;
     req.body.order.language = req.body.language;
 
-    if (req.body.order.deliveryMethod == "delivery" && !req.body.order.deliveryAddress) {
+    if (
+      req.body.order.deliveryMethod == "delivery" &&
+      !req.body.order.deliveryAddress
+    ) {
       const defaultAddress = req.user.getDefaultAddress();
       if (defaultAddress) {
         req.body.order.deliveryAddress = defaultAddress.id;
