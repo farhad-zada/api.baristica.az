@@ -76,7 +76,7 @@ Authorization: {{authToken}}
 ### my orders
 
 # @name orders
-GET {{root}}?status=active
+GET {{root}}?status=active&lt=10&pg=3
 Content-Type: application/json
 Authorization: {{authToken}}
 

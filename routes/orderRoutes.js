@@ -14,12 +14,13 @@ const {
   orderCheck,
 } = require("../controllers/orderController");
 const { allowTo } = require("../middlewares/policies");
+const checkQueryString = require("../middlewares/checkQueryString");
 
 router.post("/check", checkSignature, confirmStatus, orderCheck);
 
 router.use(auth()); // all authenticated
 
-router.get("/", index);
+router.get("/",checkQueryString, index);
 router.get("/:orderId", orderById);
 router.post("/", validateOrder, createOrder); // product ids, product quantities,
 
