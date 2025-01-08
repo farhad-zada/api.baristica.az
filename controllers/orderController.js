@@ -43,8 +43,8 @@ const index = async (req, res) => {
       .limit(pl)
       .populate("customer", "name email phone");
     const count = await Order.countDocuments(filter);
-    const pagesCount = Math.ceil(count / lt);
-    successResponse(res, { orders }, 200, count, pagesCount);
+    const pageCount = Math.ceil(count / (lt ? lt : 1));
+    successResponse(res, { orders }, 200, count, pageCount);
   } catch (error) {
     errorResponse(res, error.message, 500);
   }
