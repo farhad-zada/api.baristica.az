@@ -76,7 +76,7 @@ mongoose
 
     const server = app.listen(config.port, () => {
       console.log(`Server is running on port ${config.port}`);
-      bot.launch();
+      // bot.launch();
     });
   })
 
