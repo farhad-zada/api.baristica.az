@@ -26,20 +26,6 @@ bot.start((ctx) => {
   );
 });
 
-// bot.hears(["Test", "test"], (ctx) => {
-//   console.log("Test Payment");
-//   console.log(ctx.message);
-//   ctx.sendInvoice({
-//     currency: "AZN",
-//     chat_id: ctx.from.id,
-//     title: "Test Payment",
-//     description: "Test Payment Description",
-//     provider_token: process.env.PAYMENT_PROVIDER_TOKEN,
-//     payload: "test",
-//     prices: [{ label: "Test Payment", amount: 300 }],
-//     start_parameter: "test",
-//   });
-// });
 
 bot.hears(/my id/i, (ctx) => ctx.reply(ctx.from.id));
 
