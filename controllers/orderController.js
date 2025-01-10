@@ -88,10 +88,12 @@ const createOrder = async (req, res) => {
     newOrder.status = "cash";
     await newOrder.save();
     if (config.tg.chatId) {
-      bot.telegram.sendMessage(
-        config.tg.chatId,
-        `New order! \n${newOrder._id}\n${(order.totalCost / 100).toFixed(2)}`
-      );
+      config.tg.chats.forEach((chatId) => {
+        bot.telegram.sendMessage(
+          chatId,
+          `New order! \n${newOrder._id}\n${(order.totalCost / 100).toFixed(2)}`
+        );
+      });
     }
     return successResponse(res, {
       order: newOrder,
