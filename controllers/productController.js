@@ -113,7 +113,10 @@ const findAll = async (req, res) => {
     }
 
     if (req.productType == "Coffee") {
-      query = query.find({ weight: 200 });
+      query = query.find({$or: [
+        {category: "espresso", weight: 1000},
+        {category: "filter", weight: 200},
+      ]}).sort("category");
     }
 
     if (category) {
