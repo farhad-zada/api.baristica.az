@@ -1,12 +1,13 @@
 require("dotenv").config();
 const commands = require("./commands");
 const { haveAccess } = require("./auth");
+const getOrderById = require("./utils/getOrderById");
 const updateStatus = require(`${__dirname}/utils/updateStatus`);
 
 /**
  * @type {Telegraf<import("telegraf").Context<import("telegraf").Update>>}
  */
-const bot = require(`${__dirname}/bot`);
+const bot = require(`./bot`);
 
 const startMessages = {
   ru: "Привет! Я Бот Администратор Baristica. Вы можете получать уведомления о заказах через этот чат.",
@@ -26,15 +27,22 @@ bot.start((ctx) => {
   );
 });
 
-
 bot.hears(/my id/i, (ctx) => ctx.reply(ctx.from.id));
 
-bot.hears(["orders"], (ctx) =>
-  haveAccess(ctx, commands.orders)
-);
+bot.hears("orders", (ctx) => haveAccess(ctx, commands.order));
 
-bot.command("orders", (ctx) => haveAccess(ctx, commands.orders));
+bot.command("orders", (ctx) => haveAccess(ctx, commands.order));
 
 bot.action(/update_status_(.+)_(.+)/, (ctx) => haveAccess(ctx, updateStatus));
+bot.action(/get_order_(.+)/, (ctx) => haveAccess(ctx, getOrderById));
+bot.action(/get_next_unseen_order/, (ctx) => {
+  ctx.message = {
+    from: {
+      id: ctx.update.callback_query.from.id,
+    },
+  };
+
+  haveAccess(ctx, commands.order);
+});
 
 module.exports = bot;

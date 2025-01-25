@@ -91,7 +91,19 @@ const createOrder = async (req, res) => {
       config.tg.chats.forEach((chatId) => {
         bot.telegram.sendMessage(
           chatId,
-          `New order! \n${newOrder._id}\n${(order.totalCost / 100).toFixed(2)}`
+          `New order! \n${newOrder._id}\n${(order.totalCost / 100).toFixed(2)}`,
+          {
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text: "See 🧾",
+                    callback_data: `get_order_${newOrder.id}`,
+                  },
+                ],
+              ],
+            },
+          }
         );
       });
     }
