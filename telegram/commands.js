@@ -1,20 +1,23 @@
-const { getOrders, sendOrdersMessage } = require("./utils");
+const { getOrder, sendOrdersMessage } = require("./utils");
 
 /**
  * @param {Telegraf.Context} ctx
  */
-const orders = async (ctx) => {
-  
-  const orders = await getOrders(ctx.message.from.id);
-  if (!orders.length) {
+const order = async (ctx) => {
+  let telegramUserId;
+  if (ctx.message) {
+    telegramUserId = ctx.message.from.id;
+  } else if (ctx.update) {
+    telegramUserId = ctx.update.callback_query.from.id;
+  }
+  const order = await getOrder(telegramUserId);
+  if (!order) {
     ctx.reply("All orders seen ✅");
     return;
   }
-  orders.forEach(async (order) => {
-    await sendOrdersMessage(ctx, order);
-  });
+  await sendOrdersMessage(ctx, order);
 };
 
 module.exports = {
-  orders
+  order,
 };

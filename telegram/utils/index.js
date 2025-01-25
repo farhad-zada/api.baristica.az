@@ -5,20 +5,20 @@ const User = require("../../models/userModel");
 /**
  *
  * @param {Object | String} status
- * @returns {Array} orders
+ * @returns {object} orders
  */
-const getOrders = async (userId) => {
-  const orders = await Order.find({ seen: { $nin: [userId] }, status: "paid" })
+async function getOrder(userId) {
+  const order = await Order.findOne({
+    seen: { $nin: [userId] },
+    status: "paid",
+  })
     .populate("items.product")
     .populate("customer", "name email phone")
-    .sort({ createdAt: -1 });
-  await Order.updateMany(
-    { seen: { $nin: [userId] } },
-    { $addToSet: { seen: userId } }
-  );
+    .sort("createdAt");
+  // await Order.findByIdAndUpdate(order.id, { $addToSet: { seen: userId } });
 
-  return orders;
-};
+  return order;
+}
 
 function getDeliveryInfo(order, user) {
   let deliveryInfo = "\nDELIVERY: \n";
@@ -95,6 +95,7 @@ const sendOrdersMessage = async (ctx, order) => {
     order.items.map((item) => Product.findById(item.product))
   );
   order.items.forEach((item, i) => (item.product = items[i]));
+  await Order.findByIdAndUpdate(order.id, { $addToSet: { seen: userId } });
   return ctx.reply(orderMessage(order, user), {
     reply_markup: {
       inline_keyboard: [
@@ -107,13 +108,19 @@ const sendOrdersMessage = async (ctx, order) => {
             text: "Cancell",
             callback_data: `update_status_${order.id}_cancell`,
           },
-        ]
+        ],
+        [
+          {
+            text: "Next Order",
+            callback_data: "get_next_unseen_order",
+          },
+        ],
       ],
     },
   });
 };
 
 module.exports = {
-  getOrders,
+  getOrder,
   sendOrdersMessage,
 };
