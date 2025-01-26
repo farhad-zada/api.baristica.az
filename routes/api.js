@@ -22,5 +22,6 @@ router.use("/orders", require("./orderRoutes"));
 router.use("/comments", require("./commentRoutes"));
 router.use("/favorites", require("./favoriteRoutes"));
 router.use("/cart", require("./cartRoutes"));
+router.use("/countries", require("./countryRoutes"));
 
 module.exports = router;

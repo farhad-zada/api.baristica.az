@@ -147,4 +147,11 @@ Content-Type: application/json
     }
 }
 
-### coffee_09f0d447-e32c-4725-9a7f-67acaf0cff4d coffee_d1eb63db-745c-4c53-8cb1-76fcdf902a56
+
+
+### get counteries
+
+# @name countries
+GET {{baseUrl}}/countries
+Content-Type: application/json
+
