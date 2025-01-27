@@ -1,0 +1,13 @@
+@root = {{baseUrl}}/price-table
+
+### send price table notification to tg
+
+# @name priceTableNotification
+POST {{root}}
+Content-Type: application/json
+
+{
+    "name": "Farhad Seyfulla",
+    "phone": "+994557367232",
+    "email": "familyguy@google.com"
+}
