@@ -6,7 +6,7 @@ const { Schema, model } = mongoose;
 const ProductSchema = new Schema(
   {
     _id: {
-      type: String, 
+      type: String,
       required: true,
     },
     code: { type: String, required: true },
@@ -29,6 +29,10 @@ const ProductSchema = new Schema(
           _id: false,
         },
       ],
+    },
+    profileImage: {
+      type: String,
+      required: true,
     },
     images: [String],
     price: {

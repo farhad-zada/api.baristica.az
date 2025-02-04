@@ -1,0 +1,30 @@
+@linkbase = {{baseUrl}}/link
+@authToken = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzM2ZTIzYzljMWU5NjdmOWNlMGI5ODMiLCJlbWFpbCI6ImZhcmhhZEBnbWFpbC5jb20iLCJpYXQiOjE3MzgyNjQ0NzYsImV4cCI6MTc0NjA0MDQ3Nn0.Zk0QG3IRU6wPH2N45KEaxHp-zXD8zSoQ_pVIjDLjwPk
+
+
+### create 
+
+# @name create
+POST {{linkbase}}
+Content-Type: application/json
+Authorization: {{authToken}}
+
+{
+    "products": [
+        "machine_f5ad986f-6cdf-4d62-8411-e37c69ba5363",
+        "machine_e1b8225d-a0af-4469-94a2-4ccbb2b39ccc"
+    ],
+    "field": "category"
+}
+
+### get
+
+# @name get
+GET {{linkbase}}/machine_f5ad986f-6cdf-4d62-8411-e37c69ba5363
+
+
+
+### delete
+
+# @name delete
+DELETE {{linkbase}}/679bce858e6c10e22de43b03

@@ -19,7 +19,7 @@ const validateNewUserMiddleware = async (req, res, next) => {
     }
     const user = await User.findOne({ email: email });
     if (user) {
-      return errorRespnonse(res, "Email already used!", 400);
+      return errorResponse(res, "Email already used!", 400);
     }
     if (password !== passwordConfirm) {
       return errorResponse(res, "'password' and 'password confirmation' do not match!", 400);
@@ -27,16 +27,16 @@ const validateNewUserMiddleware = async (req, res, next) => {
       return errorResponse(res, "Password should be at least 8 characters", 400);
     }
     if (!name) {
-      return errorRespnonse(res, "Name is required!", 400);
+      return errorResponse(res, "Name is required!", 400);
     }
     if (!phone) {
-      return errorRespnonse(res, "Phone is not provided", 400);
+      return errorResponse(res, "Phone is not provided", 400);
     }
     if (!validator.isMobilePhone(phone, "any")) {
       return errorResponse(res, "Phone is not valid!", 400);
     }
     if (lastname ) {
-      return errorRespnonse(res, "Last name should be provided", 400);
+      return errorResponse(res, "Last name should be provided", 400);
     }
 
     req.body.user = {

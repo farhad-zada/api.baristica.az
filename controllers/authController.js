@@ -21,7 +21,7 @@ const logger = require("../utils/logger");
  */
 async function login(req, res) {
   if (!req.body.creds) {
-    return errorRespnonse(res, "Credentials should be provided under 'creds' field.", 400);
+    return errorResponse(res, "Credentials should be provided under 'creds' field.", 400);
   }
   const { email, password } = req.body.creds ?? {};
   if (!email) {
