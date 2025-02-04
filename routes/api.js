@@ -24,5 +24,6 @@ router.use("/favorites", require("./favoriteRoutes"));
 router.use("/cart", require("./cartRoutes"));
 router.use("/countries", require("./countryRoutes"));
 router.use("/price-table", require("./priceTableRoutes"));
+router.use("/link", require("./linkRoutes"));
 
 module.exports = router;

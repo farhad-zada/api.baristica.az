@@ -195,3 +195,7 @@ GET {{root}}?ptp=Coffee&viscocity=low,medium
 
 ### by coffee types
 GET {{root}}?ptp=Coffee&coffeeType=bright filter
+
+
+### bright espresso
+GET {{root}}?ptp=Coffee&coffeeType=bright espresso

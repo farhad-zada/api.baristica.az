@@ -16,7 +16,7 @@ const findAll = async (req, res) => {
     const levels = { low: [1, 2], medium: [3], high: [4, 5] };
     const coffeeTypes = {
       "bright espresso": {
-        acidity: { $in: levels.high },
+        acidity: { $in: [...levels.high, ...levels.medium] },
         category: { $in: ["espresso"] },
       },
       "balanced espresso": {

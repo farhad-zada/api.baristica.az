@@ -33,6 +33,8 @@ bot.hears("orders", (ctx) => haveAccess(ctx, commands.order));
 
 bot.command("orders", (ctx) => haveAccess(ctx, commands.order));
 
+bot.hears("give me users as csv", (ctx) => haveAccess(ctx, commands.exportUsersCsv));
+
 bot.action(/update_status_(.+)_(.+)/, (ctx) => haveAccess(ctx, updateStatus));
 bot.action(/get_order_(.+)/, (ctx) => haveAccess(ctx, getOrderById));
 bot.action(/get_next_unseen_order/, (ctx) => {
