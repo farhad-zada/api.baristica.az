@@ -113,10 +113,14 @@ const findAll = async (req, res) => {
     }
 
     if (req.productType == "Coffee") {
-      query = query.find({$or: [
-        {category: "espresso", weight: 1000},
-        {category: "filter", weight: 200},
-      ]}).sort("category");
+      query = query
+        .find({
+          $or: [
+            { category: "espresso", weight: 1000 },
+            { category: "filter", weight: 200 },
+          ],
+        })
+        .sort("category");
     }
 
     if (category) {
@@ -125,7 +129,25 @@ const findAll = async (req, res) => {
     }
 
     const count = await Model.countDocuments(query.getFilter());
-    const products = await query.skip(skip).limit(lt).lean();
+    const products = await query
+      .populate("linked_ids")
+      .skip(skip)
+      .limit(lt)
+      .lean();
+    for (let product of products) {
+      if (product.linked_ids && product.linked_ids.length > 0) {
+        product.linked_ids.forEach((link) => {
+          link.data.forEach((d) => {
+            product.linked.push({
+              product: d.product,
+              field: link.field,
+              fieldValue: d.value,
+            });
+          });
+        });
+        delete product.linked_ids;
+      }
+    }
 
     if (req.user !== undefined) {
       const favorites = await Favorite.find({

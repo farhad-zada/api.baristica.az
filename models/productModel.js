@@ -30,6 +30,10 @@ const ProductSchema = new Schema(
         },
       ],
     },
+    linked_ids: {
+      type: [Schema.Types.ObjectId],
+      ref: "Link"
+    },
     profileImage: {
       type: String,
       required: true,
