@@ -23,7 +23,7 @@ async function getOrder(userId) {
 function getDeliveryInfo(order, user) {
   let deliveryInfo = "\nDELIVERY: \n";
   if (order.deliveryMethod == "pickup") {
-    return "\nDELIVERY: pickup\n";
+    return "\nDELIVERY: mağazadan\n";
   }
 
   let address = user.addresses.find(
@@ -52,13 +52,13 @@ function getItemsInfo(order) {
   return order.items
     .map((item) => {
       return (
-        `name: ${item.product.name.en}\n` +
-        `code: ${item.product.code}\n` +
+        `ad: ${item.product.name.az}\n` +
+        `kod: ${item.product.code}\n` +
         (item.product.productType == "Coffee"
-          ? `weight: ${item.product.weight} gr.\n`
-          : `\n`) +
-        `quantity: ${item.quantity}\n` +
-        `cost: ${(item.cost / 100).toFixed(2)} AZN\n`
+          ? `çəki: ${item.product.weight} qr.\nüyüdülmə üsulu: ${item.grindingOption}\n`
+          : ``) +
+        `miqdar: ${item.quantity}\n` +
+        `qiymət: ${(item.cost / 100).toFixed(2)} AZN\n`
       );
     })
     .join("- - -\n");
@@ -68,18 +68,18 @@ function getItemsInfo(order) {
  */
 const orderMessage = (order, user) => {
   const msg =
-    `CUSTOMER: \n` +
-    `Name: ${order.customer.name}\n` +
-    `Phone: ${order.customer.phone}\n` +
+    `MÜŞTƏRİ: \n` +
+    `Ad: ${order.customer.name}\n` +
+    `Tell: ${order.customer.phone}\n` +
     getDeliveryInfo(order, user) +
-    "\nPRODUCTS:\n" +
+    "\nMƏHSULLAR:\n" +
     getItemsInfo(order) +
-    `\nSUMMARY: \n` +
-    `Order ID: ${order._id}\n` +
+    `\nXÜLASƏ: \n` +
+    `Sifariş ID: ${order._id}\n` +
     `Status: ${order.status}\n` +
-    `Cost: ${(order.cost / 100).toFixed(2)} AZN\n` +
-    `Delivery Fee: ${(order.deliveryFee / 100).toFixed(2)} AZN\n\n` +
-    `Total Cost: ${(order.totalCost / 100).toFixed(2)} AZN\n`;
+    `Rüsum: ${(order.cost / 100).toFixed(2)} AZN\n` +
+    `Çatdırılma rüsumu: ${(order.deliveryFee / 100).toFixed(2)} AZN\n\n` +
+    `Cəm rüsum: ${(order.totalCost / 100).toFixed(2)} AZN\n`;
 
   return msg;
 };
@@ -89,7 +89,7 @@ const orderMessage = (order, user) => {
  * @param {Telegraf.Context} ctx
  * @param {Array} orders
  */
-const sendOrdersMessage = async (ctx, order) => {
+const sendOrdersMessage = async (ctx, order, userId) => {
   const user = await User.findById(order.customer.id);
   const items = await Promise.all(
     order.items.map((item) => Product.findById(item.product))

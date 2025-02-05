@@ -28,39 +28,6 @@ Authorization: {{authToken}}
 
 
 
-### link two products
-
-@productA = coffee_34713695-619c-4062-8db1-05c4f30a642d
-@productB = coffee_fb01864d-893b-441d-8589-1579437735cd
-# @name link
-POST {{root}}/link/{{productA}}
-Content-Type: application/json
-
-{
-    "link": {
-        "product": "{{productB}}", 
-        "field": "weight"
-    }
-}
-
-
-
-
-
-
-### unlink two products
-
-# @name link
-DELETE {{baseUrl}}/products/link/coffee_09f0d447-e32c-4725-9a7f-67acaf0cff4d
-Content-Type: application/json
-
-{
-    "link": {
-        "product": "coffee_252a4dd5-f216-48e5-ac6a-0a4b75e67b9d", 
-        "field": "weight"
-    }
-}
-
 
 
 ### update a product

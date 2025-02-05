@@ -16,7 +16,7 @@ const order = async (ctx) => {
     ctx.reply("All orders seen ✅");
     return;
   }
-  await sendOrdersMessage(ctx, order);
+  await sendOrdersMessage(ctx, order, telegramUserId);
 };
 
 async function exportUsersCsv(ctx) {

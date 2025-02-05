@@ -45,9 +45,7 @@ const validateOrder = async (req, res, next) => {
     req.body.order.items.map((item, idx) => {
       product = items[idx];
       item.price = product.price;
-      item.productType = `${product.productType
-        .charAt(0)
-        .toUpperCase()}${product.productType.slice(1)}`;
+      item.productType = findProductTypeFromId(product.id);
     });
 
     req.body.order.cost = 0;
