@@ -26,7 +26,7 @@ const coffeeTypes = {
 };
 function sortProducts(query, field, direction) {
   if (direction && direction in directions) {
-    query = query.sort({ field: directions[direction] });
+    query = query.sort({ [field]: directions[direction] });
   }
   return query;
 }
@@ -42,14 +42,14 @@ function findInLevels (query, field, splittable) {
       .filter((val) => val !== null && val !== undefined)
       .flat();
 
-    query = query.find({ field: { $in: vals } });
+    query = query.find({ [field]: { $in: vals } });
   }
   return query;
 }
 function findIn(query, field, splittable) {
   if (splittable) {
     let vals = splittable.split(",");
-    query = query.find({ field: { $in: vals } });
+    query = query.find({ [field]: { $in: vals } });
   }
   return query;
 }
@@ -97,7 +97,7 @@ const findAll = async (req, res) => {
         category = "1_group,2_group,grinder";
       }
     }
-
+    console.log(category, req.productType);
     query = sortProducts(query, "price", price);
     query = sortProducts(query, "statistics.ratings", rating);
     query = sortProducts(query, "qGrader", qGrader);
@@ -115,7 +115,7 @@ const findAll = async (req, res) => {
       });
     }
 
-    if (req.productType == "Coffee") {
+    if (req.productType === "Coffee") {
       query = query
         .find({
           $or: [

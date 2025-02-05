@@ -29,7 +29,6 @@ Authorization: {{authToken}}
 
 
 
-
 ### update a product
 
 @productId = coffee_34713695-619c-4062-8db1-05c4f30a642d
