@@ -2,8 +2,8 @@
 
 @root = {{baseUrl}}/orders
 
-@productA = coffee_85b5ee47-a732-4d19-aed8-ec93eb80a108
-@productB = accessory_7e6d3080-1f15-4fff-ac12-6a95c8d1f8dd
+@productA = coffee_079c0d9c-061a-4f95-8f8a-e016976c5a85
+@productB = accessory_e0371731-d43d-443f-8302-c587842ba7fe
 
 ### create a new delivery order
 @deliveryAddress = 67388a335a6eddd19fa90f4f
@@ -62,8 +62,9 @@ Authorization: {{authToken}}
         
         "items": [
             {
-                "product": "{{productB}}",
-                "quantity": 2
+                "product": "{{productA}}",
+                "quantity": 2,
+                "grindingOption": "denli"
             }
         ]
     }

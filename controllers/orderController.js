@@ -225,6 +225,26 @@ const orderCheck = async (req, res) => {
       await product.save({ validateBeforeSave: false });
     }
   });
+  if (config.tg.chatId) {
+    config.tg.chats.forEach((chatId) => {
+      bot.telegram.sendMessage(
+        chatId,
+        `New order! \n${req.order.id}\n${(req.order.totalCost || 1 / 100).toFixed(2)}`,
+        {
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text: "See 🧾",
+                  callback_data: `get_order_${newOrder.id}`,
+                },
+              ],
+            ],
+          },
+        }
+      );
+    });
+  }
   if (req.user) {
     req.user.statistics.totalOrders += 1;
     req.user.statistics.totalSpent += req.order.totalCost;

@@ -28,25 +28,6 @@ router.post(
   productController.createProduct
 );
 
-router.post(
-  "/link/:id",
-  auth(),
-  allowTo("baristica", "admin", "superadmin"),
-  attachProductTypeById,
-  getProductModel,
-  productController.linkProducts
-);
-
-router.delete(
-  "/link/:id",
-  auth(),
-  allowTo("baristica", "admin", "superadmin"),
-  attachProductTypeById,
-  getProductModel,
-  attachProduct,
-  productController.removeLink
-);
-
 router.use("/:id", attachProductTypeById, getProductModel);
 router.get("/:id", auth(true), productController.findById);
 

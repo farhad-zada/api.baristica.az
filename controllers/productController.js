@@ -1,10 +1,72 @@
 const { successResponse, errorResponse } = require("../utils/responseHandlers");
-const { Document, Model, connection } = require("mongoose");
 const Favorite = require("../models/favorites");
-const logger = require("../utils/logger");
 const { v4: uuidv4 } = require("uuid"); // For generating unique IDs
 const humanReadableError = require("../utils/humanReadableError");
 
+const directions = { asc: 1, desc: -1 };
+const levels = { low: [1, 2], medium: [3], high: [4, 5] };
+const coffeeTypes = {
+  "bright espresso": {
+    acidity: { $in: [...levels.high, ...levels.medium] },
+    category: { $in: ["espresso"] },
+  },
+  "balanced espresso": {
+    acidity: { $in: levels.low },
+    category: { $in: ["espresso"] },
+  },
+  "bright filter": {
+    acidity: { $in: levels.high },
+    category: { $in: ["filter"] },
+  },
+  "balanced filter": {
+    acidity: { $in: levels.low },
+    category: { $in: ["filter"] },
+  },
+  
+};
+function sortProducts(query, field, direction) {
+  if (direction && direction in directions) {
+    query = query.sort({ field: directions[direction] });
+  }
+  return query;
+}
+function findInLevels (query, field, splittable) {
+  if (splittable) {
+    let vals = splittable
+      .split(",")
+      .map((splt) => {
+        if (splt in levels) {
+          return levels[splt];
+        }
+      })
+      .filter((val) => val !== null && val !== undefined)
+      .flat();
+
+    query = query.find({ field: { $in: vals } });
+  }
+  return query;
+}
+function findIn(query, field, splittable) {
+  if (splittable) {
+    let vals = splittable.split(",");
+    query = query.find({ field: { $in: vals } });
+  }
+  return query;
+}
+function setProductLinked(product) {
+  if (product.linked_ids && product.linked_ids.length > 0) {
+    product.linked_ids.forEach((link) => {
+      link.data.forEach((d) => {
+        product.linked.push({
+          product: d.product,
+          field: link.field,
+          fieldValue: d.value,
+        });
+      });
+    });
+    delete product.linked_ids;
+  }
+}
 /**
  * @param {import ('express').Request} req
  * @param {import ('express').Response} res
@@ -12,28 +74,7 @@ const humanReadableError = require("../utils/humanReadableError");
  */
 const findAll = async (req, res) => {
   try {
-    const directions = { asc: 1, desc: -1 };
-    const levels = { low: [1, 2], medium: [3], high: [4, 5] };
-    const coffeeTypes = {
-      "bright espresso": {
-        acidity: { $in: [...levels.high, ...levels.medium] },
-        category: { $in: ["espresso"] },
-      },
-      "balanced espresso": {
-        acidity: { $in: levels.low },
-        category: { $in: ["espresso"] },
-      },
-      "bright filter": {
-        acidity: { $in: levels.high },
-        category: { $in: ["filter"] },
-      },
-      "balanced filter": {
-        acidity: { $in: levels.low },
-        category: { $in: ["filter"] },
-      },
-    };
     const Model = req.Model;
-
     let {
       pg,
       lt,
@@ -51,52 +92,20 @@ const findAll = async (req, res) => {
 
     let query = Model.find();
 
-    if (price && price in directions) {
-      query = query.sort({ price: directions[price] });
+    if (!category) {
+      if (req.productType === "Machine") {
+        category = "1_group,2_group,grinder";
+      }
     }
 
-    if (rating && rating in directions) {
-      query = query.sort({ "statistics.ratings": directions[rating] });
-    }
-
-    if (qGrader && qGrader in directions) {
-      query = query.sort({ qGrader: directions[qGrader] });
-    }
-
-    if (viscocity) {
-      let vals = viscocity
-        .split(",")
-        .map((visc) => {
-          if (visc in levels) {
-            return levels[visc];
-          }
-        })
-        .filter((val) => val !== null && val !== undefined)
-        .flat();
-
-      query = query.find({ viscocity: { $in: vals } });
-    }
-    if (acidity) {
-      let vals = acidity
-        .split(",")
-        .map((acd) => {
-          if (acd in levels) {
-            return levels[acd];
-          }
-        })
-        .filter((val) => val !== null && val !== undefined)
-        .flat();
-      query = query.find({ acidity: { $in: vals } });
-    }
-
-    if (processingMethod) {
-      let vals = processingMethod.split(",");
-      query = query.find({ processingMethod: { $in: vals } });
-    }
-    if (country) {
-      let vals = country.split(",");
-      query = query.find({ country: { $in: vals } });
-    }
+    query = sortProducts(query, "price", price);
+    query = sortProducts(query, "statistics.ratings", rating);
+    query = sortProducts(query, "qGrader", qGrader);
+    query = findInLevels(query, "viscocity", viscocity);
+    query = findInLevels(query, "acidity", acidity);
+    query = findIn(query, "processingMethod.$", processingMethod);
+    query = findIn(query, "country", country);
+    query = findIn(query, "category", category);
 
     if (coffeeType) {
       coffeeType.split(",").forEach((value) => {
@@ -104,12 +113,6 @@ const findAll = async (req, res) => {
           query = query.find(coffeeTypes[value]);
         }
       });
-    }
-
-    if (!category) {
-      if (req.productType === "Machine") {
-        category = "1_group,2_group,grinder";
-      }
     }
 
     if (req.productType == "Coffee") {
@@ -123,11 +126,6 @@ const findAll = async (req, res) => {
         .sort("category");
     }
 
-    if (category) {
-      let vals = category.split(",");
-      query = query.find({ category: { $in: vals } });
-    }
-
     const count = await Model.countDocuments(query.getFilter());
     const products = await query
       .populate("linked_ids")
@@ -135,18 +133,7 @@ const findAll = async (req, res) => {
       .limit(lt)
       .lean();
     for (let product of products) {
-      if (product.linked_ids && product.linked_ids.length > 0) {
-        product.linked_ids.forEach((link) => {
-          link.data.forEach((d) => {
-            product.linked.push({
-              product: d.product,
-              field: link.field,
-              fieldValue: d.value,
-            });
-          });
-        });
-        delete product.linked_ids;
-      }
+      setProductLinked(product);
     }
 
     if (req.user !== undefined) {
@@ -188,6 +175,7 @@ const findById = async (req, res) => {
       return errorResponse(res, "No product found for the ID provided!", 404);
     }
 
+    setProductLinked(product);
     if (req.user !== undefined) {
       const favorite = await Favorite.findOne({
         user: req.user.id,
@@ -248,164 +236,6 @@ const updateProduct = async (req, res) => {
  * @param {import ('express').Response} res
  * @description everything is already verified and validated by the time it gets here
  */
-const linkProducts = async (req, res) => {
-  try {
-    const Model = req.Model;
-    const thisProductId = req.params.id;
-    const { product: otherProductId, field } = req.body.link;
-    if (!otherProductId || !field) {
-      return errorResponse(
-        res,
-        "Bad request! `otherProductId` or `field` is not provided!",
-        400
-      );
-    }
-
-    const thisProduct = await Model.findById(thisProductId);
-    const otherProduct = await Model.findById(otherProductId);
-
-    if (!thisProduct) {
-      return errorResponse(res, "Bad request! This product not found", 404);
-    }
-
-    if (!otherProduct) {
-      return errorResponse(res, "Bad request! Other product not found", 404);
-    }
-
-    const thisFieldValue = thisProduct.get(field);
-    const otherFieldValue = otherProduct.get(field);
-    if (thisFieldValue === undefined || otherFieldValue === undefined) {
-      return errorResponse(
-        res,
-        `Field "${field}" does not exist in one of the products`,
-        400
-      );
-    }
-
-    await Promise.all([
-      linkTo(thisProduct, otherProductId, field, otherFieldValue),
-      linkTo(otherProduct, thisProductId, field, thisFieldValue),
-    ]);
-
-    return successResponse(
-      res,
-      { message: "Linked successfully!", thisProduct, otherProduct },
-      200
-    );
-  } catch (error) {
-    errorResponse(res, error.message, 500);
-  }
-};
-
-/**
- *
- * @param {Document} product
- * @param {String} linkingProductId
- * @param {String} field
- * @param {String} fieldValue
- */
-const linkTo = async (product, linkingProductId, field, fieldValue) => {
-  const newLink = {
-    product: linkingProductId,
-    field,
-    fieldValue,
-  };
-  const linkExists = product.linked.find(
-    (link) => (link.product === linkingProductId) & (link.field === field)
-  );
-
-  if (!linkExists) {
-    product.linked.push(newLink);
-    await product.save();
-  }
-};
-
-/**
- * @param {import ("express").Request} req
- * @param {import ("express").Response} res
- */
-const removeLink = async (req, res) => {
-  /**
-   * @type {Model}
-   */
-  const Model = req.Model;
-
-  /**
-   * @type {Document}
-   */
-  const thisProduct = req.product;
-  /**
-   * @type {String}
-   */
-  const thisProductId = req.params.productId ?? req.params.id;
-
-  /**
-   * @typedef {Object} Link
-   * @property {String} product
-   * @property {String} field
-   * @property {String} fieldValue
-   */
-
-  /**
-   * @type {Link}
-   */
-  const { product: otherProductId, field } = req.body.link;
-
-  if (thisProduct.linked && Array.isArray(thisProduct.linked)) {
-    thisProduct.linked = thisProduct.linked.filter(
-      /**
-       * @param {Link} link
-       * @returns {boolean}
-       */
-      (link) => !(link.product === otherProductId && link.field === field)
-    );
-
-    await thisProduct.save();
-  } else {
-    return errorResponse(res, "These products are not linked!", 404);
-  }
-
-  /**
-   * @type {Document | null}
-   */
-  const otherProduct = await Model.findById(otherProductId);
-  if (
-    otherProduct &&
-    otherProduct.linked &&
-    Array.isArray(otherProduct.linked)
-  ) {
-    otherProduct.linked = otherProduct.linked.filter(
-      /**
-       * @param {Link} link
-       * @returns {boolean}
-       */
-      (link) => !(link.product === thisProductId && link.field === field)
-    );
-    await otherProduct.save();
-  } else {
-    let reason = "";
-    if (!otherProduct) reason = "Other product not found!";
-    else if (!otherProduct.linked)
-      reason = "Other product's linked list is null!";
-    else if (!Array.isArray(otherProduct.linked))
-      reason = "Other product's linked field is not an array!";
-    else reason = "Unkown reason";
-    logger.error(
-      `Could not unlink the other product. PRODUCT ID: ${otherProductId}, FIELD: ${field}\nREASON: ${reason}`
-    );
-  }
-
-  return successResponse(
-    res,
-    { message: "Unlinked successfully!", thisProduct, otherProduct },
-    200
-  );
-};
-/**
- * @param {import ('express').Request} req
- * @param {import ('express').Response} res
- * @description everything is already verified and validated by the time it gets here
- */
 const deleteProduct = async (req, res) => {
   try {
     const Model = req.Model;
@@ -430,6 +260,4 @@ module.exports = {
   deleteProduct,
   findAll,
   findById,
-  linkProducts,
-  removeLink,
 };
