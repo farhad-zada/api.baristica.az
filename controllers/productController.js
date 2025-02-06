@@ -97,7 +97,6 @@ const findAll = async (req, res) => {
         category = "1_group,2_group,grinder";
       }
     }
-    console.log(category, req.productType);
     query = sortProducts(query, "price", price);
     query = sortProducts(query, "statistics.ratings", rating);
     query = sortProducts(query, "qGrader", qGrader);
@@ -170,7 +169,7 @@ const findById = async (req, res) => {
   try {
     const Model = req.Model;
     const productId = req.params.id;
-    const product = await Model.findById(productId).lean();
+    const product = await Model.findById(productId).populate("linked_ids").lean();
     if (!product) {
       return errorResponse(res, "No product found for the ID provided!", 404);
     }
