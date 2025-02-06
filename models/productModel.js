@@ -17,6 +17,7 @@ const ProductSchema = new Schema(
     },
     name: multiLang,
     description: multiLang,
+    about: Schema.Types.Mixed,
     linked: {
       type: [
         {
