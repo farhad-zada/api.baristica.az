@@ -123,7 +123,7 @@ GET {{root}}?ptp=Coffee&rating=desc
 
 ### by single processing methods
 
-GET {{root}}?ptp=Coffee&processingMethod=washed
+GET {{root}}?ptp=Coffee&processingMethod=Yuyulmuş&processingMethodLang=az
 
 
 ### by multiple processing methods
@@ -165,3 +165,7 @@ GET {{root}}?ptp=Coffee&coffeeType=bright filter
 
 ### bright espresso
 GET {{root}}?ptp=Coffee&coffeeType=bright espresso
+
+
+### get processing methods
+GET {{root}}/processing-methods
