@@ -28,6 +28,7 @@ router.post(
   productController.createProduct
 );
 
+router.get("/processing-methods", productController.getProcessingMethods);
 router.use("/:id", attachProductTypeById, getProductModel);
 router.get("/:id", auth(true), productController.findById);
 

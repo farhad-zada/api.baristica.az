@@ -2,6 +2,7 @@ const { successResponse, errorResponse } = require("../utils/responseHandlers");
 const Favorite = require("../models/favorites");
 const { v4: uuidv4 } = require("uuid"); // For generating unique IDs
 const humanReadableError = require("../utils/humanReadableError");
+const Coffee = require("../models/coffee");
 
 const directions = { asc: 1, desc: -1 };
 const levels = { low: [1, 2], medium: [3], high: [4, 5] };
@@ -22,7 +23,6 @@ const coffeeTypes = {
     acidity: { $in: levels.low },
     category: { $in: ["filter"] },
   },
-  
 };
 function sortProducts(query, field, direction) {
   if (direction && direction in directions) {
@@ -30,7 +30,7 @@ function sortProducts(query, field, direction) {
   }
   return query;
 }
-function findInLevels (query, field, splittable) {
+function findInLevels(query, field, splittable) {
   if (splittable) {
     let vals = splittable
       .split(",")
@@ -102,7 +102,7 @@ const findAll = async (req, res) => {
     query = sortProducts(query, "qGrader", qGrader);
     query = findInLevels(query, "viscocity", viscocity);
     query = findInLevels(query, "acidity", acidity);
-    query = findIn(query, "processingMethod.$", processingMethod);
+    query = findIn(query, `processingMethod.az`, processingMethod);
     query = findIn(query, "country", country);
     query = findIn(query, "category", category);
 
@@ -169,7 +169,9 @@ const findById = async (req, res) => {
   try {
     const Model = req.Model;
     const productId = req.params.id;
-    const product = await Model.findById(productId).populate("linked_ids").lean();
+    const product = await Model.findById(productId)
+      .populate("linked_ids")
+      .lean();
     if (!product) {
       return errorResponse(res, "No product found for the ID provided!", 404);
     }
@@ -253,10 +255,32 @@ const deleteProduct = async (req, res) => {
   }
 };
 
+/**
+ * @param {import ('express').Request} req
+ * @param {import ('express').Response} res
+ * @description everything is already verified and validated by the time it gets here
+ */
+async function getProcessingMethods(req, res) {
+  try {
+    const az = await Coffee.distinct("processingMethod.az");
+    const ru = await Coffee.distinct("processingMethod.ru");
+    return successResponse(res, {
+      processingMethods: {
+        az,
+        ru,
+      },
+    });
+  } catch (e) {
+    console.error(e);
+    return errorResponse(res, "Something went wrong!", 500);
+  }
+}
+
 module.exports = {
   createProduct,
   updateProduct,
   deleteProduct,
   findAll,
   findById,
+  getProcessingMethods,
 };
