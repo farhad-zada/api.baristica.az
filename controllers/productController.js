@@ -105,13 +105,17 @@ const findAll = async (req, res) => {
     query = findIn(query, `processingMethod.az`, processingMethod);
     query = findIn(query, "country", country);
     query = findIn(query, "category", category);
-
     if (coffeeType) {
-      coffeeType.split(",").forEach((value) => {
-        if (value in coffeeTypes) {
-          query = query.find(coffeeTypes[value]);
-        }
-      });
+      const coffeeTypeFilters = coffeeType
+        .split(",")
+        .map((value) => coffeeTypes[value])
+        .filter(Boolean); // Remove undefined values
+
+      if (coffeeTypeFilters.length > 0) {
+        query = query.find({
+          $or: coffeeTypeFilters.map((filter) => ({ ...filter })), // Spread each filter
+        });
+      }
     }
 
     if (req.productType === "Coffee") {
@@ -120,6 +124,7 @@ const findAll = async (req, res) => {
           $or: [
             { category: "espresso", weight: 1000 },
             { category: "filter", weight: 200 },
+            { category: "drip", weight: 20 },
           ],
         })
         .sort("category");
@@ -138,7 +143,7 @@ const findAll = async (req, res) => {
     if (req.user !== undefined) {
       const favorites = await Favorite.find({
         user: req.user.id,
-        product: { $in: products },
+        product: { $in: products.map((prod) => prod._id) },
       });
       products.forEach((product) => {
         const found = favorites.find((fav) => {
