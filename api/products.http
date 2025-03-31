@@ -7,7 +7,7 @@
 
 ### find products (default product type - ptp is set to Coffee)
 # @name products
-GET {{root}}?ptp=Coffee&lt=15
+GET {{root}}?ptp=Coffee&category=espresso
 
 
 
@@ -160,7 +160,7 @@ GET {{root}}?ptp=Coffee&acidity=low,medium
 GET {{root}}?ptp=Coffee&viscocity=low,medium
 
 ### by coffee types
-GET {{root}}?ptp=Coffee&coffeeType=bright filter
+GET {{root}}?ptp=Coffee&coffeeType=balanced filter
 
 
 ### bright espresso

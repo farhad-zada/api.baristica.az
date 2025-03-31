@@ -23,7 +23,7 @@ const coffeeSchema = new Schema({
     type: String,
     required: [true, "A valid category must be provided!"],
     index: true,
-    enum: ["espresso", "filter"],
+    enum: ["espresso", "filter", "drip"],
   },
   profile: multiLang,
   viscocity: coffeeFeature,
