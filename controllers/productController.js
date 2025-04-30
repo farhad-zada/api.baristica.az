@@ -100,6 +100,7 @@ const findAll = async (req, res) => {
     query = sortProducts(query, "price", price);
     query = sortProducts(query, "statistics.ratings", rating);
     query = sortProducts(query, "qGrader", qGrader);
+    query = sortProducts(query, "code", "asc");
     query = findInLevels(query, "viscocity", viscocity);
     query = findInLevels(query, "acidity", acidity);
     query = findIn(query, `processingMethod.az`, processingMethod);
