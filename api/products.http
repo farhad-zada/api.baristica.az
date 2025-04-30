@@ -23,7 +23,7 @@ GET {{root}}?ptp=Machine
 
 
 ### Find ceffees limit 5
-GET {{root}}?lt=15&pg=1&ptp=Coffee
+GET {{root}}?lt=9&pg=1&ptp=Coffee
 Authorization: {{authToken}}
 
 
