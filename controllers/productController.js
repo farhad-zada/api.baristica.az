@@ -71,7 +71,10 @@ function setProductLinked(product) {
 const findTeas = async (req, res) => {
   try {
     const Tea = req.Model;
-    let teas = await Tea.find({ deleted: false, weight: 100 });
+
+    let teas = await Tea.find({ deleted: false, weight: 100 }).populate(
+      "linked_ids"
+    );
     for (let tea of teas) {
       setProductLinked(tea);
     }
