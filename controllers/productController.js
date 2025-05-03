@@ -72,6 +72,9 @@ const findTeas = async (req, res) => {
   try {
     const Tea = req.Model;
     let teas = await Tea.find({ deleted: false, weight: 100 });
+    for (let tea of teas) {
+      setProductLinked(tea);
+    }
 
     successResponse(res, teas, 200, 1, 1);
   } catch (error) {
