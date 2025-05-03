@@ -73,7 +73,7 @@ const findTeas = async (req, res) => {
     const Tea = req.Model;
     let teas = await Tea.find({ deleted: false });
 
-    successResponse(res, products, 200, 1, 1);
+    successResponse(res, teas, 200, 1, 1);
   } catch (error) {
     return errorResponse(res, error.message, 500);
   }
