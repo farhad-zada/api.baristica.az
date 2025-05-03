@@ -1,0 +1,7 @@
+@root = {{baseUrl}}/products
+@contentType = application/json
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjViMDQ3OTE4OGY0NjhjOTRmY2JkYmMiLCJlbWFpbCI6ImZhcmhhZC5zemRAZ21haWwuY29tIiwiaWF0IjoxNzMxNDg4ODAzLCJleHAiOjE3MzkyNjQ4MDN9.G3RGtq85pCTTWiXP3v8x-FC7w85HfmVE1PV9BsfLahU
+
+
+### find teas
+GET {{root}}?ptp=Tea

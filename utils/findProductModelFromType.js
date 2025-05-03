@@ -1,6 +1,7 @@
 const Accessory = require("../models/accessory");
 const Coffee = require("../models/coffee");
 const Machine = require("../models/machine");
+const Tea = require("../models/tea");
 
 /**
  * Determines the product model based on the product type.
@@ -14,6 +15,7 @@ function findProductModelFromType(productType) {
     Coffee: Coffee,
     Accessory: Accessory,
     Machine: Machine,
+    Tea: Tea,
   };
   if (productModels[productType]) {
     return productModels[productType];

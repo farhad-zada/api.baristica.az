@@ -5,16 +5,16 @@ const {
   attachProductTypeById,
   getProductModel,
   checkQueryString,
-  attachProduct,
 } = require("../middlewares/productMiddlewares");
 const router = Router();
-const { restrictTo, allowTo } = require("../middlewares/policies");
+const { allowTo } = require("../middlewares/policies");
 const auth = require("../middlewares/authMiddleware");
 const rateController = require("../controllers/ratingController");
 
 router.get(
   "/",
   auth(true),
+  allowedProducts("Coffee", "Accessory", "Machine", "Tea"),
   checkQueryString,
   getProductModel,
   productController.findAll
@@ -23,7 +23,7 @@ router.post(
   "/",
   auth(),
   allowTo("baristica", "admin", "superadmin"),
-  allowedProducts("Coffee", "Accessory", "Machine"),
+  allowedProducts("Coffee", "Accessory", "Machine", "Tea"),
   getProductModel,
   productController.createProduct
 );
