@@ -67,6 +67,17 @@ function setProductLinked(product) {
     delete product.linked_ids;
   }
 }
+
+const findTeas = async (req, res) => {
+  try {
+    const Tea = req.Model;
+    let teas = await Tea.find({ deleted: false });
+
+    successResponse(res, products, 200, 1, 1);
+  } catch (error) {
+    return errorResponse(res, error.message, 500);
+  }
+};
 /**
  * @param {import ('express').Request} req
  * @param {import ('express').Response} res
@@ -75,6 +86,9 @@ function setProductLinked(product) {
 const findAll = async (req, res) => {
   try {
     const Model = req.Model;
+    if (req.productType === "Tea") {
+      return findTeas(req, res);
+    }
     let {
       pg,
       lt,

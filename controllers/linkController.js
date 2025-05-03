@@ -31,6 +31,10 @@ async function createLink(req, res) {
     }
     const link = new Link({ products, field, data: linkData });
     await link.save();
+    await Model.updateMany(
+      { _id: { $in: products } },
+      { $addToSet: { linked_ids: link._id } }
+    );
     return successResponse(res, { link });
   } catch (error) {
     console.error(error);

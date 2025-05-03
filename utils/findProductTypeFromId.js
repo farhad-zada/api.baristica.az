@@ -12,6 +12,8 @@ function findProductTypeFromId(id) {
     return "Accessory";
   } else if (id.startsWith("machine")) {
     return "Machine";
+  } else if (id.startsWith("tea")) {
+    return "Tea";
   } else {
     throw new Error("Unknown product type!");
   }
