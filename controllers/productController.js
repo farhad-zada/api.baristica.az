@@ -145,6 +145,7 @@ const findAll = async (req, res) => {
           $or: [
             { category: "espresso", weight: 1000 },
             { code: "E20010" },
+            { code: "E20012"},
             { category: "filter", weight: 200 },
             { category: "drip", weight: 20 },
           ],
