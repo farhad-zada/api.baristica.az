@@ -169,3 +169,8 @@ GET {{root}}?ptp=Coffee&coffeeType=bright espresso
 
 ### get processing methods
 GET {{root}}/processing-methods
+
+
+
+### get 250 g
+GET {{root}}/coffee_E20012
