@@ -82,7 +82,8 @@ const orderMessage = (order, user) => {
     `Status: ${order.status}\n` +
     `Rüsum: ${(order.cost / 100).toFixed(2)} AZN\n` +
     `Çatdırılma rüsumu: ${(order.deliveryFee / 100).toFixed(2)} AZN\n\n` +
-    `Cəm rüsum: ${(order.totalCost / 100).toFixed(2)} AZN\n`;
+    `Cəm rüsum: ${(order.totalCost / 100).toFixed(2)} AZN\n` +
+    `Sifariş vaxtı: ${order.createdAt}\n`;
 
   return msg;
 };
