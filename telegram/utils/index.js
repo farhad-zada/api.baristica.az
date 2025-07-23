@@ -10,12 +10,15 @@ const User = require("../../models/userModel");
 async function getOrder(userId) {
   const order = await Order.findOne({
     seen: { $nin: [userId] },
-    status: "paid",
+    $or: {
+      status: "paid",
+      status: "cash",
+    },
   })
     .populate("items.product")
     .populate("customer", "name email phone")
     .sort("createdAt");
-  // await Order.findByIdAndUpdate(order.id, { $addToSet: { seen: userId } });
+  await Order.findByIdAndUpdate(order.id, { $addToSet: { seen: userId } });
 
   return order;
 }

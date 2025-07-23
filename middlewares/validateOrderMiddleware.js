@@ -66,6 +66,8 @@ const validateOrder = async (req, res, next) => {
       }
     }
 
+    req.body.order.status = "initiated";
+
     const validationResult = await Order.validate(req.body.order);
     if (validationResult.error) {
       const humanReadableErrors = humanReadableError(validationResult);
