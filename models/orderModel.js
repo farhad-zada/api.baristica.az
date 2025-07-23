@@ -151,6 +151,7 @@ const OrderSchema = new Schema(
     },
     status: {
       type: String,
+      required: true,
       enum: [
         "initiated",
         "card",
