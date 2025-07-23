@@ -41,7 +41,7 @@ async function updateMe(req, res, next) {
       new: true,
       runValidators: true,
     }).select("+phone +email +name +role");
-    successResponse(res, {user: userUpdated});
+    successResponse(res, { user: userUpdated });
   } catch (error) {
     errorResponse(res, error.message, 500);
   }
@@ -58,15 +58,13 @@ const addAddress = async (req, res) => {
     if (!req.body.address) {
       return errorResponse(res, `address field is empty`, 400);
     }
-    const {
-      city,
-      street,
-      apartment,
-      isPrimary,
-    } = req.body.address;
+    const { city, street, apartment, isPrimary } = req.body.address;
     const user = req.user;
     if (!city && !street && !apartment) {
-      return errorResponse("City, street or apartment should be provided!", 400);
+      return errorResponse(
+        "City, street or apartment should be provided!",
+        400
+      );
     }
     user.addresses.push({
       city,
@@ -78,7 +76,13 @@ const addAddress = async (req, res) => {
         address.isPrimary = false;
       });
       user.addresses[user.addresses.length - 1].isPrimary = true;
+    } else if (
+      user.addresses.length == 1 ||
+      !user.addresses.some((address) => address.isPrimary == true)
+    ) {
+      user.addresses[user.addresses.length - 1].isPrimary = true;
     }
+
     await user.save();
     successResponse(res, user, 201);
   } catch (error) {
@@ -104,36 +108,32 @@ const updateAddress = async (req, res) => {
     if (!req.body.address) {
       return errorResponse(res, `address field is empty`, 400);
     }
-    const addressId  = req.params.id;
+    const addressId = req.params.id;
     const user = req.user;
 
-    const {
-      city,
-      street,
-      apartment,
-      isPrimary,
-    } = req.body.address;
+    const { city, street, apartment, isPrimary } = req.body.address;
 
-    const addressExists = user.addresses.find((address) => address.id == addressId);
+    const addressExists = user.addresses.find(
+      (address) => address.id == addressId
+    );
     if (!addressExists) {
       return errorResponse(res, "Address not found!", 404);
     }
-    
+
     user.addresses.filter((address) => {
       if (address._id.toString() == addressId) {
         if (city) {
           address.city = city;
-        } 
+        }
         if (street) {
           address.street = street;
         }
-    
+
         if (apartment) {
           address.apartment = apartment;
         }
       }
     });
-
 
     if (isPrimary) {
       user.addresses.forEach((address) => {
