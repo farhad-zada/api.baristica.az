@@ -87,26 +87,26 @@ const createOrder = async (req, res) => {
   if (order.paymentMethod == "cash") {
     newOrder.status = "cash";
     await newOrder.save();
-    if (config.tg.chatId) {
-      config.tg.chats.forEach((chatId) => {
-        bot.telegram.sendMessage(
-          chatId,
-          `New order! \n${newOrder._id}\n${(order.totalCost / 100).toFixed(2)}`,
-          {
-            reply_markup: {
-              inline_keyboard: [
-                [
-                  {
-                    text: "See 🧾",
-                    callback_data: `get_order_${newOrder.id}`,
-                  },
-                ],
-              ],
-            },
-          }
-        );
-      });
-    }
+    // if (config.tg.chatId) {
+    //   config.tg.chats.forEach((chatId) => {
+    //     bot.telegram.sendMessage(
+    //       chatId,
+    //       `New order! \n${newOrder._id}\n${(order.totalCost / 100).toFixed(2)}`,
+    //       {
+    //         reply_markup: {
+    //           inline_keyboard: [
+    //             [
+    //               {
+    //                 text: "See 🧾",
+    //                 callback_data: `get_order_${newOrder.id}`,
+    //               },
+    //             ],
+    //           ],
+    //         },
+    //       }
+    //     );
+    //   });
+    // }
     return successResponse(res, {
       order: newOrder,
       redirect: "https://baristica.az/success",
@@ -115,9 +115,6 @@ const createOrder = async (req, res) => {
   await newOrder.save();
 
   let amount = newOrder.totalCost / 100;
-  if (process.env.NODE_ENV === "development") {
-    amount = amount / 100;
-  }
   amount = amount.toFixed(2);
 
   const epointData = {
@@ -225,26 +222,26 @@ const orderCheck = async (req, res) => {
       await product.save({ validateBeforeSave: false });
     }
   });
-  if (config.tg.chatId) {
-    config.tg.chats.forEach((chatId) => {
-      bot.telegram.sendMessage(
-        chatId,
-        `New order! \n${req.order.id}\n${(req.order.totalCost || 1 / 100).toFixed(2)}`,
-        {
-          reply_markup: {
-            inline_keyboard: [
-              [
-                {
-                  text: "See 🧾",
-                  callback_data: `get_order_${newOrder.id}`,
-                },
-              ],
-            ],
-          },
-        }
-      );
-    });
-  }
+  // if (config.tg.chatId) {
+  //   config.tg.chats.forEach((chatId) => {
+  //     bot.telegram.sendMessage(
+  //       chatId,
+  //       `New order! \n${req.order.id}\n${(req.order.totalCost || 1 / 100).toFixed(2)}`,
+  //       {
+  //         reply_markup: {
+  //           inline_keyboard: [
+  //             [
+  //               {
+  //                 text: "See 🧾",
+  //                 callback_data: `get_order_${newOrder.id}`,
+  //               },
+  //             ],
+  //           ],
+  //         },
+  //       }
+  //     );
+  //   });
+  // }
   if (req.user) {
     req.user.statistics.totalOrders += 1;
     req.user.statistics.totalSpent += req.order.totalCost;
