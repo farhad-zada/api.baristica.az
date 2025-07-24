@@ -41,7 +41,7 @@ bot.hears("give me users as csv", (ctx) =>
   haveAccess(ctx, commands.exportUsersCsv)
 );
 
-bot.action(/update_status_(.+)_(.+)/, (ctx) => haveAccess(ctx, updateStatus));
+// bot.action(/update_status_(.+)_(.+)/, (ctx) => haveAccess(ctx, updateStatus));
 bot.action(/get_order_(.+)/, (ctx) => haveAccess(ctx, sendByIdOrderMessage));
 bot.action(/get_next_unseen_order/, (ctx) => {
   ctx.message = {

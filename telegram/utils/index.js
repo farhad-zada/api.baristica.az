@@ -125,18 +125,18 @@ const sendOrdersMessage = async (ctx, order) => {
     reply_markup: {
       inline_keyboard: [
         [
-          {
-            text: "Delivered",
-            callback_data: `update_status_${order.id}_delivered`,
-          },
-          {
-            text: "Cancell",
-            callback_data: `update_status_${order.id}_cancell`,
-          },
+          // {
+          //   text: "Delivered",
+          //   callback_data: `update_status_${order.id}_delivered`,
+          // },
+          // {
+          //   text: "Cancell",
+          //   callback_data: `update_status_${order.id}_cancell`,
+          // },
         ],
         [
           {
-            text: "Next Order",
+            text: "Next Order ⏭️",
             callback_data: "get_next_unseen_order",
           },
         ],
