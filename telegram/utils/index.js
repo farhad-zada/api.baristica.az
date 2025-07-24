@@ -14,6 +14,7 @@ function getTelegramUserId(ctx) {
   } else if (ctx.update) {
     telegramUserId = ctx.update.callback_query.from.id;
   }
+  ctx.userId = telegramUserId;
   return telegramUserId;
 }
 
@@ -117,7 +118,7 @@ const sendOrdersMessage = async (ctx, order) => {
   }));
 
   if (process.env.TG_ENV.startsWith("prod")) {
-    await Order.findByIdAndUpdate(order.id, { $addToSet: { seen: userId } });
+    await Order.findByIdAndUpdate(order.id, { $addToSet: { seen: ctx.userId } });
   }
   let message = orderMessage(order, user);
   return ctx.reply(message, {
