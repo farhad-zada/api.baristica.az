@@ -1,23 +1,4 @@
-const { getOrder, sendOrdersMessage } = require("./utils");
 const User = require("../models/userModel");
-
-/**
- * @param {Telegraf.Context} ctx
- */
-const order = async (ctx) => {
-  let telegramUserId;
-  if (ctx.message) {
-    telegramUserId = ctx.message.from.id;
-  } else if (ctx.update) {
-    telegramUserId = ctx.update.callback_query.from.id;
-  }
-  const order = await getOrder(telegramUserId);
-  if (!order) {
-    ctx.reply("All orders seen ✅");
-    return;
-  }
-  await sendOrdersMessage(ctx, order, telegramUserId);
-};
 
 async function exportUsersCsv(ctx) {
   const users = await User.find({deleted: false}).select("_id name phone email role addresses statistics").lean();
@@ -50,7 +31,6 @@ async function exportUsersCsv(ctx) {
 }
 
 module.exports = {
-  order,
   exportUsersCsv,
 };
 

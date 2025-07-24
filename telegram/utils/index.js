@@ -1,6 +1,21 @@
 const Order = require("../../models/orderModel");
 const Product = require("../../models/productModel");
 const User = require("../../models/userModel");
+const config = require("../../config")
+const bot = require("../bot");
+
+/**
+ * @param {Telegraf.Context} ctx
+ */
+function getTelegramUserId(ctx) {
+  let telegramUserId;
+  if (ctx.message) {
+    telegramUserId = ctx.message.from.id;
+  } else if (ctx.update) {
+    telegramUserId = ctx.update.callback_query.from.id;
+  }
+  return telegramUserId;
+}
 
 /**
  *
@@ -10,15 +25,11 @@ const User = require("../../models/userModel");
 async function getOrder(userId) {
   const order = await Order.findOne({
     seen: { $nin: [userId] },
-    $or: {
-      status: "paid",
-      status: "cash",
-    },
+    status: { $in: ["paid", "cash"] },
   })
-    .populate("items.product")
+    // .populate("items.product")
     .populate("customer", "name email phone")
     .sort("createdAt");
-  await Order.findByIdAndUpdate(order.id, { $addToSet: { seen: userId } });
 
   return order;
 }
@@ -54,14 +65,17 @@ function getDeliveryInfo(order, user) {
 function getItemsInfo(order) {
   return order.items
     .map((item) => {
+      item.product = item.product.toObject();
       return (
-        `ad: ${item.product.name.az}\n` +
-        `kod: ${item.product.code}\n` +
+        `Ad: ${item.product.name.az}\n` +
+        `Kod: ${item.product.code}\n` +
         (item.product.productType == "Coffee"
-          ? `çəki: ${item.product.weight} qr.\nüyüdülmə üsulu: ${item.grindingOption}\n`
+          ? `Çəki: ${item.product.weight} ${
+              item.product.category == "drip" ? "əd." : "qr."
+            }\nÜyüdülmə üsulu: ${item.grindingOption}\n`
           : ``) +
-        `miqdar: ${item.quantity}\n` +
-        `qiymət: ${(item.cost / 100).toFixed(2)} AZN\n`
+        `Miqdar: ${item.quantity}\n` +
+        `Qiymət: ${(item.price / 100).toFixed(2)} AZN\n`
       );
     })
     .join("- - -\n");
@@ -82,8 +96,8 @@ const orderMessage = (order, user) => {
     `Status: ${order.status}\n` +
     `Rüsum: ${(order.cost / 100).toFixed(2)} AZN\n` +
     `Çatdırılma rüsumu: ${(order.deliveryFee / 100).toFixed(2)} AZN\n\n` +
-    `Cəm rüsum: ${(order.totalCost / 100).toFixed(2)} AZN\n` +
-    `Sifariş vaxtı: ${order.createdAt}\n`;
+    `Cəm rüsum: ${(order.totalCost / 100).toFixed(2)} AZN\n\n` +
+    `Sifariş tarixi: ${order.createdAt}\n`;
 
   return msg;
 };
@@ -91,16 +105,22 @@ const orderMessage = (order, user) => {
 /**
  *
  * @param {Telegraf.Context} ctx
- * @param {Array} orders
  */
-const sendOrdersMessage = async (ctx, order, userId) => {
+const sendOrdersMessage = async (ctx, order) => {
   const user = await User.findById(order.customer.id);
   const items = await Promise.all(
     order.items.map((item) => Product.findById(item.product))
   );
-  order.items.forEach((item, i) => (item.product = items[i]));
-  await Order.findByIdAndUpdate(order.id, { $addToSet: { seen: userId } });
-  return ctx.reply(orderMessage(order, user), {
+  order.items = order.items.map((item, index) => ({
+    ...item,
+    product: items[index],
+  }));
+
+  if (process.env.TG_ENV.startsWith("prod")) {
+    await Order.findByIdAndUpdate(order.id, { $addToSet: { seen: userId } });
+  }
+  let message = orderMessage(order, user);
+  return ctx.reply(message, {
     reply_markup: {
       inline_keyboard: [
         [
@@ -124,7 +144,60 @@ const sendOrdersMessage = async (ctx, order, userId) => {
   });
 };
 
+async function sendLastUnseenOrderMessage(ctx) {
+  let userId = getTelegramUserId(ctx);
+  let order = await getOrder(userId);
+  if (!order) {
+    ctx.reply("All orders seen ✅");
+    return;
+  }
+  order = order.toObject();
+  sendOrdersMessage(ctx, order);
+}
+
+async function sendByIdOrderMessage(ctx) {
+  const [, orderId] = ctx.match;
+
+  let order = await Order.findById(orderId);
+   if (!order) {
+    ctx.reply("invalid order id 🫤");
+    return;
+  }
+
+  order = order.toObject();
+  sendOrdersMessage(ctx, order);
+}
+
+
+async function notifyAdmins(orderId) {
+  let order = await Order.findById(orderId);
+  if (config.tg.chatId) {
+    config.tg.chats.forEach((chatId) => {
+      bot.telegram.sendMessage(
+        chatId,
+        `New order! \n${order.id}\n${(order.totalCost || 100).toFixed(2)}`,
+        {
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text: "See 🧾",
+                  callback_data: `get_order_${order.id}`,
+                },
+              ],
+            ],
+          },
+        }
+      );
+    });
+  }
+}
+
 module.exports = {
   getOrder,
   sendOrdersMessage,
+  getTelegramUserId,
+  sendLastUnseenOrderMessage,
+  sendByIdOrderMessage,
+  notifyAdmins
 };
