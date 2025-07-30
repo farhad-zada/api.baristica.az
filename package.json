@@ -12,7 +12,7 @@
     "fetch": "node scripts/imagesFromDrive.js",
     "update-coffee-fields": "node commands/updateCoffeeFields.js",
     "tg": "TG_ENV=dev node telegram/index.js",
-    "tg-prod": "TG_ENV=prod node telegram/index.js"
+    "tg-prod": "TG_ENV=production node telegram/index.js"
   },
   "keywords": [],
   "author": "",

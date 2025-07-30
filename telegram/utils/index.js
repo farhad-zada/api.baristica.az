@@ -116,24 +116,20 @@ const sendOrdersMessage = async (ctx, order) => {
     ...item,
     product: items[index],
   }));
-
   if (process.env.TG_ENV.startsWith("prod")) {
-    await Order.findByIdAndUpdate(order.id, { $addToSet: { seen: ctx.userId } });
+    let ord = await Order.findById(order._id);
+    console.log(ord);
+    if (ord && ord.seen === undefined) {
+      ord.seen = [];
+    }
+    let userId = getTelegramUserId(ctx);
+    ord.seen.push(userId);
+    await ord.save();
   }
   let message = orderMessage(order, user);
   return ctx.reply(message, {
     reply_markup: {
       inline_keyboard: [
-        [
-          // {
-          //   text: "Delivered",
-          //   callback_data: `update_status_${order.id}_delivered`,
-          // },
-          // {
-          //   text: "Cancell",
-          //   callback_data: `update_status_${order.id}_cancell`,
-          // },
-        ],
         [
           {
             text: "Next Order ⏭️",
