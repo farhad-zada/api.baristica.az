@@ -79,7 +79,10 @@ async function setupOrderStream() {
       case 'update':
         console.log('Updated document ID:', change.documentKey._id);
         console.log('Updated fields:', change.updateDescription.updatedFields);
-        notifyAdmins(change.documentKey._id);
+        const updatedFields = Object.keys(change.updateDescription.updatedFields || {});
+        if (!updatedFields.some(field => field.startsWith("seen"))) {
+          notifyAdmins(change.documentKey._id);
+        }
         break;
       case 'delete':
         console.log('Deleted document ID:', change.documentKey._id);
