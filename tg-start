@@ -1,3 +1,0 @@
-#!/bin/bash
-
-nohup npm run tg-prod > tg-prod.log 2>&1 & echo $! > telegram-pid
