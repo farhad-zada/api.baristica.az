@@ -35,7 +35,7 @@ const allowedProducts =
   async (req, res, next) => {
     const productType = req.body.productType ?? req.query.ptp ?? req.productType;
     if (!productType) {
-      return errorResponse(res, "'productType' field is required!", 400);
+      return errorResponse(res, "'ptp' (means product type) field is required!", 400);
     }
 
     if (args.includes(productType)) {

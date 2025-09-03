@@ -14,8 +14,8 @@ const rateController = require("../controllers/ratingController");
 router.get(
   "/",
   auth(true),
-  allowedProducts("Coffee", "Accessory", "Machine", "Tea"),
   checkQueryString,
+  allowedProducts("Coffee", "Accessory", "Machine", "Tea"),
   getProductModel,
   productController.findAll
 );
