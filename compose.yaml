@@ -1,0 +1,22 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
+    container_name: api-baristica
+    environment:
+      - PORT=${PORT}
+      - PUBLIC_KEY=${PUBLIC_KEY}
+      - PIRVATE_KEY=${PRIVATE_KEY}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
+    networks:
+      - baristica
+    volumes: 
+      - baristica:/usr/src/app
+    
+networks:
+  baristica:
+    driver: bridge
+
+volumes:
+  baristica:
