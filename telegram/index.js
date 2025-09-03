@@ -81,7 +81,10 @@ async function setupOrderStream() {
         console.log('Updated fields:', change.updateDescription.updatedFields);
         const updatedFields = Object.keys(change.updateDescription.updatedFields || {});
         if (!updatedFields.some(field => field.startsWith("seen"))) {
+          console.log(`notifying tlegram admins with: ${change}`)
           notifyAdmins(change.documentKey._id);
+        } else {
+          console.log("skipping, it is a seen change update");
         }
         break;
       case 'delete':
