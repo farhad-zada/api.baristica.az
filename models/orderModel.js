@@ -176,6 +176,10 @@ const OrderSchema = new Schema(
     deletedAt: {
       type: Date,
     },
+    notified: {
+      type: Boolean, 
+      default: false
+    }
   },
   {
     timestamps: true,
