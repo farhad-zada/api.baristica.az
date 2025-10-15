@@ -37,7 +37,7 @@ mongoose
         contentSecurityPolicy: false, // Disable CSP if it's conflicting
       })
     );
-    
+
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json());
     app.use(mongoSanitize());
@@ -50,7 +50,7 @@ mongoose
     const imagesPath = path.join(__dirname, "public/images");
     app.use(
       (req, res, next) => {
-        res.setHeader("Access-Control-Allow-Origin", "*"); 
+        res.setHeader("Access-Control-Allow-Origin", "*");
         next();
       },
       express.static(imagesPath)
@@ -60,6 +60,7 @@ mongoose
       "/md",
       (req, res, next) => {
         res.setHeader("Cross-Origin-Resource-Policy", "cross-origin"); // Allow cross-origin access
+        res.setHeader("Cache-Control", "no-store"); // disable cache 
         next();
       },
       express.static(imagesPath)

@@ -95,6 +95,13 @@ const createOrder = async (req, res) => {
   await newOrder.save();
 
   let amount = newOrder.totalCost / 100;
+
+  if (newOrder.customer) {
+    if (`${newOrder.customer.id}` === "688728b453f5f56f8364ba5b"){
+      console.log("ID: " + newOrder.customer.id);
+      amount = amount / 100;
+    }
+  }
   amount = amount.toFixed(2);
 
   const epointData = {
