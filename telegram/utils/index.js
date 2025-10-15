@@ -4,6 +4,13 @@ const User = require("../../models/userModel");
 const config = require("../../config")
 const bot = require("../bot");
 
+async function sendTelegramTextMessage(ctx, text) {
+  await ctx.reply(text);
+  if (ctx.callbackQuery !== undefined) {
+    await ctx.answerCbQuery("Done!");
+  }
+}
+
 /**
  * @param {Telegraf.Context} ctx
  */
@@ -21,7 +28,7 @@ function getTelegramUserId(ctx) {
 /**
  *
  * @param {Object | String} status
- * @returns {object} orders
+ * @returns {Promise<object>} orders
  */
 async function getOrder(userId) {
   const order = await Order.findOne({
@@ -71,9 +78,8 @@ function getItemsInfo(order) {
         `Ad: ${item.product.name.az}\n` +
         `Kod: ${item.product.code}\n` +
         (item.product.productType == "Coffee"
-          ? `Çəki: ${item.product.weight} ${
-              item.product.category == "drip" ? "əd." : "qr."
-            }\nÜyüdülmə üsulu: ${item.grindingOption}\n`
+          ? `Çəki: ${item.product.weight} ${item.product.category == "drip" ? "əd." : "qr."
+          }\nÜyüdülmə üsulu: ${item.grindingOption}\n`
           : ``) +
         `Miqdar: ${item.quantity}\n` +
         `Qiymət: ${(item.price / 100).toFixed(2)} AZN\n`
@@ -103,10 +109,7 @@ const orderMessage = (order, user) => {
   return msg;
 };
 
-/**
- *
- * @param {Telegraf.Context} ctx
- */
+
 const sendOrdersMessage = async (ctx, order) => {
   const user = await User.findById(order.customer.id);
   const items = await Promise.all(
@@ -126,7 +129,7 @@ const sendOrdersMessage = async (ctx, order) => {
     await ord.save();
   }
   let message = orderMessage(order, user);
-  return ctx.reply(message, {
+  await ctx.reply(message, {
     reply_markup: {
       inline_keyboard: [
         [
@@ -138,13 +141,17 @@ const sendOrdersMessage = async (ctx, order) => {
       ],
     },
   });
+  if (ctx.callbackQuery !== undefined) {
+    await ctx.answerCbQuery("Success!✅");
+  }
+
 };
 
 async function sendLastUnseenOrderMessage(ctx) {
   let userId = getTelegramUserId(ctx);
   let order = await getOrder(userId);
   if (!order) {
-    ctx.reply("All orders seen ✅");
+    sendTelegramTextMessage(ctx, "All orders seen ✅")
     return;
   }
   order = order.toObject();
@@ -155,8 +162,8 @@ async function sendByIdOrderMessage(ctx) {
   const [, orderId] = ctx.match;
 
   let order = await Order.findById(orderId);
-   if (!order) {
-    ctx.reply("invalid order id 🫤");
+  if (!order) {
+    sendTelegramTextMessage(ctx, "invalid order id 🫤");
     return;
   }
 
@@ -176,26 +183,32 @@ async function notifyError(message) {
 }
 
 async function notifyAdmins(orderId) {
-  let order = await Order.findById(orderId);
-  if (config.tg.chats && config.tg.chats.length > 0) {
-    config.tg.chats.forEach((chatId) => {
-      bot.telegram.sendMessage(
-        chatId,
-        `New order! \n${order.id}\n${(order.totalCost || 100).toFixed(2)}`,
-        {
-          reply_markup: {
-            inline_keyboard: [
-              [
-                {
-                  text: "See 🧾",
-                  callback_data: `get_order_${order.id}`,
-                },
+  try {
+    let order = await Order.findById(orderId);
+    if (config.tg.chats && config.tg.chats.length > 0) {
+      config.tg.chats.forEach((chatId) => {
+        bot.telegram.sendMessage(
+          chatId,
+          `New order! \n${order.id}\n${(order.totalCost / 100).toFixed(2)}`,
+          {
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text: "See 🧾",
+                    callback_data: `get_order_${order.id}`,
+                  },
+                ],
               ],
-            ],
-          },
-        }
-      );
-    });
+            },
+          }
+        );
+      });
+    }
+    order.notified = true;
+    await order.save();
+  } catch (error) {
+    notifyError("Something went wrong at notifyAdmins: \n\n" + error);
   }
 }
 

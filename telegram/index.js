@@ -45,11 +45,11 @@ bot.hears("give me users as csv", (ctx) =>
 // bot.action(/update_status_(.+)_(.+)/, (ctx) => haveAccess(ctx, updateStatus));
 bot.action(/get_order_(.+)/, (ctx) => haveAccess(ctx, sendByIdOrderMessage));
 bot.action(/get_next_unseen_order/, (ctx) => {
-  ctx.message = {
-    from: {
-      id: ctx.update.callback_query.from.id,
-    },
-  };
+  // ctx.message = {
+  //   from: {
+  //     id: ctx.update.callback_query.from.id,
+  //   },
+  // };
 
   haveAccess(ctx, sendLastUnseenOrderMessage);
 });
@@ -66,7 +66,7 @@ bot.action(/get_next_unseen_order/, (ctx) => {
 async function checkNewOrders() {
   try {
     let orders = await Order.find({
-      seen: [],
+      notified: false,
       $or: [
         {
           status: "cash"
