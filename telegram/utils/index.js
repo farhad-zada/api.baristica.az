@@ -118,7 +118,6 @@ const sendOrdersMessage = async (ctx, order) => {
   }));
   if (process.env.TG_ENV.startsWith("prod")) {
     let ord = await Order.findById(order._id);
-    console.log(ord);
     if (ord && ord.seen === undefined) {
       ord.seen = [];
     }
@@ -162,7 +161,7 @@ async function sendByIdOrderMessage(ctx) {
   }
 
   order = order.toObject();
-  sendOrdersMessage(ctx, order);
+  await sendOrdersMessage(ctx, order);
 }
 
 async function notifyError(message) {
