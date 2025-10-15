@@ -11,7 +11,8 @@ const bot = require(`./bot`);
 const { default: mongoose } = require("mongoose");
 const { ServerApiVersion } = require("mongodb");
 const Order = require("../models/orderModel");
-const { sendByIdOrderMessage, sendLastUnseenOrderMessage, notifyAdmins } = require("./utils");
+const { sendByIdOrderMessage, sendLastUnseenOrderMessage, notifyAdmins, notifyError } = require("./utils");
+const logger = require("../utils/logger");
 
 const startMessages = {
   ru: "Привет! Я Бот Администратор Baristica. Вы можете получать уведомления о заказах через этот чат.",
@@ -62,42 +63,38 @@ bot.action(/get_next_unseen_order/, (ctx) => {
   });
 })();
 
-
-async function setupOrderStream() {
-  const pipeline = [
-    { $match: { operationType: { $in: ['insert', 'update'] } } }
-  ];
-  
-  const orderStream = Order.watch(pipeline);
-  
-  orderStream.on('change', (change) => {
-    switch (change.operationType) {
-      case 'insert':
-        console.log('New document:', change);
-        notifyAdmins(change.documentKey._id);
-        break;
-      case 'update':
-        console.log('Updated document ID:', change.documentKey._id);
-        console.log('Updated fields:', change.updateDescription.updatedFields);
-        const updatedFields = Object.keys(change.updateDescription.updatedFields || {});
-        if (!updatedFields.some(field => field.startsWith("seen"))) {
-          console.log(`notifying tlegram admins with: ${change}`)
-          notifyAdmins(change.documentKey._id);
-        } else {
-          console.log("skipping, it is a seen change update");
+async function checkNewOrders() {
+  try {
+    let orders = await Order.find({
+      seen: [],
+      $or: [
+        {
+          status: "cash"
+        },
+        {
+          status: "paid"
         }
-        break;
-      case 'delete':
-        console.log('Deleted document ID:', change.documentKey._id);
-        break;
+      ]
+    }).select("_id");
+
+    if (orders.length > 0) {
+      logger.info(`New orders with IDs: ${orders.map(o => o.id).join(", ")}`);
+      orders.forEach(order => notifyAdmins(order.id));
+      for (let order of orders) {
+        await notifyAdmins(order.id);
+      }
+    } else {
+      logger.info("No new orders yet!");
     }
-  });
-  
-  orderStream.on('error', (err) => {
-    console.error('Change stream error:', err);
-  });
+  } catch (error) {
+    logger.error("Something wrong happened at checkNewOrders: \n\n" + error);
+    notifyError("Something wrong happened at checkNewOrders: \n\n" + error);
+  }
 }
 
-setupOrderStream()
+const interval = 10 * 1000; // every 10 seconds
+setInterval(() => {
+  checkNewOrders();
+}, interval);
 
 bot.launch();

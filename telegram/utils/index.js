@@ -165,6 +165,16 @@ async function sendByIdOrderMessage(ctx) {
   sendOrdersMessage(ctx, order);
 }
 
+async function notifyError(message) {
+  if (config.tg.chatId) {
+    config.tg.chats.forEach((chatId) => {
+      bot.telegram.sendMessage(
+        chatId,
+        `🆘 Error: \n${message}`,
+      );
+    });
+  }
+}
 
 async function notifyAdmins(orderId) {
   let order = await Order.findById(orderId);
@@ -196,5 +206,6 @@ module.exports = {
   getTelegramUserId,
   sendLastUnseenOrderMessage,
   sendByIdOrderMessage,
-  notifyAdmins
+  notifyAdmins,
+  notifyError,
 };
