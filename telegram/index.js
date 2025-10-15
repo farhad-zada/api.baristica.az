@@ -79,7 +79,6 @@ async function checkNewOrders() {
 
     if (orders.length > 0) {
       logger.info(`New orders with IDs: ${orders.map(o => o.id).join(", ")}`);
-      orders.forEach(order => notifyAdmins(order.id));
       for (let order of orders) {
         await notifyAdmins(order.id);
       }

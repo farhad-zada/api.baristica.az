@@ -178,7 +178,7 @@ async function notifyError(message) {
 
 async function notifyAdmins(orderId) {
   let order = await Order.findById(orderId);
-  if (config.tg.chatId) {
+  if (config.tg.chats && config.tg.chats.length > 0) {
     config.tg.chats.forEach((chatId) => {
       bot.telegram.sendMessage(
         chatId,
