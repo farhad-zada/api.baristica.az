@@ -3,8 +3,9 @@
  */
 const bot = require("../telegram");
 const config = require("../config");
+const logger = require("../utils/logger");
 
-function getPriceTable(req, res) {
+async function getPriceTable(req, res) {
   const { name, phone, email } = req.body;
 
   let message = [
@@ -13,9 +14,14 @@ function getPriceTable(req, res) {
     `Telefon: \`${phone}\``,
     `EPoçt: \`${email}\``,
   ].join("\n");
-  config.tg.chats.forEach((chatId) => {
-    bot.telegram.sendMessage(chatId, message, {parse_mode: 'Markdown'});
-  });
+  let chats = await config.tg.existentChats()
+  for (let chatId of chats) {
+    try {
+      bot.telegram.sendMessage(chatId, message, { parse_mode: 'Markdown' });
+    } catch (error) {
+      logger.error(error);
+    }
+  }
   res.status(200).json({ message: "Sent message!" });
 }
 

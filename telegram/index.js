@@ -1,7 +1,6 @@
 require("dotenv").config();
 const commands = require("./commands");
 const { haveAccess } = require("./auth");
-const updateStatus = require(`${__dirname}/utils/updateStatus`);
 const config = require("../config");
 
 /**
@@ -83,6 +82,7 @@ async function checkNewOrders() {
     } else {
       logger.info("No new orders yet!");
     }
+    throw new Error("test");
   } catch (error) {
     logger.error("Something wrong happened at checkNewOrders: \n\n" + error);
     notifyError("Something wrong happened at checkNewOrders: \n\n" + error);

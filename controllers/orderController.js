@@ -95,9 +95,10 @@ const createOrder = async (req, res) => {
   await newOrder.save();
 
   let amount = newOrder.totalCost / 100;
+  console.log(newOrder.customer.id);
 
   if (newOrder.customer) {
-    if (`${newOrder.customer.id}` === "67b8a945c3c5348e077ccf8d"){
+    if (`${newOrder.customer.id}` === "68ef46e3483f21dac21635aa"){
       console.log("ID: " + newOrder.customer.id);
       amount = amount / 100;
     }

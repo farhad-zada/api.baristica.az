@@ -3,6 +3,7 @@ const Product = require("../../models/productModel");
 const User = require("../../models/userModel");
 const config = require("../../config")
 const bot = require("../bot");
+const logger = require("../../utils/logger");
 
 async function sendTelegramTextMessage(ctx, text) {
   await ctx.reply(text);
@@ -172,23 +173,31 @@ async function sendByIdOrderMessage(ctx) {
 }
 
 async function notifyError(message) {
-  if (config.tg.chatId) {
-    config.tg.chats.forEach((chatId) => {
-      bot.telegram.sendMessage(
-        chatId,
-        `🆘 Error: \n${message}`,
-      );
-    });
+  try {
+    let chats = await config.tg.existentChats();
+    for (let chat of chats) {
+      try {
+        bot.telegram.sendMessage(
+          chat,
+          `🆘 Error: \n${message}`,
+        );
+      } catch (error) {
+        logger.error("Something went wrong at notifyError.sendMessage: \n\n" + error);
+      }
+    }
+  } catch (error) {
+    logger.error("Something went wrong at notifyError: \n\n" + error);
   }
 }
 
 async function notifyAdmins(orderId) {
   try {
     let order = await Order.findById(orderId);
-    if (config.tg.chats && config.tg.chats.length > 0) {
-      config.tg.chats.forEach((chatId) => {
+    let chats = await config.tg.existentChats();
+    for (let chat of chats) {
+      try {
         bot.telegram.sendMessage(
-          chatId,
+          chat,
           `New order! \n${order.id}\n${(order.totalCost / 100).toFixed(2)}`,
           {
             reply_markup: {
@@ -203,7 +212,9 @@ async function notifyAdmins(orderId) {
             },
           }
         );
-      });
+      } catch (error) {
+        logger.error("Something went wrong at notifyAdmins.sendMessage: \n\n" + error);
+      }
     }
     order.notified = true;
     await order.save();

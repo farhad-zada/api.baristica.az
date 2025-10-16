@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const auth = require("../middlewares/authMiddleware");
 const { validateOrder } = require("../middlewares/validateOrderMiddleware");
+const multer = require("multer")
 const {
   confirmStatus,
   checkSignature,
@@ -16,7 +17,7 @@ const {
 const { allowTo } = require("../middlewares/policies");
 const checkQueryString = require("../middlewares/checkQueryString");
 
-router.post("/check", checkSignature, confirmStatus, orderCheck);
+router.post("/check", multer().any() ,checkSignature, confirmStatus, orderCheck);
 
 router.use(auth()); // all authenticated
 
