@@ -82,7 +82,6 @@ async function checkNewOrders() {
     } else {
       logger.info("No new orders yet!");
     }
-    throw new Error("test");
   } catch (error) {
     logger.error("Something wrong happened at checkNewOrders: \n\n" + error);
     notifyError("Something wrong happened at checkNewOrders: \n\n" + error);

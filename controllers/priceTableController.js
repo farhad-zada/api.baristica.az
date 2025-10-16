@@ -14,7 +14,7 @@ async function getPriceTable(req, res) {
     `Telefon: \`${phone}\``,
     `EPoçt: \`${email}\``,
   ].join("\n");
-  let chats = await config.tg.existentChats()
+  let chats = await config.tg.safeChats()
   for (let chatId of chats) {
     try {
       bot.telegram.sendMessage(chatId, message, { parse_mode: 'Markdown' });

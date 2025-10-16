@@ -13,7 +13,7 @@ async function sendTgMsgs() {
   });
   console.log(orders.length);
   console.log(orders[0]);
-  let chats = await config.tg.existentChats();
+  let chats = await config.tg.safeChats();
   for (let chatId of chats) {
     try {
       bot.telegram.sendMessage(

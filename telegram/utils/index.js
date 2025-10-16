@@ -174,7 +174,7 @@ async function sendByIdOrderMessage(ctx) {
 
 async function notifyError(message) {
   try {
-    let chats = await config.tg.existentChats();
+    let chats = await config.tg.safeChats();
     for (let chat of chats) {
       try {
         bot.telegram.sendMessage(
@@ -193,7 +193,7 @@ async function notifyError(message) {
 async function notifyAdmins(orderId) {
   try {
     let order = await Order.findById(orderId);
-    let chats = await config.tg.existentChats();
+    let chats = await config.tg.safeChats();
     for (let chat of chats) {
       try {
         bot.telegram.sendMessage(
