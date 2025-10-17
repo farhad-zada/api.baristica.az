@@ -41,6 +41,7 @@ const index = async (req, res) => {
     const orders = await Order.find(filter)
       .skip(skip)
       .limit(lt)
+      .sort({createdAt: -1})
       .populate("customer", "name email phone");
     const count = await Order.countDocuments(filter);
     const pageCount = Math.ceil(count / lt);
