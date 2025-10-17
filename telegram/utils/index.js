@@ -62,11 +62,11 @@ function getDeliveryInfo(order, user) {
   if (address.apartment) {
     deliveryInfo = `${deliveryInfo}, ${address.apartment}\n`;
   }
-  const formattedDate = new Intl.DateTimeFormat("en-US", {
+  const formattedDate = new Intl.DateTimeFormat("az-AZ", {
     month: "short",
     day: "numeric",
     year: "numeric",
-  }).format(order.eliveryDate);
+  }).format(order.deliveryDate);
   deliveryInfo = `${deliveryInfo}${formattedDate} ${order.deliveryHour}\n`;
   return deliveryInfo;
 }
@@ -92,6 +92,13 @@ function getItemsInfo(order) {
  * @param {Array} orders
  */
 const orderMessage = (order, user) => {
+  let formattedDate = new Intl.DateTimeFormat("az-AZ", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  }).format(order.createdAt);
   const msg =
     `MÜŞTƏRİ: \n` +
     `Ad: ${order.customer.name}\n` +
@@ -105,7 +112,8 @@ const orderMessage = (order, user) => {
     `Rüsum: ${(order.cost / 100).toFixed(2)} AZN\n` +
     `Çatdırılma rüsumu: ${(order.deliveryFee / 100).toFixed(2)} AZN\n\n` +
     `Cəm rüsum: ${(order.totalCost / 100).toFixed(2)} AZN\n\n` +
-    `Sifariş tarixi: ${order.createdAt}\n`;
+    `Sifariş tarixi: ${formattedDate}\n` +
+    `\nŞƏRH: ${order.notes}`;
 
   return msg;
 };
