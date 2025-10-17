@@ -12,6 +12,7 @@ const { ServerApiVersion } = require("mongodb");
 const Order = require("../models/orderModel");
 const { sendByIdOrderMessage, sendLastUnseenOrderMessage, notifyAdmins, notifyError } = require("./utils");
 const logger = require("../utils/logger");
+const updateStatus = require("./utils/updateStatus")
 
 const startMessages = {
   ru: "Привет! Я Бот Администратор Baristica. Вы можете получать уведомления о заказах через этот чат.",
@@ -45,7 +46,7 @@ bot.hears("give me users as csv", (ctx) =>
   haveAccess(ctx, commands.exportUsersCsv)
 );
 
-// bot.action(/update_status_(.+)_(.+)/, (ctx) => haveAccess(ctx, updateStatus));
+bot.action(/update_status_(.+)_(.+)/, (ctx) => haveAccess(ctx, updateStatus));
 bot.action(/get_order_(.+)/, (ctx) => haveAccess(ctx, sendByIdOrderMessage));
 bot.action(/get_next_unseen_order/, (ctx) => {
   haveAccess(ctx, sendLastUnseenOrderMessage);

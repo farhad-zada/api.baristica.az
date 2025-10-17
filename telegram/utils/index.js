@@ -138,9 +138,20 @@ const sendOrdersMessage = async (ctx, order) => {
     await ord.save();
   }
   let message = orderMessage(order, user);
+  console.log(`update_status_${order._id}_delivered`);
   await ctx.reply(message, {
     reply_markup: {
       inline_keyboard: [
+        [
+          {
+            text: "Delivered ✅",
+            callback_data: `update_status_${order._id}_delivered`
+          },
+          {
+            text: "Cancelled ❌",
+            callback_data: `update_status_${order._id}_cancelled`
+          }
+        ],
         [
           {
             text: "Next Order ⏭️",
