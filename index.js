@@ -42,10 +42,19 @@ mongoose
     app.use(express.json());
     app.use(mongoSanitize());
     app.use((req, res, next) => {
-      logger.info(`${req.headers}`);
+      // logger.info(`${req.headers}`);
       logger.info(`${req.ip} ${req.method} ${req.url}`);
       next();
     });
+
+    // // app.use(express.static("public/resources"))
+    // app.get("/", (req, res) => {
+    //   res.sendFile(path.join(__dirname, "public", "resources", "login.html"));
+    // })
+
+    // app.get("/control", (req, res) => {
+    //   res.sendFile(path.join(__dirname, "public", "resources", "control.html"));
+    // })
 
     // Serve static files in /md from the images directory
     const imagesPath = path.join(__dirname, "public/images");

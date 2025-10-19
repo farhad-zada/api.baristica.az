@@ -1,15 +1,32 @@
 const sharp = require("sharp");
-const { successResponse } = require("../utils/responseHandlers");
+const { successResponse, errorResponse } = require("../utils/responseHandlers");
 const { v4: uuidv4 } = require("uuid"); // For generating unique IDs
 const { media } = require("../config");
+const fs = require("fs")
 const logger = require("../utils/logger");
+const path = require("path");
+
+async function listImages(req, res) {
+  // list all the pictures in the /public/images folder
+  try {
+    let imagesDir = path.join(__dirname, "..", "public", "images");
+    let files = fs.readdirSync(imagesDir);
+    let imagePaths = files.map(f => {
+      return { [f]: `https://api.baristica.az/md/${f}` }
+    });
+    successResponse(res, {  imagePaths }, 200);
+  } catch (error) {
+    logger.error(error)
+    errorResponse(res, "something went wrong", 500)
+  }
+}
 
 /**
  * @param {import('express').Request} req
  * @param {import('express').Response} res
  * @returns {Function}
  */
-module.exports = (req, res) => {
+async function storeMedia (req, res) {
   /**
    * @type {Multer.File[]}
    */
@@ -37,3 +54,8 @@ module.exports = (req, res) => {
 
   successResponse(res, returns);
 };
+
+module.exports = {
+  storeMedia, 
+  listImages
+}

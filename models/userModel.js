@@ -90,7 +90,6 @@ const UserSchema = new Schema(
       type: String,
       enum: ["default", "baristica", "admin", "superadmin"],
       default: "default",
-      select: false,
     },
     resetPasswordToken: {
       type: String,

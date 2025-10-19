@@ -31,7 +31,7 @@ async function login(req, res) {
     return errorResponse(res, `"password" is not provided!`, 400);
   }
 
-  const user = await User.findOne({ email }).select("+password");
+  const user = await User.findOne({ email }).select("+password +role");
   if (!user) {
     return errorResponse(res, `No user found for this email: "${email}"!`, 404);
   }
