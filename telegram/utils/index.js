@@ -1,9 +1,9 @@
 const Order = require("../../models/orderModel");
 const Product = require("../../models/productModel");
 const User = require("../../models/userModel");
-const config = require("../../config")
 const bot = require("../bot");
 const logger = require("../../utils/logger");
+const safeChats = require("./safeChats");
 
 async function sendTelegramTextMessage(ctx, text) {
   await ctx.reply(text);
@@ -193,7 +193,7 @@ async function sendByIdOrderMessage(ctx) {
 
 async function notifyError(message) {
   try {
-    let chats = await config.tg.safeChats();
+    let chats = await safeChats()
     for (let chat of chats) {
       try {
         bot.telegram.sendMessage(
@@ -212,7 +212,7 @@ async function notifyError(message) {
 async function notifyAdmins(orderId) {
   try {
     let order = await Order.findById(orderId);
-    let chats = await config.tg.safeChats();
+    let chats = await safeChats();
     for (let chat of chats) {
       try {
         bot.telegram.sendMessage(
@@ -231,12 +231,12 @@ async function notifyAdmins(orderId) {
             },
           }
         );
+        order.notified = true;
+        await order.save();
       } catch (error) {
         logger.error("Something went wrong at notifyAdmins.sendMessage: \n\n" + error);
       }
     }
-    order.notified = true;
-    await order.save();
   } catch (error) {
     notifyError("Something went wrong at notifyAdmins: \n\n" + error);
   }
