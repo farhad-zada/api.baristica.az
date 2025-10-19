@@ -8,7 +8,7 @@ const Product = require("../models/productModel");
 /**
  * @type {import("telegraf").Telegraf<import("telegraf").Context<import("telegraf").Updates>>}
  */
-const bot = require("../telegram");
+const bot = require("../bot");
 
 /**
  * @param {import ('express').Request} req

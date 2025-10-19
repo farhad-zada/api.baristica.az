@@ -1,7 +1,7 @@
 /**
  * @type {import("telegraf").Telegraf<import("telegraf").Context<import("telegraf").Updates>>}
  */
-const bot = require("../telegram");
+const bot = require("../bot");
 const config = require("../config");
 const logger = require("../utils/logger");
 
