@@ -169,7 +169,7 @@
         }
 
         .media-grid.expanded {
-            max-height: 2000px;
+            max-height: 40000px;
             /* Adjust based on your content */
             padding: 1rem;
         }
@@ -472,7 +472,7 @@
                     // Simple role detection based on email (replace with actual role checking)
                     if (data.data.role === 'admin' || data.data.role === 'superadmin') {
                         role = 'Admin';
-                    } else if (data.data.roles === 'baristica') {
+                    } else if (data.data.role === 'baristica') {
                         role = 'Baristica';
                     }
 
@@ -538,6 +538,7 @@
 
             // Create HTML for each group
             let groupsHTML = '';
+            console.log(groupedFiles)
             sortedGroups.forEach(letter => {
                 const files = groupedFiles[letter];
 
