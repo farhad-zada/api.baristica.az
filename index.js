@@ -47,25 +47,18 @@ mongoose
       next();
     });
 
-    // // app.use(express.static("public/resources"))
-    // app.get("/", (req, res) => {
-    //   res.sendFile(path.join(__dirname, "public", "resources", "login.html"));
-    // })
+    // app.use(express.static("public/resources"))
+    app.get("/", (req, res) => {
+      res.sendFile(path.join(__dirname, "public", "resources", "login.html"));
+    })
 
-    // app.get("/control", (req, res) => {
-    //   res.sendFile(path.join(__dirname, "public", "resources", "control.html"));
-    // })
+    app.get("/control", (req, res) => {
+      res.sendFile(path.join(__dirname, "public", "resources", "control.html"));
+    })
 
     // Serve static files in /md from the images directory
     const imagesPath = path.join(__dirname, "public/images");
-    app.use(
-      (req, res, next) => {
-        res.setHeader("Access-Control-Allow-Origin", "*");
-        next();
-      },
-      express.static(imagesPath)
-    );
-
+    const commentsPath = path.join(__dirname, "public/comments");
     app.use(
       "/md",
       (req, res, next) => {
@@ -74,6 +67,16 @@ mongoose
         next();
       },
       express.static(imagesPath)
+    );
+
+     app.use(
+      "/md/commments",
+      (req, res, next) => {
+        res.setHeader("Cross-Origin-Resource-Policy", "cross-origin"); // Allow cross-origin access
+        res.setHeader("Cache-Control", "no-store"); // disable cache 
+        next();
+      },
+      express.static(commentsPath)
     );
 
     app.use("/api/v1", require("./routes/api"));
