@@ -72,15 +72,7 @@ async function storeMediaAsPrivileged(req, res) {
     const fileOut = `${__dirname}/../public/images/${photoName}`;
 
     logger.info("[New Image] " + fileOut);
-    const extension = photo.mimetype.split("/")[1];
-    if (extension === "png") {
-      sharp(photo.buffer)
-        .resize(media.width, media.height)
-        .png({ force: true })
-        .toFile(fileOut);
-    } else {
-      sharp(photo.buffer).resize(media.width, media.height).toFile(fileOut);
-    }
+    sharp(photo.buffer).resize(media.width, media.height).toFile(fileOut);
     const photourl = `https://api.baristica.az/md/${photoName}`;
     const { originalname } = photo;
     return { originalname, photourl };
