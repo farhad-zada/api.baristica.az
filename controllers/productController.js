@@ -145,9 +145,11 @@ const findAll = async (req, res) => {
           $or: [
             { category: "espresso", weight: 1000 },
             { code: "E20010" },
-            { code: "E20012"},
+            { code: "E20012" },
             { category: "filter", weight: 200 },
+            { category: "filter", weight: 100 },
             { category: "drip", weight: 20 },
+            { category: "tea", weight: 100 }
           ],
         })
         .sort("category");
@@ -180,7 +182,6 @@ const findAll = async (req, res) => {
       });
     }
     const pagesCount = Math.ceil(count / lt);
-
     successResponse(res, products, 200, count, pagesCount);
   } catch (error) {
     console.log(error);
