@@ -149,7 +149,8 @@ const findAll = async (req, res) => {
             { category: "filter", weight: 200 },
             { category: "filter", weight: 100 },
             { category: "drip", weight: 20 },
-            { category: "tea", weight: 100 }
+            { category: "tea", weight: 100 },
+            { code: "E20015"}
           ],
         })
         .sort("category");
