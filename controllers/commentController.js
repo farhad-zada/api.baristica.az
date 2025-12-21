@@ -22,14 +22,14 @@ async function all(req, res) {
   if (product) {
     comments = await Comment.find({ product })
       .populate("user", "name")
-      .skip(skip)
-      .limit(lt)
+      //.skip(skip)
+      //.limit(lt)
       .exec();
   } else if (req.user) {
     comments = await Comment.find({ user: req.user.id })
       .populate("user", "name")
-      .skip(skip)
-      .limit(lt)
+      //.skip(skip)
+      //.limit(lt)
       .exec();
   }
 

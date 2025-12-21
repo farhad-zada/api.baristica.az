@@ -44,13 +44,15 @@ async function updateProductAverageRating(product) {
  */
 async function rate(req, res, next) {
   try {
-    const { rating } = req.body;
+    let { rating } = req.body;
     const productId = req.params.id;
 
     const Model = req.Model;
-
+    if (rating == undefined || rating  == null || rating == 0) {
+	rating = 5;
+    }
     if (rating != undefined && rating != null) {
-      if ((rating > 5) | (rating < 1) | (typeof rating != "number")) {
+      if ((rating > 5) | (rating < 0) | (typeof rating != "number")) {
         return errorResponse(
           res,
           "Rating can only be 1, 2, 3, 4, 5. Given: `" + rating + "`",
@@ -87,6 +89,7 @@ async function rate(req, res, next) {
     updateProductAverageRating(product);
     return successResponse(res, { response, rating: existingRating }, 200);
   } catch (error) {
+    console.log(error);
     logger.error(error);
     return errorResponse(
       res,

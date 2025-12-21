@@ -33,7 +33,7 @@ const OrderItemSchema = new Schema(
     },
     productType: {
       type: String, 
-      enum: ["Coffee", "Machine", "Accessory"],
+      enum: ["Coffee", "Machine", "Accessory", "Tea"],
       required: [true, "Product type is mandatory"]
     },
     quantity: {
