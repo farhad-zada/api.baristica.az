@@ -137,30 +137,36 @@ const sendOrdersMessage = async (ctx, order) => {
     ord.seen.push(userId);
     await ord.save();
   }
-  let message = orderMessage(order, user);
-  console.log(`update_status_${order._id}_delivered`);
-  await ctx.reply(message, {
-    reply_markup: {
-      inline_keyboard: [
-        [
-          {
-            text: "Delivered ✅",
-            callback_data: `update_status_${order._id}_delivered`
-          },
-          {
-            text: "Cancelled ❌",
-            callback_data: `update_status_${order._id}_cancelled`
-          }
+  let message = "";
+
+  let productNotFound = order.items.some(item => item.product === null || item.product === undefined);
+  if (productNotFound) {
+    await ctx.reply("❌❌❌\nSome products in the order do not exist‼");
+  } else {
+    let message = orderMessage(order, user);
+    await ctx.reply(message, {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: "Delivered ✅",
+              callback_data: `update_status_${order._id}_delivered`
+            },
+            {
+              text: "Cancelled ❌",
+              callback_data: `update_status_${order._id}_cancelled`
+            }
+          ],
+          [
+            {
+              text: "Next Order ⏭️",
+              callback_data: "get_next_unseen_order",
+            },
+          ],
         ],
-        [
-          {
-            text: "Next Order ⏭️",
-            callback_data: "get_next_unseen_order",
-          },
-        ],
-      ],
-    },
-  });
+      },
+    });
+  }
   if (ctx.callbackQuery !== undefined) {
     await ctx.answerCbQuery("Success!✅");
   }
@@ -180,7 +186,7 @@ async function sendLastUnseenOrderMessage(ctx) {
 
 async function sendByIdOrderMessage(ctx) {
   const [, orderId] = ctx.match;
-
+  console.log(orderId);
   let order = await Order.findById(orderId);
   if (!order) {
     sendTelegramTextMessage(ctx, "invalid order id 🫤");
@@ -213,6 +219,7 @@ async function notifyAdmins(orderId) {
   try {
     let order = await Order.findById(orderId);
     let chats = await safeChats();
+    console.log(`get_order_${order.id}`)
     for (let chat of chats) {
       try {
         bot.telegram.sendMessage(
