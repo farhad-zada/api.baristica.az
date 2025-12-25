@@ -81,7 +81,7 @@ async function checkNewOrders() {
         await notifyAdmins(order.id);
       }
     } else {
-      logger.info("No new orders yet!");
+      // logger.info("No new orders yet!");
     }
   } catch (error) {
     logger.error("Something wrong happened at checkNewOrders: \n\n" + error);
