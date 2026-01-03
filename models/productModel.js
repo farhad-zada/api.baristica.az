@@ -62,6 +62,17 @@ const ProductSchema = new Schema(
       // default: "coffee",
       immutable: true,
     },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+      immutable: true,
+      required: true,
+    },
+    updatedAt: {
+      type: Date,
+      default: Date.now,
+      required: true,
+    },
     deletedAt: {
       type: Date,
       default: null,
