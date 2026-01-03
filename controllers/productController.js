@@ -117,6 +117,7 @@ const findAll = async (req, res) => {
         category = "1_group,2_group,grinder";
       }
     }
+    query = sortProducts(query, "updatedAt", "desc"); // Default sorting
     query = sortProducts(query, "price", price);
     query = sortProducts(query, "statistics.ratings", rating);
     query = sortProducts(query, "qGrader", qGrader);
