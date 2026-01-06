@@ -25,7 +25,7 @@ const checkQueryString = (req, res, next) => {
       return errorResponse(res, "Invalid limit", 400);
     }
   } else {
-    req.query.lt = 5;
+    req.query.lt = 3;
   }
   if (ptp) {
     if (
