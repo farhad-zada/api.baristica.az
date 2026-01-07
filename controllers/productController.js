@@ -107,6 +107,7 @@ const findAll = async (req, res) => {
       price,
       coffeeType,
       category,
+      
     } = req.query; // Accept 'keys' as a query parameter for multiple sorting fields
     const skip = (pg - 1) * lt;
 
@@ -117,6 +118,7 @@ const findAll = async (req, res) => {
         category = "1_group,2_group,grinder";
       }
     }
+    console.log(req.query);
     query = sortProducts(query, "updatedAt", "desc"); // Default sorting
     query = sortProducts(query, "price", price);
     query = sortProducts(query, "statistics.ratings", rating);
