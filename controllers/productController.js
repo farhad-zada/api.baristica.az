@@ -129,6 +129,7 @@ const findAll = async (req, res) => {
     query = findIn(query, `processingMethod.az`, processingMethod);
     query = findIn(query, "country", country);
     query = findIn(query, "category", category);
+    query.find({ deleted: false });
     if (coffeeType) {
       const coffeeTypeFilters = coffeeType
         .split(",")

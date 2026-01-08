@@ -38,9 +38,23 @@ const validateOrder = async (req, res, next) => {
     });
 
     const items = await Promise.all(itemsPromises);
-    if (items.some((item) => !item)) {
-      return errorResponse(res, "Invalid product id provided!", 400);
+    let problematicIndex = -1;
+    let problem = "";
+    if (items.some((item, idx) => {
+      if (!item) {
+        problematicIndex = idx;
+        problem = `the product with id ${req.body.order.items[idx].product} does not exist`;
+        return true;
+      } else if (item.deleted) {
+        problematicIndex = idx;
+        problem = `the product with SKU code ${item.code} has been deleted`;
+        return true;
+      }
+      return false;
+    })) {
+      return errorResponse(res, problem, 400);
     }
+
 
     req.body.order.items.map((item, idx) => {
       product = items[idx];

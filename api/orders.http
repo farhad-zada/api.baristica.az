@@ -27,7 +27,7 @@ Authorization: {{authToken}}
         "paymentMethod": "card",
         "items": [
             {
-                "product": "{{productA}}",
+                "product": "coffee_F20015",
                 "quantity": 1
             },
             {
